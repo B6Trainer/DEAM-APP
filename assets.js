@@ -62,12 +62,32 @@ const AccountData = await readContracts({
     },
     ],
   });
+
 console.log(AccountData[2])
-DFN_BAL.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);
-USDTBAL.innerHTML =Number(utils.formatEther(AccountData[1].result)).toFixed(2);
-TotalStakes.innerHTML = Number(utils.formatEther(AccountData[2].result[1])).toFixed(2);
-RealtimeRewards.innerHTML = Number(utils.formatEther(String(AccountData[2].result[2]))).toFixed(2); 
-AvailableRewards.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);
+
+if(AccountData[0].status =="success"){  
+  DFN_BAL.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);
+  AvailableRewards.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);
+}else{
+  console.log("No data on DMTK Balance of operation. Status: "+AccountData[0].status);
+}
+
+if(AccountData[1].status =="success"){  
+  USDTBAL.innerHTML =Number(utils.formatEther(AccountData[1].result)).toFixed(2);
+}else{
+  console.log("No data on USDT Balance of operation. Status: "+AccountData[1].status);
+}
+
+if(AccountData[2].status =="success"){  
+  TotalStakes.innerHTML = Number(utils.formatEther(AccountData[2].result[1])).toFixed(2);
+  RealtimeRewards.innerHTML = Number(utils.formatEther(String(AccountData[2].result[2]))).toFixed(2); 
+}else{
+  console.log("No data on Subscription operation. Status: "+AccountData[2].status);
+}
+
+
+
+
 
 
 // receivebtn.addEventListener("click", async () => {
