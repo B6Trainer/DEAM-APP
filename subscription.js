@@ -37,80 +37,89 @@ const email_ = document.getElementById("email")
 const referrerAc___ = document.getElementById("referrerAc")
 const amountInput___ = document.getElementById("amountInput")
 const minimumTopup = document.getElementById("minimumTopup")
-
+const mandatory = document.getElementById("mandatory")
 const minimumDepositFee=100;
 
 var connected = ethereumClient.getAccount().isConnected;
 
 if(!connected){
   carddiv.innerHTML =``;
-  carddiv.innerHTML =`<span style="text-align:center;margin-left:110px;margin-top:100px;position: fixed;">Connect  Wallet<span>`;
+  carddiv.innerHTML =`<span style="text-align:center;margin-left:110px;margin-top:100px;position: fixed;">
+                        Please connect your wallet <br> to join as a member.
+                      <span>`;
 }
 
 const subscriptionContract = {
   address: subscriptionAddress,
   abi: subscriptionABI,
-  }
+}
   
-  const dmtkCOntract = {
+const dmtkCOntract = {
   address: tokenAddress,
   abi: ABI_DMTK,
-  }
+}
 
-  const usdtContract = {
+const usdtContract = {
     address: usdtAddress,
     abi: ABI_ERC20,
-    }
+}
     
   
 
 const AccountData = await readContracts({
   contracts: [
-  {
-      ...dmtkCOntract,
-      functionName: 'balanceOf',
-      args: [ethereumClient.getAccount().address],
-  },
-  {
-    ...subscriptionContract,
-    functionName: 'getSubscriptionDetails',
-    args:[ethereumClient.getAccount().address]
-  },
-  {
-    ...dmtkCOntract,
-    functionName: 'conversionFeeWallet',
-},
-{
-  ...usdtContract,
-  functionName: 'allowance',
-  args: [ethereumClient.getAccount().address,tokenAddress],
-},
-{
-  ...usdtContract,
-  functionName: 'balanceOf',
-  args: [ethereumClient.getAccount().address],
-},
-{
-  ...dmtkCOntract,
-  functionName: 'minimumDepositForMembers',
-},
+        {
+            ...dmtkCOntract,
+            functionName: 'balanceOf',
+            args: [ethereumClient.getAccount().address],
+        },
+        {
+          ...subscriptionContract,
+          functionName: 'getSubscriptionDetails',
+          args:[ethereumClient.getAccount().address]
+        },
+        {
+          ...dmtkCOntract,
+          functionName: 'conversionFeeWallet',
+        },
+        {
+          ...usdtContract,
+          functionName: 'allowance',
+          args: [ethereumClient.getAccount().address,tokenAddress],
+        },
+        {
+          ...usdtContract,
+          functionName: 'balanceOf',
+          args: [ethereumClient.getAccount().address],
+        },
+        {
+          ...dmtkCOntract,
+          functionName: 'minimumDepositForMembers',
+        },
 
-{
-  ...dmtkCOntract,
-  functionName: 'minimumTopUpAmountMembers',
-},
-
-
+        {
+          ...dmtkCOntract,
+          functionName: 'minimumTopUpAmountMembers',
+        },
   ],
 });
+
 console.log(AccountData);
-minimumTopup.innerHTML = `(Min TopUp: ${Number(utils.formatEther(AccountData[6].result)).toFixed(2)} USDT)`;
+
+var minTopupfees;
+if(AccountData[6].status == "failure"){
+  minTopupfees = minimumDepositFee;
+}else{
+  minTopupfees = `(Min TopUp: ${Number(utils.formatEther(AccountData[6].result)).toFixed(2)} USDT)`;
+}
+minimumTopup.innerHTML = minTopupfees;
 
 if(AccountData[5].status == "failure"){
   mindeposit.innerHTML = minimumDepositFee;
 }else{
   mindeposit.innerHTML = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
 }
+
 if(AccountData[4].result)
 availableUSDT.innerHTML = Number(utils.formatEther(AccountData[4].result)).toFixed(2)
 
@@ -143,7 +152,7 @@ function formatDateToDDMMYYYY(date) {
 }
 
 if(AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
-  planName.innerHTML = "Not A Subscriber";
+  planName.innerHTML = "not a Subscriber";
 }else{
   planName.innerHTML = AccountData[1].result[0]==0?"MEMBER":"PROMOTOR";
 }
@@ -305,12 +314,12 @@ subscribeBtn.addEventListener('click', async function (e) {
   const mobile = document.getElementById("mobile__").value;
   const email = document.getElementById("email__").value;
   if(!userAddress || !name || !mobile || !email || !referrerAccount){
-    errorx.innerHTML = "Enter Required Field";
+    errorx.innerHTML = "Please fill all the mandatory fields";
     return;
   }
 var selectElement = document.getElementById("membershipType");
 var selectedValue = selectElement.value;
-  console.log(selectedValue);
+  console.log("Membershiptype value: "+selectedValue);
   var min = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
   if(Number(amountsubscriptionnew)<min){
     errorx.innerHTML = "Error:"+"Minimum Deposit is "+min;
@@ -387,13 +396,14 @@ membershipType.addEventListener("change", function() {
     }
 
     benefitsSection.innerHTML =MemberbenifitsHtml;
-    mindepositcontainer.style.display ="block";
+    mindepositcontainer.style.display ="none";
     referrerAc___.style.display ="block";
     amountInput___.style.display ="block";
     name_.style.display ="block";
     userAddress_.style.display = "block";
     mobile_.style.display ="block";
     email_.style.display ="block";
+    mandatory.style.display ="block";
 } else if(selectedValue === '1'){
     $('#amountInput').hide();
     if(Number(utils.formatEther(AccountData[3].result))  < Number(utils.formatEther(AccountData[2].result))){
@@ -411,22 +421,24 @@ membershipType.addEventListener("change", function() {
     }
 
     benefitsSection.innerHTML =PromotorbenifitsHtml;
-    mindepositcontainer.style.display ="block";
+    mindepositcontainer.style.display ="none";
     referrerAc___.style.display ="block";
     amountInput___.style.display ="none";
     name_.style.display ="block";
     userAddress_.style.display = "block";
     mobile_.style.display ="block";
     email_.style.display ="block";
+    madatory.style.display ="block";
 }else{
   mindepositcontainer.style.display ="none";
   benefitsSection.innerHTML ="";
   referrerAc___.style.display ="none";
   amountInput___.style.display ="none";
-  name_.style.display ="block";
-  userAddress_.style.display = "block";
-  mobile_.style.display ="block";
-  email_.style.display ="block";
+  name_.style.display ="none";
+  userAddress_.style.display = "none";
+  mobile_.style.display ="none";
+  email_.style.display ="none";
+  mandatory.style.display ="none";
 }
 });
 

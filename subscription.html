@@ -34,7 +34,7 @@
   <div id="navbarmenu"></div>
   <div class="container" id="carddiv">
     <div class="card-withImage">
-      <h5 style="color:var(--primary-color)"><span></span>I am subscribed to </h5>
+      <h5 style="color:var(--primary-color)"><span></span>I am</h5>
       <h2 style="color:var(--primary-color)" class="balance"><span id="plan-name">-</span></h2>
       <p class="usd-value-main">
         Validity Till: <span id="validity"> </span>
@@ -59,46 +59,49 @@
         <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Subscribe to a Plan</u></h3>
         <h4 style="color: var(--secondary-color);" class="text-center mt-2">Available USDT: <span
             id="availableUSDT">0</span> USDT</h4>
-        <p id="mindepositcontainer" style="display:none" class="text-center alert alert-info">Minimum Deposit: <span
-            id="mindeposit"></span> USDT</p>
+        <p id="mindepositcontainer" style="display:none" class="text-center alert alert-info">Choose your Membership </p>
         <div class="container sub-container">
           <div class="form-group">
             <label for="membershipType">Membership Type:</label>
             <select class="form-control" id="membershipType" name="membershipType">
               <option>-Choose Membership Type-</option>
-              <option value="0">Member</option>
+              <option value="0">Classic Member</option>
               <!-- <option value="1">Promotor</option> -->
             </select>
           </div>
           <div id="benefits-section"></div>
           <div class="form-group" id="userAddress" style="display:none">
-            <label for="name">User Wallet Address:</label>
+            <label for="name">User Wallet Address: *</label>
             <input required type="text" class="form-control" id="userAddress__" name="userAddress"
               placeholder="0xdjsad...23d2">
           </div>
           <div class="form-group" id="name" style="display:none">
-            <label for="name">Name:</label>
+            <label for="name">Name: *</label>
             <input required type="text" class="form-control" id="name__" name="subcsriberName"
               placeholder="eg .Mark James">
           </div>
           <div class="form-group" id="mobile" style="display:none">
-            <label for="mobile">Mobile:</label>
+            <label for="mobile">Mobile: *</label>
             <input required type="text" class="form-control" id="mobile__" name="mobile" placeholder="+971 50*****33">
           </div>
           <div class="form-group" id="email" style="display:none">
-            <label for="email">Email:</label>
+            <label for="email">Email: *</label>
             <input required type="text" class="form-control" id="email__" name="email" placeholder="xyz@abc.com">
           </div>
 
           <div class="form-group" id="referrerAc" style="display:none">
-            <label for="Referrer">Referral Address:</label>
+            <label for="Referrer">Referral Address: *</label>
             <input required type="text" class="form-control" id="referrerAccount" name="referrerAccount"
               placeholder="0x0321........41u41">
           </div>
           <div class="form-group" id="amountInput" style="display: none;">
-            <label for="amount">Amount:</label>
+            <label for="amount">Amount *: (Minimum deposit <span id="mindeposit"></span> USDT)</label>
             <input required type="text" class="form-control" id="amountsubscriptionnew" name="amount"
               placeholder="eg. 100">
+          </div>
+          <div class="form-group" id="mandatory" style="display: none;">
+            <label for="amount"> * - Mandatory values</label>
+            
           </div>
           <br>
           <div id="subscribeBtnCont">
