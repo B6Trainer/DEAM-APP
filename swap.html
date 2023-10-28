@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Swap</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./swap.css" />
+    <meta
+      name="description"
+      content="DFN (Decentralized Finance Network) is Complete peer to peer decentralized finance network. Provides all Banking Solutions on your fingertips."
+    />
+  </head>
+
+  <body>
+    <div id="loader" class="loader">
+      <div class="spinner"></div>
+    </div>
+    <div id="navbarmenu"></div>
+
+  <div id="swap-contatiner" class="container">
+    <h1 class="mb-4 text-center">Token Swap</h1>
+   
+  <hr>
+    <p>Available Balance:</p>
+   
+    <div class="">
+        <div class="coin-row">
+            <div class="coin-name">
+              
+              <span>USDT:</span>
+            </div>
+            <div class="coin-balance">
+              <span id="swap_usdt_balance">0 </span>
+            </div>
+          </div>
+        
+          <div class="coin-row">
+            <div class="coin-name">
+             
+              <span>DMTK:</span>
+            </div>
+            <div class="coin-balance">
+              <span id="swap_dfn_balance">0 </span>
+            </div>
+          </div>
+        <p style="font-weight:bold" class="text-center text-danger">(Present Price : <span id="currentPrice">0</span> USDT = 1 DMTK)</p>
+   </div>
+
+    <div class="row swapContainerstyle " style="color:rgb(180, 45, 45);word-wrap: break-word; display:none" id="errormsg"></div>
+
+   <div id="containerOfSwap" class="container swapContainerstyle">
+    <div class="form-group ">
+      <label class="form-label" for="tokenA">USDT</label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">
+            <i class="fas fa-coins coin-icon"></i>
+          </span>
+        </div>
+        <input type="number" class="form-control" id="usdtInput" placeholder="Enter amount in USDT">
+      </div>
+    </div>
+    <div class="row justify-content-center">
+        <i class="fa-solid fa-arrow-down switch-icon"></i>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="tokenB">DMTK Token</label>
+    
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">
+            <i class="fas fa-coins coin-icon"></i>
+          </span>
+        </div>
+        <input disabled="true" type="number" class="form-control" id="dfnOutput" placeholder="Equivalent amount in DFN" readonly>
+      </div>
+    </div>
+    
+    <div class="text-center mt-4">
+      <button class="btn btn-primary" id="tokenSwap"><i class="fa fa-refresh fa-spin"></i> Waiting for Input</button>
+    </div>
+  </div>
+    <div class="text-center mt-3">
+      <p id="result"></p>
+    </div>
+  </div>
+
+  <div id="footer-menu"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+  <script>
+    document.onreadystatechange = function () {
+      const loader = document.getElementById("loader");
+      if (document.readyState === "complete") {
+        loader.style.display = "none";
+      } else {
+        loader.style.display = "block";
+      }
+    };
+  </script>
+  <script type="module" src="./swap.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="./common.js"></script>
+</body>
+</html>
+

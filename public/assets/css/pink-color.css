@@ -1,0 +1,10 @@
+/*----------------------------------------------
+  Pink Color Style
+----------------------------------------------*/
+
+:root {
+ --primary-color:#2dd9df ;
+ --secondary-color: #03888d;
+ --secondary-color-header:#00f7ff ;
+ --primary-color-header: #00aab0;
+}

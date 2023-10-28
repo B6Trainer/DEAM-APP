@@ -1,0 +1,18 @@
+{
+  "theme_color": "#030301",
+  "background_color": "#030301",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/index.html",
+  "name": "DEAM Metaverse",
+  "short_name": "DEAM",
+  "description": "DEAM Metaverse Community",
+  "icons": [
+    {
+      "src": "applogo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "id": "1234"
+}

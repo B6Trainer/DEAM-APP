@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Assets</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <!--Stylesheet-->
+    <link rel="stylesheet" href="/assets/css/stylesheet-main.css" />
+    <link rel="stylesheet" href="/assets/css/default-stylesheet.css" />
+    <link rel="stylesheet" href="/assets/css/pink-color.css" />
+    <link rel="stylesheet" href="./style.css" />
+ 
+
+    <meta
+      name="description"
+      content="DEAM Metavers is a community to benfit the members with each others contribution. Provides a stream of passive income."
+    />
+
+    <style>
+      :root {
+        --header-bg-color: #030301;
+        --nav-item-color: #f5f5f5;
+        --hero-bg-color: #030301;
+        --section-1-bg-color: #111111;
+        --section-2-bg-color: #030301;
+        --section-3-bg-color: #111111;
+        --section-4-bg-color: #030301;
+        --section-5-bg-color: #111111;
+        --section-6-bg-color: #030301;
+        --section-7-bg-color: #111111;
+        --section-8-bg-color: #030301;
+        --section-9-bg-color: #111111;
+        --section-10-bg-color: #030301;
+        --section-11-bg-color: #111111;
+        --section-12-bg-color: #030301;
+        --footer-bg-color: #000000;
+      }
+    </style>
+    
+  </head>
+
+  <body>
+    <div id="loader" class="loader">
+      <div class="spinner"></div>
+    </div>
+    <div id="navbarmenu"></div>
+
+    <div
+      class="container"
+      style="
+        margin-top: 60px;
+        width: 100%;
+        padding: 20px;
+        padding-bottom: 100px;
+        color:#c3c3c3;
+      "
+    >
+      <div
+        class="assets-rewards"
+        style="
+          padding: 5px;
+          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
+          border-radius: 5px;
+          margin-bottom: 15px;
+        "
+      >
+        <strong>My Wallet Balance:</strong>
+        <div class="coin-row">
+          <div class="coin-name">
+            <i class="fas fa-coins coin-icon"></i>
+            <span>USDT:</span>
+          </div>
+          <div class="coin-balance">
+            <span id="swap_usdt_balance">0 </span>
+          </div>
+        </div>
+
+        <div class="coin-row">
+          <div class="coin-name">
+            <i class="fas fa-coins coin-icon"></i>
+            <span>DMTK:</span>
+          </div>
+          <div class="coin-balance">
+            <span id="swap_dfn_balance">0 </span>
+          </div>
+        </div>
+        <!-- <div class="button-container mt-3">
+          <button
+            style="width: 100%; margin-right: 5px"
+            class="btn btn-outline-primary btn-lg"
+            onClick="location.href='./withdrawToken.html'"
+          >
+            <i class="fa-solid fa-upload"></i> Send
+          </button>
+          <button id="receivebtn" data-toggle="modal" data-target="#myModal" style="width: 100%" class="btn btn-outline-primary btn-lg">
+            <i class="fa-solid fa-download"></i> Receive
+          </button>
+        </div> -->
+        <!-- <a href="./swap.html"
+        ><button
+          style="width: 100%"
+          class="mt-3 btn btn-info btn-lg btn-block"
+        >
+          <i class="fa-solid fa-repeat"></i> Swap USDT to DMTK
+        </button></a
+      > -->
+      </div>
+      <div
+        class="assets-rewards"
+        style="
+          padding: 5px;
+          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
+          border-radius: 5px;
+          margin-bottom: 15px;
+        "
+      >
+      
+        <strong>My Assets:</strong>
+
+        <div class="coin-row">
+          <div class="coin-name">
+            <i class="fas fa-coins coin-icon"></i>
+            <span>My Deposits:</span>
+          </div>
+          <div class="coin-balance"><span id="total_stakes">0 </span> DMTK</div>
+        </div>
+      </div>
+
+      <div
+        class="assets-rewards"
+        style="
+          padding: 5px;
+          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
+          border-radius: 5px;
+          margin-bottom: 15px;
+        "
+      >
+        <strong>My Rewards:</strong>
+        <div class="coin-row">
+          <div class="coin-name">
+            <i class="fas fa-coins coin-icon"></i>
+            <span> Total Earnings: </span>
+          </div>
+          <div class="coin-balance">
+            <span id="realtimeReward">0 </span> DMTK
+          </div>
+        </div>
+
+        <div class="coin-row">
+          <div class="coin-name">
+            <i class="fas fa-coins coin-icon"></i>
+            <span>Available Rewards: </span>
+          </div>
+          <div class="coin-balance">
+            <span id="availableRewards">0 </span> DMTK
+          </div>
+        </div>
+
+       
+      <div
+        class="assets-rewards"
+        style="
+          padding: 5px;
+          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
+          border-radius: 5px;
+          margin-bottom: 15px;
+        "
+      >
+       
+       
+        <div class="mt-1">
+          <button
+            onClick="location.href='./withdrawRewards.html'"
+            style="margin-right: 5px;width: 100%;"
+            class="btn-info btn-lg"
+          >
+            Withdraw Reward
+          </button>
+         
+        </div>
+  
+      </div>
+
+     
+   
+     
+    </div>
+
+
+    <!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal body -->
+      <div class="modal-body">
+        <h1 class="text-center">Receive DMTK OR USDT</h1>
+        <hr>
+        <div style="display: flex;
+        align-items: center;
+        flex-direction: column;" id="qrcode"></div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <div id="footer-menu"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      document.onreadystatechange = function () {
+        const loader = document.getElementById("loader");
+        if (document.readyState === "complete") {
+          loader.style.display = "none";
+        } else {
+          loader.style.display = "block";
+        }
+      };
+    </script>
+    <script type="module" src="./assets.js"></script>
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./common.js"></script>
+    <script>
+      function copyToClipboard(id) {
+    const hiddenInputValue = document.getElementById(id).value;
+
+    // Create a temporary textarea element
+    const tempTextarea = document.createElement("textarea");
+    tempTextarea.value = hiddenInputValue;
+    document.body.appendChild(tempTextarea);
+  
+    // Select the text inside the temporary textarea
+    tempTextarea.select();
+    tempTextarea.setSelectionRange(0, 99999); // For mobile devices
+  
+    try {
+      // Copy the selected text to the clipboard using Clipboard API
+      const successful = document.execCommand("copy");
+      const message = successful ? "Address copied to clipboard!" : "Failed to copy text";
+      alert(message);
+    } catch (err) {
+      console.error("Error copying text:", err);
+    }
+  
+    // Remove the temporary textarea from the DOM
+    document.body.removeChild(tempTextarea);
+  
+}
+    </script>
+  </body>
+</html>
