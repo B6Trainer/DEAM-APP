@@ -9,6 +9,7 @@ import ABI_DMTK from "./ABI_DMTK.json";
 
 const planName = document.getElementById("plan-name");
 const validity = document.getElementById("validity");
+const walletid = document.getElementById("walletid");
 const totalDeposits = document.getElementById("total-deposits");
 const totalEarnings = document.getElementById("total-earnings");
 const benefits = document.getElementById("benefits");
@@ -41,12 +42,18 @@ const mandatory = document.getElementById("mandatory")
 const minimumDepositFee=100;
 
 var connected = ethereumClient.getAccount().isConnected;
+var walletConnectedid="";
+var MTYPE_Memeber = "0";
+var MTYPE_Promoter = "1";
 
 if(!connected){
   carddiv.innerHTML =``;
   carddiv.innerHTML =`<span style="text-align:center;margin-left:110px;margin-top:100px;position: fixed;">
                         Please connect your wallet <br> to join as a member.
                       <span>`;
+  
+}else{
+  walletConnectedid=ethereumClient.getAccount().address;
 }
 
 const subscriptionContract = {
@@ -151,15 +158,6 @@ function formatDateToDDMMYYYY(date) {
   return formattedDate;
 }
 
-if(AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
-  planName.innerHTML = "not a Subscriber";
-}else{
-  planName.innerHTML = AccountData[1].result[0]==0?"MEMBER":"PROMOTOR";
-}
-
-totalDeposits.innerHTML = Number(utils.formatEther(AccountData[1].result[1])).toFixed(2);
-totalEarnings.innerHTML = Number(utils.formatEther(AccountData[1].result[2])).toFixed(2);
-
 var MemberbenifitsHtml = `Benefits: <ul>
 <li>Earn Level Rewards <a href="./index.html"> click for more </a></li>
 <li>Earnigns upto 3X of investment</li>
@@ -174,65 +172,86 @@ var PromotorbenifitsHtml = `    Benefits: <ul>
 <li>You can Renew Once Validity Expires</li>
 </ul>`;
 
+if(AccountData[1].status == "failure" || AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
+  planName.innerHTML = "Welcome, Dear Guest";
 
-//promotor
-if(AccountData[1].result[0]==1){
-  topupdiv.style.display = "none";
-  labeltopup.style.display ="none";
-  benefits.innerHTML = PromotorbenifitsHtml;
-  validity.innerHTML = formatDateToDDMMYYYY(new Date(Number(String(AccountData[1].result[3]))*1000));
-  renewalCharge.innerHTML = Number(utils.formatEther(AccountData[2].result)).toFixed(2);
-  amountx.style.display ="none";
-  subscribeform.style.display ="none";
-}
+    renewbtndiv.style.display = "none";
+    topupdiv.style.display = "none";
+    labeltopup.style.display ="none";
+    benefits.innerHTML = "";
+    amountx.style.display ="none";
+    walletid.innerHTML = walletConnectedid;
+    subscribeform.style.display ="none";
+    subscribeform.style.display ="block";
 
-//member
-if(AccountData[1].result[0]==0){
-  subscribeform.style.display ="none";
-  renewbtndiv.style.display = "none";
-  benefits.innerHTML = MemberbenifitsHtml;
-  validity.innerHTML = "Lifetime";
-  amountx.style.display ="block";
+}else{
+  planName.innerHTML = AccountData[1].result[0]==0?"Welcome, Dear Member":"Welcome, Dear Promoter";
+  totalDeposits.innerHTML = Number(utils.formatEther(AccountData[1].result[1])).toFixed(2);
+  totalEarnings.innerHTML = Number(utils.formatEther(AccountData[1].result[2])).toFixed(2);
 
-  topupBtn.addEventListener('click', async function (e) {
-    try{
-      topupBtn.disabled = true;
-      topupBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
-      var amountx_ = amountx.value;
-      const result = await writeContract({
-        address: tokenAddress,
-        abi: ABI_DMTK,
-        functionName: 'topUpSubscriptionForMember',
-        args: [utils.parseUnits(String(amountx_), 18)],
-      })
+  //promotor
+  if(AccountData[1].result[0]==1){
+    topupdiv.style.display = "none";
+    labeltopup.style.display ="none";
+    benefits.innerHTML = PromotorbenifitsHtml;
+    validity.innerHTML = formatDateToDDMMYYYY(new Date(Number(String(AccountData[1].result[3]))*1000));
+    renewalCharge.innerHTML = Number(utils.formatEther(AccountData[2].result)).toFixed(2);
+    amountx.style.display ="none";
+    walletid.innerHTML = walletid;
+    subscribeform.style.display ="none";
+  }
 
-      const resultTr = await waitForTransaction({
-        hash: result.hash,
-      })
-      if(resultTr.status=='success'){
-        window.location.reload();
-      }
-      }catch(e){
-        topupBtn.innerHTML = `Top Up`;
-        topupBtn.disabled = false;
-        errorx.innerHTML = "Error: "+e.shortMessage;
-      }
-  })
+  //member
+  if(AccountData[1].result[0]==0){
+    subscribeform.style.display ="none";
+    renewbtndiv.style.display = "none";
+    benefits.innerHTML = MemberbenifitsHtml;
+    validity.innerHTML = "Lifetime";
+    walletid.innerHTML = walletid;
+    amountx.style.display ="block";
 
+    topupBtn.addEventListener('click', async function (e) {
+      try{
+        topupBtn.disabled = true;
+        topupBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
+        var amountx_ = amountx.value;
+        const result = await writeContract({
+          address: tokenAddress,
+          abi: ABI_DMTK,
+          functionName: 'topUpSubscriptionForMember',
+          args: [utils.parseUnits(String(amountx_), 18)],
+        })
+
+        const resultTr = await waitForTransaction({
+          hash: result.hash,
+        })
+        if(resultTr.status=='success'){
+          window.location.reload();
+        }
+        }catch(e){
+          topupBtn.innerHTML = `Top Up`;
+          topupBtn.disabled = false;
+          errorx.innerHTML = "Error: "+e.shortMessage;
+        }
+    })
+
+  }
+
+    //neither
+  if(AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
+    renewbtndiv.style.display = "none";
+    topupdiv.style.display = "none";
+    labeltopup.style.display ="none";
+    benefits.innerHTML = "";
+    amountx.style.display ="none";
+    subscribeform.style.display ="none";
+    subscribeform.style.display ="block";
+  }
+ 
   
-  
 }
 
-//neither
-if(AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
-  renewbtndiv.style.display = "none";
-  topupdiv.style.display = "none";
-  labeltopup.style.display ="none";
-  benefits.innerHTML = "";
-  amountx.style.display ="none";
-  subscribeform.style.display ="none";
-  subscribeform.style.display ="block";
-}
+
 
 
 
@@ -317,15 +336,15 @@ subscribeBtn.addEventListener('click', async function (e) {
     errorx.innerHTML = "Please fill all the mandatory fields";
     return;
   }
-var selectElement = document.getElementById("membershipType");
-var selectedValue = selectElement.value;
-  console.log("Membershiptype value: "+selectedValue);
+var selectMTypeElement = document.getElementById("membershipType");
+var mTypeSelectedValue = selectMTypeElement.value;
+  console.log("Membershiptype value: "+mTypeSelectedValue);
   var min = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
   if(Number(amountsubscriptionnew)<min){
     errorx.innerHTML = "Error:"+"Minimum Deposit is "+min;
     return;
   }
-  if(selectedValue==0){
+  if(mTypeSelectedValue==0){
     subscribeBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
     subscribeBtn.disabled =true;
     try{
@@ -386,8 +405,8 @@ amountsubscriptionnewx.addEventListener("keyup",()=>{
 
 
 membershipType.addEventListener("change", function() {
-  const selectedValue = membershipType.value;
-  if (selectedValue === '0') {
+  const mTypeSelectedValue = membershipType.value;
+  if (mTypeSelectedValue === "0") {
     $('#amountInput').show();
     if(AccountData[5].status == "failure"){
       mindeposit.innerHTML = minimumDepositFee;
@@ -402,9 +421,10 @@ membershipType.addEventListener("change", function() {
     name_.style.display ="block";
     userAddress_.style.display = "block";
     mobile_.style.display ="block";
+    
     email_.style.display ="block";
     mandatory.style.display ="block";
-} else if(selectedValue === '1'){
+  } else if(mTypeSelectedValue === "1"){
     $('#amountInput').hide();
     if(Number(utils.formatEther(AccountData[3].result))  < Number(utils.formatEther(AccountData[2].result))){
       btnApprove.style.display = "block";
@@ -429,17 +449,17 @@ membershipType.addEventListener("change", function() {
     mobile_.style.display ="block";
     email_.style.display ="block";
     madatory.style.display ="block";
-}else{
-  mindepositcontainer.style.display ="none";
-  benefitsSection.innerHTML ="";
-  referrerAc___.style.display ="none";
-  amountInput___.style.display ="none";
-  name_.style.display ="none";
-  userAddress_.style.display = "none";
-  mobile_.style.display ="none";
-  email_.style.display ="none";
-  mandatory.style.display ="none";
-}
+  }else{
+    mindepositcontainer.style.display ="none";
+    benefitsSection.innerHTML ="";
+    referrerAc___.style.display ="none";
+    amountInput___.style.display ="none";
+    name_.style.display ="none";
+    userAddress_.style.display = "none";
+    mobile_.style.display ="none";
+    email_.style.display ="none";
+    mandatory.style.display ="none";
+  }
 });
 
 

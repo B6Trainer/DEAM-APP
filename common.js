@@ -24,9 +24,9 @@ previousNetwork = chain.id;
           previousNetwork = network.chain.id;
       if(previousNetwork != defaultChainId){
           //window.location.href="./home.html";
-          switchChain.style.display ="block";
-          connectBtn.style.display = "none";
-          openApp.style.display = "none";
+          //switchChain.style.display ="block";
+          //connectBtn.style.display = "none";
+          //openApp.style.display = "none";
       }
     }
   });

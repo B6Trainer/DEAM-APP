@@ -17,7 +17,9 @@ var tokenAdd;
 if(network=='Main'){
      subAddress='0x5075cda7dedccb7a7b438541f87f783a73b3283c';//Mainnet
      usdtAdd = '0x55d398326f99059fF775485246999027B3197955';//Mainnet
-     tokenAdd = '0x3f120977b0e1Ad22E407976C63159c7BB80f7beC';//Mainnet
+     //tokenAdd = '0x3f120977b0e1Ad22E407976C63159c7BB80f7beC';//Mainnet -old
+     tokenAdd = '0x618463731e99e08D7FDd590E81823668CcC7297e';//Mainnet
+     
      
 }else{
      subAddress='0x175228E3B5681c7B3CD85d7C619a27ee6dEf5851';//Testnet
