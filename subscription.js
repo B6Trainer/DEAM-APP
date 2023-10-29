@@ -6,6 +6,7 @@ import subscriptionABI from './ABI_SUBSCRIPTION.json';
 import ABI_ERC20 from './ABI_ERC20.json'
 import getPlanName from "./contractUtils";
 import ABI_DMTK from "./ABI_DMTK.json";
+import {copyToClipboard} from "./common.js";
 
 const planName = document.getElementById("plan-name");
 const validity = document.getElementById("validity");
@@ -251,7 +252,11 @@ if(AccountData[1].status == "failure" || AccountData[1].result[6]=="0x0000000000
   
 }
 
-
+const walletidCopybutton = document.getElementById("walletidCopybutton");
+const textToCopy = document.getElementById("walletid").textContent;
+walletidCopybutton.addEventListener("click", () => {
+      copyToClipboard(textToCopy);
+});
 
 
 

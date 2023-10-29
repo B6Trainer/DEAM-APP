@@ -33,6 +33,17 @@ previousNetwork = chain.id;
 }
 
 
+// Function to copy text to clipboard
+export function copyToClipboard(text) {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      alert("Copied to clipboard: " + text);
+    })
+    .catch(err => {
+      console.error('Unable to copy text: ', err);
+    });
+}
+
 
 // document.getElementById("footer-menu").style.zIndex = "100";
 const footerMenu = `

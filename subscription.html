@@ -39,6 +39,7 @@
 
       <p class="usd-value-main">
         <span id="walletid"> </span>
+        <i class="far fa-copy copy-icon" id="walletidCopybutton"></i>
       </p>
 
      <!--<p class="title no-margin">
@@ -56,9 +57,9 @@
 
         </div>
         <div class="reward no-margin">
-          <p class="title no-margin">Validity Till:</p>
+          <p class="title no-margin">Membership Validity Till:</p>
           <p class="value no-margin">
-            <span id="validity"></span>
+            <span id="validity">Not a member yet</span>
           </p>
         </div>
       </div>
@@ -67,7 +68,6 @@
         <div class="staked-amount no-margin">
           <p class="title no-margin">Total Deposits</p>
           <p class="value no-margin"><span id="total-deposits">0</span> USDT</p>
-
         </div>
         <div class="reward no-margin">
           <p class="title no-margin">Total Earning</p>
@@ -191,9 +191,10 @@
       }
     };
   </script>
-  <script type="module" src="./subscription.js"></script>
+  
   <script type="module" src="./main.js"></script>
   <script type="module" src="./common.js"></script>
+  <script type="module" src="./subscription.js"></script>
   <script>
       // $(document).ready(function() {
       //     $('#membershipType').change(function() {
