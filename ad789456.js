@@ -6,6 +6,8 @@ import ERC20_ABI from './ABI_ERC20.json'
 import ABI_DMTK from './ABI_DMTK.json'
 import subscriptionABI from './ABI_SUBSCRIPTION.json';
 
+const addmembererrorx = document.getElementById("addmembererrorx");
+
  const dmtkContract = {
     address: tokenAddress,
     abi: ABI_DMTK,
@@ -312,12 +314,12 @@ changeTransactionFee.addEventListener("click", async function() {
 
 var currentMinDepositMembers = document.getElementById("currentMinDepositMembers");
 var changeMinimumDepositMembers = document.getElementById("changeMinimumDepositMembers");
-currentMinDepositMembers.innerHTML = `Current Deposit  for Members : ${Number(AdminWallets[14].result)/Math.pow(10,18)}`;
+currentMinDepositMembers.innerHTML = `Member's Joining min fee- Current value: ${Number(AdminWallets[14].result)/Math.pow(10,18)} USDT`;
 
 changeMinimumDepositMembers.addEventListener("click", async function() {
     var newMinimumDepositMembers= document.getElementById("newMinimumDepositMembers").value;
     if(newMinimumDepositMembers==""){
-        alert("Enter new Deposit fee")
+        alert("Enter new Minimum joining fee for Members")
         return;
     }
     try{
@@ -345,12 +347,12 @@ changeMinimumDepositMembers.addEventListener("click", async function() {
 
 var currentTopUpMembers = document.getElementById("currentTopUpMembers");
 var changeTopUpMembers = document.getElementById("changeTopUpMembers");
-currentTopUpMembers.innerHTML = `Current Top Up for Members : ${Number(AdminWallets[15].result)/Math.pow(10,18)}`;
+currentTopUpMembers.innerHTML = `Member's topup min fee- Current value:  ${Number(AdminWallets[15].result)/Math.pow(10,18)} USDT`;
 
 changeTopUpMembers.addEventListener("click", async function() {
     var newTopUpMembers= document.getElementById("newTopUpMembers").value;
     if(newTopUpMembers==""){
-        alert("Enter new Deposit fee")
+        alert("Enter new minimum topup fee")
         return;
     }
     try{
@@ -375,18 +377,19 @@ changeTopUpMembers.addEventListener("click", async function() {
 
 
 
-
-
-
-
-
 var addFreeMember = document.getElementById("addFreeMember");
 addFreeMember.addEventListener("click", async function() {
-var name= document.getElementById("name__").value;
-var mobile= document.getElementById("mobile__").value;
-var email= document.getElementById("email__").value;
-var referrer= document.getElementById("referrer__").value;
-var memberAddress= document.getElementById("memberAddress__").value;
+    var name= document.getElementById("name__").value;
+    var mobile= document.getElementById("mobile__").value;
+    var email= document.getElementById("email__").value;
+    var referrer= document.getElementById("referrer__").value;
+    var memberAddress= document.getElementById("memberAddress__").value;
+
+    if(!name || !mobile || !referrer || !email || !memberAddress){
+        addmembererrorx.innerHTML = "Please fill all the mandatory fields";
+        return;
+    }
+
     try{
         var result = await writeContract({
             address: tokenAddress,
@@ -407,4 +410,4 @@ var memberAddress= document.getElementById("memberAddress__").value;
     }
 })
 
-
+document.getElementById("footer-menu").innerHTML = "";

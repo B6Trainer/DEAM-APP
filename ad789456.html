@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>DeamAdmin</title>
+    <link rel="icon" type="image/x-icon" href="/applogo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <!--Stylesheet-->
+    <link rel="stylesheet" href="/assets/css/stylesheet-main.css" />
+    <link rel="stylesheet" href="/assets/css/default-stylesheet.css" />
+    <link rel="stylesheet" href="/assets/css/pink-color.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+
+    <meta name="description"
+    content="DEAM Metaverse is a community to benfit by streams of passive income." />
+   
+
+</head>
+
+<body style="background-color: #080808;">
+
+    <header class="odd" >
+        <nav id="headerNavbar" class="navbar navbar-expand-lg fixed-top " style="background-color: transparent;
+        ">
+          <div class="container">
+          <a class="navbar-brand" href="#"><img src="./images/dmtklogo.png" width="200px"></a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"><i class="fa fa-bars" style="font-size:24px;color:#8e9999"></i> </span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarText" style="background-color: #111111cb;">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link nav-link-header" href="#">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link nav-link-header smooth-anchor" href="#adminwallets">Admin Wallets</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link nav-link-header smooth-anchor" href="#weeklydistribution">Weekly Distribution</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link nav-link-header smooth-anchor" href="#feesetup">Fee Setup</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link nav-link-header smooth-anchor" href="#addnewmember">Add New Member</a>
+              </li>
+            </ul>
+            <span class="navbar-text">
+              <div id="connectBtn">
+              <w3m-core-button id="wagmiButton"></w3m-core-button>
+            </div>
+              <button style="display: none;" class="btn btn-info" id="switchChain">Switch Chain</button>
+              <button id="openApp" style="display: none;" onclick="window.location.href='./home.html'"  
+                      class="smooth-anchor ml-auto mr-auto ml-md-0 btn primary-button aos-init aos-animate" >Open App</button>
+            </span>
+          </div>
+        </div>
+        </nav>
+      </header>
+
+    <section id="authorizemessage">               
+        <div class="button-container"><h4 id="adminaddress"></h4></div>
+    </section>
+  
+
+    <section id="adminwallets">     
+
+      <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;margin-top: 100px;">
+          <table id="myTable">            
+            <h3>Admin Wallets</h3>              
+              <thead>
+                  <tr>
+                      <th>name</th>
+                      <th>Wallet</th>
+                      <th>New Address</th>
+                      <th>Update?</th>
+                  </tr>
+              </thead>
+              <tbody id="myTableBody">
+                  <!-- Rows will be added here -->
+              </tbody>
+          </table>
+      </div>
+      </section>
+
+
+    <hr>
+
+    <section id="weeklydistribution">
+        <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
+            <h3>Distribute Weekly Reward </h3>
+            <p id="lastDistributeTime">loading..</p>
+            <div class="row">
+                <div class="col-sm-4">
+                    <p id="currentfrequency"></p>
+                </div>
+                <div class="col-sm-4"> <input type="text" id="newfrequency" placeholder="Enter new Frequency in days"></div>
+                <div class="col-sm-4"> <button id="changeFrequency">Change</button></div>
+            </div>
+            <hr>
+            <p>Distribute in Batch</p>
+            <div class="row">
+                startIndex
+                <div class="col-sm-4"> <input type="text" id="startIndex" placeholder="Start Index"></div>
+                batch Size
+                <div class="col-sm-4"> <input type="text" id="lastIndex" placeholder="Batch Size" value="10000" disabled></div>
+                <div class="col-sm-4"> <button id="distributeButton" class="btn btn-info">Distribute Now</button></div>
+            </div>
+            <p id="totalTillDate"></p>
+        </div>
+
+    </section>
+
+    <hr>
+
+    <section id="feesetup">
+        
+        <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
+            <h2>Fee Setup</h2>
+            <br>
+            <h5>Set Conversion Fee Members</h5>
+            <div class="row">
+                <div class="col-sm-4"> <p id="currentConversionFeeMembers"></p> </div>
+                <div class="col-sm-4"> <input type="text" id="newConversionFeeMembers" placeholder="Enter percent"></div>
+                <div class="col-sm-4"> <button id="changeCoversionFeeMembers">Update</button></div>
+            </div>
+            
+       
+        <!-- 
+            <h3>Set Conversion Fee Promotor</h3>
+            <div class="row">
+                <div class="col-sm-4">
+                    <p id="currentConversionFeePromotor"></p>
+                </div>
+                <div class="col-sm-4"> <input type="text" id="newConversionFeePromotor" placeholder="Enter percent"></div>
+                <div class="col-sm-4"> <button id="changeCoversionFeePromotor">Change</button></div>
+            </div>
+            <hr>
+         -->
+        
+        
+            <h5>Set Conversion Fee split</h5>
+            <div class="row">
+                <div class="col-sm-3"><p id="currentTransactionFeeComm"></p></div>
+                <div class="col-sm-3"><p id="currentTransactionFeeFounder"></p></div>
+                <div class="col-sm-2"> <input type="text" id="newTransactionFeeComm" placeholder="Community New percent">
+                </div>
+                <div class="col-sm-2"> <input type="text" id="newTransactionFeeFounder" placeholder="Founders New percent">
+                </div>
+                <div class="col-sm-2"> <button id="changeTransactionFee">Update</button></div>
+            </div>
+
+            <h5>Minimum deposit members</h5>
+            <div class="row">
+                <div class="col-sm-4">  <p id="currentMinDepositMembers"></p> </div>
+                <div class="col-sm-4"> <input type="text" id="newMinimumDepositMembers" placeholder="Enter percent"></div>
+                <div class="col-sm-4"> <button id="changeMinimumDepositMembers">Update</button></div>
+            </div>
+        
+            <h5>Minimum TopUp members</h5>
+            <div class="row">
+                <div class="col-sm-4"> <p id="currentTopUpMembers"></p> </div>
+                <div class="col-sm-4"> <input type="text" id="newTopUpMembers" placeholder="Enter percent"></div>
+                <div class="col-sm-4"> <button id="changeTopUpMembers">Update</button></div>
+            </div>
+        </div>
+
+    </section>
+
+    <hr>
+
+    <section id="addnewmember">
+        <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
+            <h3>Add New Member (Free)</h3>
+            <div class="row">
+                <div class="form-group" id="name" >
+                    <label for="memberAddress">Member Address*:</label>
+                    <input required type="text" class="form-control" id="memberAddress__" name="subcsriberName"
+                      placeholder="0x00032.......10302130">
+                </div>
+                <div class="form-group" id="name" >
+                <label for="name">Name*:</label>
+                <input required type="text" class="form-control" id="name__" name="subcsriberName"
+                  placeholder="eg .Mark James">
+                </div>
+                <div class="form-group" id="mobile" >
+                <label for="mobile">Mobile*:</label>
+                <input required type="text" class="form-control" id="mobile__" name="mobile" placeholder="+971 50*****33">
+                </div>
+                <div class="form-group" id="email" >
+                <label for="email">Email*:</label>
+                <input required type="text" class="form-control" id="email__" name="email" placeholder="xyz@abc.com">
+                </div>
+    
+                <div class="form-group" id="referrerAc">
+                <label for="Referrer">Referrer Address*:</label>
+                <input required type="text" class="form-control" id="referrer__" name="referrerAccount"
+                  placeholder="0x0321........41u41">
+                </div>
+              <input class="btn btn-info" type="button" id="addFreeMember" value ="Add Member">
+              <p class="text-center"><span style="color:#f25a67" id="addmembererrorx"></span></p>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-menu"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./common.js"></script>
+    <script type="module" src="./ad789456.js"></script>
+</body>
+
+</html>
