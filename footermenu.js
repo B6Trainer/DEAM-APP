@@ -7,13 +7,6 @@ const tokenContractElement = document.getElementById("tokenContract");
 deamcontractElement.innerHTML = subscriptionAddress;
 tokenContractElement.innerHTML = tokenAddress;
 
-//Contact us Section
-fetch('contact.html')
-.then(response => response.text())
-.then(data => {
-    document.getElementById('contactus').innerHTML = data;
-});
-
 fetch('footermenu.html')
 .then(response => response.text())
 .then(data => {
