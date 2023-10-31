@@ -1,29 +1,23 @@
-import {TOKEN_PRICE,getShareData,subscriptionAddress,tokenAddress } from "./config";
-import {copyToClipboard} from "./common.js";
 
-const deamcontractElement = document.getElementById("deamcontract");
-const tokenContractElement = document.getElementById("tokenContract");
 
-deamcontractElement.innerHTML = subscriptionAddress;
-tokenContractElement.innerHTML = tokenAddress;
+console.log('Footermenu.js is being executed');
 
-fetch('footermenu.html')
-.then(response => response.text())
-.then(data => {
-    document.getElementById('footer-menu-2').innerHTML = data;
+const assetContent = document.getElementById("assetscontent");
+assetContent.addEventListener("click", () => {
+      alert('Asset menu clicked');
+      //loadContent(textToCopy);
 });
 
-const tokencopyButton = document.getElementById("tokencopybutton");
-const textToCopy = document.getElementById("tokenContract").textContent;
-tokencopyButton.addEventListener("click", () => {
-      copyToClipboard(textToCopy);
-});
-
-const deamContractcopyicon = document.getElementById("deamContractcopyicon");
-const deamContractAddToCopy = document.getElementById("deamcontract").textContent;
-deamContractcopyicon.addEventListener("click", () => {
-      copyToClipboard(deamContractAddToCopy);
-});
+// Function to copy text to clipboard
+function loadContent(sourcepage,targetelementid) {
+      navigator.clipboard.writeText(sourcepage)
+        .then(() => {
+          alert("Copied to clipboard: " + sourcepage);
+        })
+        .catch(err => {
+          console.error('Unable to copy text: ', err);
+        });
+}
 
 
 

@@ -3,7 +3,7 @@ import ethereumClient from "./walletConnect";
 import {defaultChainId} from './config'
 
 
-
+console.log('common.js is being executed');
 var connected = ethereumClient.getAccount().isConnected;
 var previousAddress;
 var previousNetwork;

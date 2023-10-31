@@ -7,18 +7,21 @@ const tokenContractElement = document.getElementById("tokenContract");
 deamcontractElement.innerHTML = subscriptionAddress;
 tokenContractElement.innerHTML = tokenAddress;
 
-//Contact us Section
-fetch('contact.html')
-.then(response => response.text())
-.then(data => {
-    document.getElementById('contactus').innerHTML = data;
-});
 
-fetch('footermenu.html')
-.then(response => response.text())
-.then(data => {
-    document.getElementById('footer-menu-2').innerHTML = data;
-});
+console.log('index.js is being executed');
+
+
+
+// Function to copy text to clipboard
+function loadContent(sourcepage,targetelementid) {
+      navigator.clipboard.writeText(sourcepage)
+        .then(() => {
+          alert("Copied to clipboard: " + sourcepage);
+        })
+        .catch(err => {
+          console.error('Unable to copy text: ', err);
+        });
+}
 
 const tokencopyButton = document.getElementById("tokencopybutton");
 const textToCopy = document.getElementById("tokenContract").textContent;
