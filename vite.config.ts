@@ -10,7 +10,7 @@ export default defineConfig({
               input: {
                   sponsor: resolve(__dirname, './sponsor.html'),
                   index: resolve(__dirname, './index.html'),
-                  admin: resolve(__dirname, './admin.html'),
+                  admin: resolve(__dirname, './ad789456.html'),
                   assets: resolve(__dirname, './assets.html'),
                   joinPlan: resolve(__dirname, './joinPlan.html'),
                   plans: resolve(__dirname, './stakePlan.html'),

@@ -14,6 +14,14 @@ const addmembererrorx = document.getElementById("addmembererrorx");
     }
     
     
+    // Load the header, body, and footer from their respective HTML files
+    fetch('adheader.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header').innerHTML = data;
+        });
+
+ 
 
 
 const AdminWallets = await readContracts({
