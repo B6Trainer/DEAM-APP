@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-contract SubscriptionContract {
+contract Membershipcontract {
     enum UserType {
         Member,
         Promotor
@@ -171,10 +171,6 @@ contract SubscriptionContract {
         subscribers[account].subscriptionBalance += amount;
     }
 
-    function getMemberAddresses() external view returns (address[] memory) {
-        return memberAddresses;
-    }
-
     function calculateShare(address account,uint256 totalPoolBalance) external view onlyAllowedContract returns (uint256)  {
         uint256 subscriptionBalance = subscribers[account].subscriptionBalance;
         uint256 share = (subscriptionBalance * totalPoolBalance) / totalSubscriptionAmountMembers;
@@ -189,6 +185,10 @@ contract SubscriptionContract {
      function updateReferrer(address account, address _referrer) external onlyOwner returns (bool)  {
         subscribers[account].referrer = _referrer; 
         return true;
+    }
+
+    function getMemberAddresses() external view returns (address[] memory) {
+        return memberAddresses;
     }
 
 }

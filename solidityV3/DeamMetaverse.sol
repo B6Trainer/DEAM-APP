@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import "./SubscriptionContract.sol";
+import "./Membershipcontract.sol";
+import "./DeamMetaverseConfig.sol";
 import "./IERC20.sol";
 
 contract DeamMetaverse is IERC20 {
@@ -9,7 +10,8 @@ contract DeamMetaverse is IERC20 {
     string public symbol = "DMTK";
     uint8 public decimals = 18;
     uint256 public _totalSupply;
-    SubscriptionContract public subscriptionContract;
+    Membershipcontract public subscriptionContract;
+    DeamMetaverseConfig public deamMetaverseConfigContract;
     IERC20 public usdtToken;
 
     mapping(address => uint256) override public balanceOf;

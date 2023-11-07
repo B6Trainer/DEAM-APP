@@ -15,6 +15,7 @@ const totalDeposits = document.getElementById("total-deposits");
 const totalEarnings = document.getElementById("total-earnings");
 const benefits = document.getElementById("benefits");
 const carddiv = document.getElementById("carddiv");
+const depoandearningdiv = document.getElementById("depoandearningdiv");
 const renewbtndiv = document.getElementById("button-renew");
 const topupdiv = document.getElementById("button-topup");
 const renewBtn = document.getElementById("btn-renew");
@@ -46,6 +47,12 @@ var connected = ethereumClient.getAccount().isConnected;
 var walletConnectedid="";
 var MTYPE_Memeber = "0";
 var MTYPE_Promoter = "1";
+
+   
+var MemberbenifitsHtml = null;
+
+var PromotorbenifitsHtml = null;
+
 
 var AccountData=null;
 if(!connected){
@@ -113,6 +120,22 @@ if(!connected){
       });
       console.log('Fetched the membership details for wallet: '+walletConnectedid);
       console.log('Membership details : '+AccountData);
+
+         
+      MemberbenifitsHtml = `Benefits: <ul>
+      <li>Earn Level Rewards <a href="./index.html"> click for more </a></li>
+      <li>Earnigns upto 3X of investment</li>
+      <li>Get Weekly Community Rewards</li>
+      <li>Top Up Anytime</li>
+      </ul>`;
+
+      PromotorbenifitsHtml = `    Benefits: <ul>
+      <li>Earn Level Rewards <a href="./index.html"> click for more </a></li>
+      <li>Unlimited Earnings</li>
+      <li>Valid For 1 Year</li>
+      <li>You can Renew Once Validity Expires</li>
+      </ul>`;
+
 }
 
 
@@ -168,36 +191,24 @@ function formatDateToDDMMYYYY(date) {
 if(AccountData != null){
   if(AccountData[1].status == "failure" || AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
     planName.innerHTML = "Welcome, Dear Guest";
-
+      
+      walletid.innerHTML = walletConnectedid;
       renewbtndiv.style.display = "none";
       topupdiv.style.display = "none";
       labeltopup.style.display ="none";
+      depoandearningdiv.innerHTML ="";
       benefits.innerHTML = "";
       amountx.style.display ="none";
-      walletid.innerHTML = walletConnectedid;
+      
       //subscribeform.style.display ="none";
       subscribeform.style.display ="block";
 
   }else{
     planName.innerHTML = AccountData[1].result[0]==0?"Welcome, Dear Member":"Welcome, Dear Promoter";
+    walletid.innerHTML = walletConnectedid;
     totalDeposits.innerHTML = Number(utils.formatEther(AccountData[1].result[1])).toFixed(2);
     totalEarnings.innerHTML = Number(utils.formatEther(AccountData[1].result[2])).toFixed(2);
-    walletid.innerHTML = walletConnectedid;
-
-      var MemberbenifitsHtml = `Benefits: <ul>
-      <li>Earn Level Rewards <a href="./index.html"> click for more </a></li>
-      <li>Earnigns upto 3X of investment</li>
-      <li>Get Weekly Community Rewards</li>
-      <li>Top Up Anytime</li>
-      </ul>`;
-
-      var PromotorbenifitsHtml = `    Benefits: <ul>
-      <li>Earn Level Rewards <a href="./index.html"> click for more </a></li>
-      <li>Unlimited Earnings</li>
-      <li>Valid For 1 Year</li>
-      <li>You can Renew Once Validity Expires</li>
-      </ul>`;
-
+ 
     //promotor
     if(AccountData[1].result[0]==1){
       topupdiv.style.display = "none";
@@ -334,7 +345,7 @@ if(AccountData != null){
       errorx.innerHTML = "Error:"+"Minimum Deposit is "+min;
       return;
     }
-    
+
     if(mTypeSelectedValue==0){
       subscribeBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
       subscribeBtn.disabled =true;
