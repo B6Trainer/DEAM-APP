@@ -5,7 +5,7 @@ import "./Membershipcontract.sol";
 import "./DeamMetaverseConfig.sol";
 import "./IERC20.sol";
 
-contract DeamMetaverse is IERC20 {
+contract DMToken is IERC20 {
     string public name = "DEAM Metaverse";
     string public symbol = "DMTK";
     uint8 public decimals = 18;
@@ -21,34 +21,21 @@ contract DeamMetaverse is IERC20 {
     
     address public owner;
 
-    address public communityPoolWallet;
-    address public marketingWallet;
-    address public technologyWallet;
-    address public transactionPoolWallet;
-    address public foundersWallet;
-    address public conversionFeeWallet;
-    uint256 public conversionFeeMember = 100000;
-    uint256 public maxRewardsMultiplier = 3;
+
+    //uint256 public conversionFeeMember = 100000;
+
     uint256 public lastCommunityDistributionTime = block.timestamp;
     uint256 public communityDistributionFrequencyInDays = 30 seconds;
     uint256 public totalCommunityDistribution = 0;
     uint256 public transactionFee_communityPoolFeePercentage = 30000;
     uint256 public transactionFee_foundersFeePercentage = 20000;
-    uint256 public minimumDepositForMembers = 100 * 10 ** 18;
-    uint256 public minimumTopUpAmountMembers = 100 * 10 ** 18;
+
     uint256 public communityPoolBalanceWhileCommunityDistribution=0;
     uint256 public startIndexOfNextBatch;
     uint256 public minimumWithdrawalLimit = 50 *10 ** 18;
     uint256 public withdrawalsAllowedADay = 1;
     uint256 public initialSupply =0;
     uint256 public percentageDecimals=10000;
-    uint256 public levelRewardPercentage =71; //71%
-    uint256 public communityPoolSharePercent = 10; // 10.0%
-    uint256 public marketingSharePercent = 10; // 10.0%
-    uint256 public technologySharePercent = 3; // 3.0%
-    uint256 public foundersSharePercent = 3; // 3.0%
-    uint256 public transactionPoolSharePercent = 3; // 3.0%
-    uint256[7] levelPercentage = [500000,100000,30000,20000,10000,5000,2500];
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
@@ -57,25 +44,14 @@ contract DeamMetaverse is IERC20 {
 
     constructor(
         address _subscriptionContractAddress,
-        address _communityPoolWallet,
-        address _marketingWallet,
-        address _technologyWallet,
-        address _transactionPoolWallet,
-        address _foundersWallet,
-        address _usdtToken,
-        address _conversionFeeWallet
-    ) {
-        
+        address _configContractAddress,
+        address _usdtToken
+    ) {        
         _totalSupply = initialSupply * 10**uint256(decimals);
         balanceOf[msg.sender] = _totalSupply;
         owner = msg.sender;
-        subscriptionContract = SubscriptionContract(_subscriptionContractAddress);
-        communityPoolWallet = _communityPoolWallet;
-        marketingWallet = _marketingWallet;
-        technologyWallet = _technologyWallet;
-        transactionPoolWallet = _transactionPoolWallet;
-        foundersWallet = _foundersWallet;
-        conversionFeeWallet = _conversionFeeWallet;
+        subscriptionContract = Membershipcontract(_subscriptionContractAddress);
+        deamMetaverseConfigContract = DeamMetaverseConfig(_configContractAddress);
         usdtToken = IERC20(_usdtToken);
         emit Transfer(address(0), owner, _totalSupply);
     }
@@ -93,8 +69,10 @@ contract DeamMetaverse is IERC20 {
     function deductTransferFee(address from , uint256 amount) internal  returns (uint256) {
         uint256 communityPoolFee = ((amount * transactionFee_communityPoolFeePercentage) / (100*percentageDecimals));
         uint256 foundersFee = (amount * transactionFee_foundersFeePercentage) / (100*percentageDecimals);
-        _transfer(from, communityPoolWallet, communityPoolFee);
-        _transfer(from, foundersWallet, foundersFee);
+        address comPoolWalletAddress=deamMetaverseConfigContract.communityPoolWallet();
+        address founderWalletPoolAddress=deamMetaverseConfigContract.communityPoolWallet();
+        _transfer(from, comPoolWalletAddress, communityPoolFee);
+        _transfer(from, founderWalletPoolAddress, foundersFee);
         return (amount-communityPoolFee-foundersFee);
     }
 
@@ -142,29 +120,8 @@ contract DeamMetaverse is IERC20 {
         emit Transfer(address(0), to, value);
     }
 
-    function updateAdminWalletAddresses(
-        address _communityPoolWallet,
-        address _marketingWallet,
-        address _technologyWallet,
-        address _transactionPoolWallet,
-        address _foundersWallet,
-        address _conversionFeeWallet
-    ) external onlyOwner {
-        communityPoolWallet = _communityPoolWallet;
-        marketingWallet = _marketingWallet;
-        technologyWallet = _technologyWallet;
-        transactionPoolWallet = _transactionPoolWallet;
-        foundersWallet = _foundersWallet;
-        conversionFeeWallet = _conversionFeeWallet;
-    }
+ 
 
-    function setTransactionFees(
-        uint256 _communityPoolFeePercentage,
-        uint256 _foundersFeePercentage
-    ) external onlyOwner {
-        transactionFee_communityPoolFeePercentage = _communityPoolFeePercentage;
-        transactionFee_foundersFeePercentage = _foundersFeePercentage;
-    }
 
     function swapToDMTK(uint256 amount) external returns (bool) {
         require(amount > 0, "ERC20: Amount must be greater than zero");
@@ -188,33 +145,30 @@ contract DeamMetaverse is IERC20 {
     }
 
     function deductConversionFee(uint256 amount) internal returns (uint256) {
-        uint256 feeAmount = (amount * conversionFeeMember) / (100*percentageDecimals);
+        uint256 feeAmount = (amount * deamMetaverseConfigContract.conversionFeeMember()) / (100*percentageDecimals);
         if (feeAmount > 0) {
             uint256 conversionWalletAmount = (feeAmount * 70) / 100;
             uint256 communityPoolWalletAmount = (feeAmount * 30) / 100;
-            balanceOf[conversionFeeWallet] += conversionWalletAmount;
-            balanceOf[communityPoolWallet] += communityPoolWalletAmount;
+            balanceOf[deamMetaverseConfigContract.conversionFeeWallet()] += conversionWalletAmount;
+            balanceOf[deamMetaverseConfigContract.communityPoolWallet()] += communityPoolWalletAmount;
             balanceOf[msg.sender] -= feeAmount;
-            emit Transfer(msg.sender, conversionFeeWallet, conversionWalletAmount);
-            emit Transfer(msg.sender, communityPoolWallet, communityPoolWalletAmount);
+            emit Transfer(msg.sender, deamMetaverseConfigContract.conversionFeeWallet(), conversionWalletAmount);
+            emit Transfer(msg.sender, deamMetaverseConfigContract.communityPoolWallet(), communityPoolWalletAmount);
         }
         return amount - feeAmount;
     }
 
-    function setConversionFee_member(uint256 newFee) external onlyOwner {
-        require(newFee <= (100*percentageDecimals), "Conversion fee percentage cannot exceed 100");
-        conversionFeeMember = newFee;
-    }
 
-     function addAMember(address memberAddress, uint256 subscriptionAmount, address _referrer, string memory _email, string memory  _mobile,string memory _name)
+
+    function addAMember(address memberAddress, uint256 subscriptionAmount, address _referrer, string memory _email, string memory  _mobile,string memory _name)
         external
     {   
         require(usdtToken.balanceOf(msg.sender) >= subscriptionAmount,"ERC20: Insufficient Balance");
-        require(subscriptionAmount >= minimumDepositForMembers,"Minimum Deposit amount not met");
+        require(subscriptionAmount >= deamMetaverseConfigContract.minimumDepositForMembers(),"Minimum Deposit amount not met");
         require(subscriptionContract.isSubscriber(memberAddress) == false,"ERC20: Already a Subsciber");
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
         usdtToken.transferFrom(msg.sender,address(this),subscriptionAmount);
-        subscriptionContract.subscribe(memberAddress, SubscriptionContract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
+        subscriptionContract.subscribe(memberAddress, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
         distributeRewardsForMembers(subscriptionAmount,_referrer);
     }
 
@@ -222,11 +176,11 @@ contract DeamMetaverse is IERC20 {
         external
     {   
         require(usdtToken.balanceOf(msg.sender) >= subscriptionAmount,"ERC20: Insufficient Balance");
-        require(subscriptionAmount >= minimumDepositForMembers,"Minimum Deposit amount not met");
+        require(subscriptionAmount >= deamMetaverseConfigContract.minimumDepositForMembers(),"Minimum Deposit amount not met");
         require(subscriptionContract.isSubscriber(msg.sender) == false,"ERC20: Already a Subsciber");
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
         usdtToken.transferFrom(msg.sender,address(this),subscriptionAmount);
-        subscriptionContract.subscribe(msg.sender, SubscriptionContract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
+        subscriptionContract.subscribe(msg.sender, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
         distributeRewardsForMembers(subscriptionAmount,_referrer);
     }
 
@@ -234,11 +188,11 @@ contract DeamMetaverse is IERC20 {
         external onlyOwner
     {   
         require(subscriptionContract.isSubscriber(memberAddress) == false,"ERC20: Already a Subsciber");
-        subscriptionContract.subscribe(memberAddress, SubscriptionContract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
+        subscriptionContract.subscribe(memberAddress, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
     }
 
     function distributeRewardsForMembers(uint256 amount,address referrer) internal {
-        uint256 levelDistributionPart = (levelRewardPercentage * amount) / 100; //71%
+        uint256 levelDistributionPart = (deamMetaverseConfigContract.levelRewardPercentage() * amount) / 100; //71%
         uint256 amountLeft = distributeLevelRewards(
             referrer,
             levelDistributionPart,
@@ -246,22 +200,22 @@ contract DeamMetaverse is IERC20 {
             levelDistributionPart
         );
         if (amountLeft > 0) {
-            mint(foundersWallet,amountLeft);
+            mint(deamMetaverseConfigContract.foundersWallet(),amountLeft);
         }
         allocateAdminWallets(amount);
     }
 
     function allocateAdminWallets(uint256 amount) internal {
-        uint256 communityPoolShare = (amount * communityPoolSharePercent) / 100; 
-        uint256 marketingShare = (amount * marketingSharePercent) / 100;
-        uint256 technologyShare = (amount * technologySharePercent) / 100; 
-        uint256 foundersShare = (amount * foundersSharePercent) / 100; 
-        uint256 transactionPoolShare = (amount * transactionPoolSharePercent) / 100; 
-        mint(communityPoolWallet,communityPoolShare);
-        mint(marketingWallet,marketingShare);
-        mint(technologyWallet,technologyShare);
-        mint(foundersWallet,foundersShare);
-        mint(transactionPoolWallet,transactionPoolShare);
+        uint256 communityPoolShare = (amount * deamMetaverseConfigContract.communityPoolSharePercent()) / 100; 
+        uint256 marketingShare = (amount * deamMetaverseConfigContract.marketingSharePercent()) / 100;
+        uint256 technologyShare = (amount * deamMetaverseConfigContract.technologySharePercent()) / 100; 
+        uint256 foundersShare = (amount * deamMetaverseConfigContract.foundersSharePercent()) / 100; 
+        uint256 transactionPoolShare = (amount * deamMetaverseConfigContract.transactionPoolSharePercent()) / 100; 
+        mint(deamMetaverseConfigContract.communityPoolWallet(),communityPoolShare);
+        mint(deamMetaverseConfigContract.marketingWallet(),marketingShare);
+        mint(deamMetaverseConfigContract.technologyWallet(),technologyShare);
+        mint(deamMetaverseConfigContract.foundersWallet(),foundersShare);
+        mint(deamMetaverseConfigContract.transactionPoolWallet(),transactionPoolShare);
     }
 
     function distributeLevelRewards(
@@ -275,6 +229,7 @@ contract DeamMetaverse is IERC20 {
         }
 
         uint256 referralBonus;
+        uint256[7] memory levelPercentage = deamMetaverseConfigContract.getlevelPercentageArray();
 
         if (depth == 1) {
             // 1st referrer (50% bonus)
@@ -298,9 +253,9 @@ contract DeamMetaverse is IERC20 {
             // 12th to 15th referrers (0.25% bonus)
             referralBonus = (amount * levelPercentage[6]) / (100*percentageDecimals);
         }
-        SubscriptionContract.UserType usertype = subscriptionContract.getUserType(referrer);
-        if (usertype == SubscriptionContract.UserType.Member) {
-            uint256 pendingReward = subscriptionContract.getPendingReward(referrer,maxRewardsMultiplier);
+        Membershipcontract.UserType usertype = subscriptionContract.getUserType(referrer);
+        if (usertype == Membershipcontract.UserType.Member) {
+            uint256 pendingReward = subscriptionContract.getPendingReward(referrer,deamMetaverseConfigContract.maxRewardsMultiplier());
             if (pendingReward>0) {
                 if(pendingReward<referralBonus){
                     referralBonus = pendingReward;
@@ -340,7 +295,7 @@ contract DeamMetaverse is IERC20 {
 
     function topUpSubscriptionForMember(uint256 topupAmount) external {
         require(subscriptionContract.isMember(msg.sender)==true, "ERC20: Not a member");
-        require(topupAmount >= minimumTopUpAmountMembers, "ERC20: Minimum TopUp Amount Not");
+        require(topupAmount >= deamMetaverseConfigContract.minimumTopUpAmountMembers(), "ERC20: Minimum TopUp Amount Not");
         IERC20(usdtToken).transferFrom(msg.sender,address(this),topupAmount);
         subscriptionContract.topUpSubscriptionBalance(msg.sender, topupAmount);
         address referrer = subscriptionContract.getReferrer(msg.sender);
@@ -364,20 +319,20 @@ function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) externa
 
 
     if(communityPoolBalanceWhileCommunityDistribution<=0){
-        communityPoolBalanceWhileCommunityDistribution = balanceOf[communityPoolWallet];
+        communityPoolBalanceWhileCommunityDistribution = balanceOf[deamMetaverseConfigContract.communityPoolWallet()];
     }
     require(communityPoolBalanceWhileCommunityDistribution > 0, "No balance in the transaction pool");
     uint256 pendingReward;
     uint256 share;
 
     for (uint256 i = _startIndex; i <= endIndex; i++) {
-            pendingReward = subscriptionContract.getPendingReward(memberAddressList[i],maxRewardsMultiplier);
+            pendingReward = subscriptionContract.getPendingReward(memberAddressList[i],deamMetaverseConfigContract.maxRewardsMultiplier());
             if (pendingReward > 0) {
                 share = subscriptionContract.calculateShare(memberAddressList[i], communityPoolBalanceWhileCommunityDistribution);
                 if (pendingReward < share) {
                     share = pendingReward;
                 }
-                _transfer(communityPoolWallet, memberAddressList[i], share);
+                _transfer(deamMetaverseConfigContract.communityPoolWallet(), memberAddressList[i], share);
                 totalCommunityDistribution += share;
         }
     }
@@ -398,17 +353,7 @@ function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) externa
             1 days;
     }
 
-    function updateMinimumDepositMembers(
-        uint256 _minmumDeposit
-    ) external {
-        minimumDepositForMembers = _minmumDeposit;
-    }
 
-      function updateMinimumTopUpAmountMembers(
-        uint256 _minimumTopUpAmountMembers
-    ) external {
-        minimumTopUpAmountMembers = _minimumTopUpAmountMembers;
-    }
 
     function updateMinimumSwapAmount(
         uint256 _minimumWithdrawalLimit
@@ -422,32 +367,8 @@ function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) externa
         withdrawalsAllowedADay = _withdrawalsAllowedADay;
     }
 
-    function updateLevelPercentageWithDecimals(
-        uint256[7] memory _levelPercentage
-    ) external {
-         uint256 sum = 0;
-        for (uint8 i = 0; i < 7; i++) {
-            sum += _levelPercentage[i];
-        }
-        require((sum/percentageDecimals)==levelRewardPercentage,"Sum should be match to levelRewardPercentage");
-        levelPercentage = _levelPercentage;
-    }
 
-    function setAdminWalletShares(
-        uint256 _communityPoolSharePercent,
-        uint256 _marketingSharePercent,
-        uint256  _technologySharePercent,
-        uint256  _foundersSharePercent,
-        uint256  _transactionPoolSharePercent
-        ) external {
-            require(_communityPoolSharePercent+_marketingSharePercent+_technologySharePercent+_foundersSharePercent+_transactionPoolSharePercent== 100-levelRewardPercentage,
-            "Sum should be exactly 100-levelRewardPercentage");
-            communityPoolSharePercent= _communityPoolSharePercent;
-            marketingSharePercent=_marketingSharePercent;
-            technologySharePercent=_technologySharePercent;
-            foundersSharePercent=_foundersSharePercent;
-            transactionPoolSharePercent=_transactionPoolSharePercent;
-        }
+
 
     function recoverStuckTokens(address tokenAddress) public onlyOwner{
         IERC20 token = IERC20(tokenAddress);
