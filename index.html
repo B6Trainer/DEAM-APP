@@ -42,6 +42,24 @@
         --section-12-bg-color: #030301;
         --footer-bg-color: #000000;
       }
+      .color-text{
+        color: #2fd9df !important;
+      }
+
+      /* Media query for screens with a maximum width of 768px (typical mobile devices) */
+         @media (max-width: 768px) {
+            .hero-image {
+              opacity: 0.6 !important;
+            }
+        }
+
+        /* Media query for screens with a maximum width of 1024px (typical tablets) */
+        @media (max-width: 1024px) {
+          .hero-image {
+            opacity: 0.6 !important;
+            }
+        }
+
     </style>
   </head>
   <body>
@@ -129,27 +147,27 @@
                    
                   </div>
 
-                  <div class="d-flex justify-content-between" style="margin-top: 30px">
-                    <div class="staked-amount no-margin">
-                      <p class="title no-margin">DEAM Community Contract: </p>
-                      <p class="value no-margin"><span id="deamcontract">Loading...</span></p>
-                      <i class="far fa-copy copy-icon" id="deamContractcopyicon"></i>
+                  <div class="" style="margin-top: 30px">
+                    <div class="staked-amount no-margin color-text">
+                      <p  class="title no-margin color-text">DEAM Community Contract: </p>
+                      <p class="value no-margin text-white"><span id="deamcontract">Loading...</span> <i class="far fa-copy copy-icon" id="deamContractcopyicon"></i></p>
+                     
                     </div>                   
                   </div>
-                  <div class="d-flex justify-content-between" style="margin-top: 30px">
-                    <div class="staked-amount no-margin">
-                      <p class="title no-margin">DEAM Members Token Contract:</p>
-                      <p class="value no-margin"><span id="tokenContract">Loading...</span></p>
-                      <i class="far fa-copy copy-icon" id="tokencopybutton"></i>
+                  <div class="" style="margin-top: 30px">
+                    <div class="staked-amount no-margin color-text">
+                      <p class="title no-margin color-text">DEAM Members Token Contract:</p>
+                      <p class="value no-margin text-white"><span id="tokenContract">Loading...</span> <i class="far fa-copy copy-icon" id="tokencopybutton"></i></p>
+                     
                     </div>                   
                   </div>
 
-                  <div class="d-flex justify-content-between" style="margin-top: 30px">
-                    <p id="joiningdes" class="small mt-3">
+                  <div class="" style="margin-top: 30px">
+                    <p id="joiningdes" class="small mt-3 text-white">
                       Download the brouchure from 
-                      <a target="_blank" href="DEAMMetaverseCommunity.pdf" class="ps-hero__content__link">here</a>
+                      <a style="color:var(--primary-color) !important;" target="blank" href="DEAMMetaverseCommunity.pdf" class="ps-herocontent_link">here</a>
                     </p>
-                  </div>
+                  </div>
 
                 </div>
               </div>
