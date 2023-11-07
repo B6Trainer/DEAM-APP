@@ -105,57 +105,62 @@ const AdminWallets = await readContracts({
     document.getElementById("adminaddress").innerHTML = "Welcome admin!"
   }
   
-  var name = ["communityPoolWallet","marketingWallet","technologyWallet","transactionPoolWallet","foundersWallet","conversionFeeWallet"]
+  var walletnamearray = ["communityPoolWallet","marketingWallet","technologyWallet","transactionPoolWallet","foundersWallet","conversionFeeWallet"]
   var table = document.getElementById("myTable");
   var tbody = document.getElementById("myTableBody");
-  var args=[AdminWallets[0].result,AdminWallets[1].result,AdminWallets[2].result,AdminWallets[3].result,AdminWallets[4].result,AdminWallets[5].result]
-for(var i=0;i<6;i++){
-    var newRow = table.insertRow(tbody.rows.length); 
-    var cell1 = newRow.insertCell(0); 
-    var cell2 = newRow.insertCell(1); 
-    var cell3 = newRow.insertCell(2); 
-    var cell4 = newRow.insertCell(3); 
-    cell1.innerHTML = name[i];
-    cell2.innerHTML = AdminWallets[i].result;
+  var adminWalletAddArray=[AdminWallets[0].result,AdminWallets[1].result,AdminWallets[2].result,AdminWallets[3].result,AdminWallets[4].result,AdminWallets[5].result]
+    for(var i=0;i<6;i++){
+        var newRow = table.insertRow(tbody.rows.length); 
+        var cell1 = newRow.insertCell(0); 
+        var cell2 = newRow.insertCell(1); 
+        var cell3 = newRow.insertCell(2); 
+        var cell4 = newRow.insertCell(3); 
+        cell1.innerHTML = walletnamearray[i];
+        cell2.innerHTML = AdminWallets[i].result;
 
-// Create a new input element
-    var inputElement = document.createElement("input");
-    inputElement.setAttribute("type", "text"); // Set the input type (e.g., text, number, etc.)
-    inputElement.setAttribute("id", `input${i}`); // Set an ID for the input element
-    inputElement.setAttribute("placeholder", "Enter New Address");
-    cell3.appendChild(inputElement);
+        //Create a new input element
+        var inputElement = document.createElement("input");
+        inputElement.setAttribute("type", "text"); // Set the input type (e.g., text, number, etc.)
+        inputElement.setAttribute("id", `input${i}`); // Set an ID for the input element
+        inputElement.setAttribute("placeholder", "Enter New Address");
+        cell3.appendChild(inputElement);
 
 
-    // Create a button element and add a click event listener
-    var button = document.createElement("button");
-    button.innerHTML = "Change";
-    button.id = i;
-    button.addEventListener("click", async function() {
-       var value =  document.getElementById(`input${this.id}`).value;
-       args[this.id] = value;
-       try{
-        var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
-            functionName: `updateAdminWalletAddresses`,
-            args: args,
+        // Create a button element and add a click event listener
+        var button = document.createElement("button");
+        button.innerHTML = "Change";
+        button.id = i;
+        button.addEventListener("click", async function() {
+            var newWalletAddressValue =  document.getElementById(`input${this.id}`).value;
+            if(newWalletAddressValue != ''){
+                adminWalletAddArray[this.id] = newWalletAddressValue;
+                try{
+                    var result = await writeContract({
+                        address: tokenAddress,
+                        abi: ABI_DMTK,
+                        functionName: `updateAdminWalletAddresses`,
+                        args: adminWalletAddArray,
+                    });
+                    var tr = await waitForTransaction({
+                        hash: result.hash,
+                    })
+                    if(tr.status=='success'){
+                        alert("success");
+                    }else{
+                        alert("Error");
+                    }
+                }catch(e){
+                    alert("Exception: "+e);
+                }
+            }else{
+                alert("Error! Entered Admin Wallet address is empty: "+newWalletAddressValue);
+            }
+            
         });
-        var tr = await waitForTransaction({
-            hash: result.hash,
-          })
-          if(tr.status=='success'){
-            alert("success");
-          }else{
-            alert("Error");
-          }
-    }catch(e){
-        alert(e);
-    }
-    });
-    // Append the button to the third cell
-    cell4.appendChild(button);
+        // Append the button to the third cell
+        cell4.appendChild(button);
 
-}
+    }
 
 
 var lastDistributeTime = document.getElementById("lastDistributeTime");

@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "./SubscriptionContract.sol";
 import "./IERC20.sol";
 
-contract MyToken is IERC20 {
+contract DeamMetaverse is IERC20 {
     string public name = "DEAM Metaverse";
     string public symbol = "DMTK";
     uint8 public decimals = 18;
@@ -454,7 +454,8 @@ function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) externa
         require(token.transfer(owner, balance), "Token transfer failed.");
     }
 
-    function recoverStuckEther() public onlyOwner{
-        payable(owner).transfer(address(this).balance);
+    function withdrawNativeCurrency(address payable _to,uint256 _amount) external onlyOwner {
+        payable(_to).transfer(_amount);
     }
+
 }
