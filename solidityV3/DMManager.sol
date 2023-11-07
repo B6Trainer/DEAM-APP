@@ -1,26 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
+
 import "./Membershipcontract.sol";
 import "./DeamMetaverseConfig.sol";
 import "./IERC20.sol";
-
-contract DMToken is IERC20 {
-    string public name = "DEAM Metaverse";
-    string public symbol = "DMTK";
-    uint8 public decimals = 18;
-    uint256 public _totalSupply;
+import "./DMToken.sol";
+contract DMManager  {
+    
     Membershipcontract public subscriptionContract;
     DeamMetaverseConfig public deamMetaverseConfigContract;
-    IERC20 public usdtToken;
-
-    mapping(address => uint256) override public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
+    DMToken public dmTokenContract;
+    
+    
     mapping(address => uint256) public lastWithdrawTime;
     mapping(address => uint256) public numberOfWithdrawals;
     
     address public owner;
-    mapping(address => address) private allowedContracts;
+
 
     //uint256 public conversionFeeMember = 100000;
 
@@ -42,45 +39,16 @@ contract DMToken is IERC20 {
         _;
     }
 
-        modifier onlyAllowedContract() {
-        require(allowedContracts[msg.sender] != address(0), "Only the authorized contracts can call this function");
-        _;
-    }
-
-
-    function updateAllowedContract(address _allowedContract)
-    external
-    onlyOwner
-    {
-        allowedContracts[_allowedContract]=_allowedContract;
-    }
-
     constructor(
         address _subscriptionContractAddress,
         address _configContractAddress,
-        address _usdtToken
+        address _dmTokenAddress
     ) {        
-        _totalSupply = initialSupply * 10**uint256(decimals);
-        balanceOf[msg.sender] = _totalSupply;
         owner = msg.sender;
         subscriptionContract = Membershipcontract(_subscriptionContractAddress);
         deamMetaverseConfigContract = DeamMetaverseConfig(_configContractAddress);
-        usdtToken = IERC20(_usdtToken);
-        emit Transfer(address(0), owner, _totalSupply);
-    }
-
-     function totalSupply() external view override  returns (uint256) {
-        return _totalSupply;
-    }
-
-    function transfer(address sender, address receiver, uint256 amount) external onlyAllowedContract  {
-        _transfer(sender, receiver, amount);
-    }
-
-    function _transfer(address sender, address receiver, uint256 amount) internal  {
-        balanceOf[receiver] += amount;
-        balanceOf[sender] -= amount;
-        emit Transfer(sender, receiver, amount);
+        dmTokenContract = DMToken(_dmTokenAddress);
+            
     }
 
     function deductTransferFee(address from , uint256 amount) internal  returns (uint256) {
@@ -88,72 +56,20 @@ contract DMToken is IERC20 {
         uint256 foundersFee = (amount * transactionFee_foundersFeePercentage) / (100*percentageDecimals);
         address comPoolWalletAddress=deamMetaverseConfigContract.communityPoolWallet();
         address founderWalletPoolAddress=deamMetaverseConfigContract.communityPoolWallet();
-        _transfer(from, comPoolWalletAddress, communityPoolFee);
-        _transfer(from, founderWalletPoolAddress, foundersFee);
+        dmTokenContract.transfer(from, comPoolWalletAddress, communityPoolFee);
+        dmTokenContract.transfer(from, founderWalletPoolAddress, foundersFee);
         return (amount-communityPoolFee-foundersFee);
     }
 
     function transfer(address to, uint256 amount) public override returns (bool success) {
-        require(to != address(0), "Invalid address");
-        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
-        uint256 deduction = 0;
-        balanceOf[msg.sender] -= amount;
-        if (subscriptionContract.isSubscriber(msg.sender)) {
-            deduction = deductTransferFee(msg.sender, amount);
-        }
-        _transfer(msg.sender, to, amount - deduction);
-        return true;
+         return dmTokenContract.transfer(to, amount);
     }
 
-    function approve(address spender, uint256 value) public override returns (bool success) {
-        allowance[msg.sender][spender] = value;
-        emit Approval(msg.sender, spender, value);
-        return true;
-    }
 
-    function transferFrom(address from, address to, uint256 amount) override public returns (bool success) {
-        require(to != address(0), "Invalid address");
-        require(balanceOf[from] >= amount, "Insufficient balance");
-        require(allowance[from][msg.sender] >= amount, "Allowance exceeded");
-        uint256 deduction = 0;
-        if (subscriptionContract.isSubscriber(msg.sender)) {
-            deduction = deductTransferFee(from,amount);
-        }
-        _transfer(from, to, amount-deduction);
-        allowance[from][msg.sender] -= amount;
-        return true;
-    }
-
-    function burn(address from, uint256 value) internal {
-        require(balanceOf[from] >= value, "Insufficient balance");
-        balanceOf[from] -= value;
-        _totalSupply -= value;
-        emit Transfer(from, address(0), value);
-    }
-
-    function mint(address to, uint256 value) internal {
-        balanceOf[to] += value;
-        _totalSupply += value;
-        emit Transfer(address(0), to, value);
-    }
-
- 
-    function swapToDMTK(uint256 amount) external returns (bool) {
-        require(amount > 0, "ERC20: Amount must be greater than zero");
-        usdtToken.transferFrom(msg.sender, address(this), amount);
-        mint(msg.sender, amount);
-        return true;
-    }
 
     function withdraw(uint256 amount) external returns (bool) {
-        require(amount > 0, "ERC20: Amount must be greater than zero");
-        require(balanceOf[msg.sender] >= amount, "ERC20: Insufficient balance");
-        require(block.timestamp > lastWithdrawTime[msg.sender] + 1 days, "");
-        require(amount >= minimumWithdrawalLimit, "Minimum Withdrawal not met");
-        require(numberOfWithdrawals[msg.sender] <= withdrawalsAllowedADay, "Withdrawals For the Day Exceeded");
-        uint256 amountAfterFee = deductConversionFee(amount);
-        usdtToken.transfer(msg.sender, amountAfterFee);
-        burn(msg.sender, amountAfterFee);
+        
+        dmTokenContract.transfer(amount);
         lastWithdrawTime[msg.sender] = block.timestamp;
         numberOfWithdrawals[msg.sender] +=1; 
         return true;
@@ -199,7 +115,12 @@ contract DMToken is IERC20 {
         distributeRewardsForMembers(subscriptionAmount,_referrer);
     }
 
-
+    function addAMemberFree(address memberAddress, uint256 subscriptionAmount, address _referrer, string memory _email, string memory  _mobile,string memory _name)
+        external onlyOwner
+    {   
+        require(subscriptionContract.isSubscriber(memberAddress) == false,"ERC20: Already a Subsciber");
+        subscriptionContract.subscribe(memberAddress, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
+    }
 
     function distributeRewardsForMembers(uint256 amount,address referrer) internal {
         uint256 levelDistributionPart = (deamMetaverseConfigContract.levelRewardPercentage() * amount) / 100; //71%
@@ -215,18 +136,6 @@ contract DMToken is IERC20 {
         allocateAdminWallets(amount);
     }
 
-    function allocateAdminWallets(uint256 amount) internal {
-        uint256 communityPoolShare = (amount * deamMetaverseConfigContract.communityPoolSharePercent()) / 100; 
-        uint256 marketingShare = (amount * deamMetaverseConfigContract.marketingSharePercent()) / 100;
-        uint256 technologyShare = (amount * deamMetaverseConfigContract.technologySharePercent()) / 100; 
-        uint256 foundersShare = (amount * deamMetaverseConfigContract.foundersSharePercent()) / 100; 
-        uint256 transactionPoolShare = (amount * deamMetaverseConfigContract.transactionPoolSharePercent()) / 100; 
-        mint(deamMetaverseConfigContract.communityPoolWallet(),communityPoolShare);
-        mint(deamMetaverseConfigContract.marketingWallet(),marketingShare);
-        mint(deamMetaverseConfigContract.technologyWallet(),technologyShare);
-        mint(deamMetaverseConfigContract.foundersWallet(),foundersShare);
-        mint(deamMetaverseConfigContract.transactionPoolWallet(),transactionPoolShare);
-    }
 
     function distributeLevelRewards(
         address referrer,
@@ -312,7 +221,7 @@ contract DMToken is IERC20 {
         distributeRewardsForMembers(topupAmount,referrer);
     }
 
-function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) external onlyOwner returns (uint256){
+    function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) external onlyOwner returns (uint256){
     address[] memory memberAddressList =  subscriptionContract.getMemberAddresses();
     require(block.timestamp >lastCommunityDistributionTime + communityDistributionFrequencyInDays, "Community Distribution Frequency Not Met");
     require(_startIndex == startIndexOfNextBatch,"Start Index Should be greater than Last Distributed Index");
@@ -352,7 +261,7 @@ function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) externa
         startIndexOfNextBatch = 0;
     }
     return startIndexOfNextBatch;
-}
+    }
 
 
     function setCommunityDistributionFrequencyInDays(
@@ -389,6 +298,14 @@ function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) externa
 
     function withdrawNativeCurrency(address payable _to,uint256 _amount) external onlyOwner {
         payable(_to).transfer(_amount);
+    }
+
+
+    function addAMemberFree(address memberAddress, uint256 subscriptionAmount, address _referrer, string memory _email, string memory  _mobile,string memory _name)
+        external onlyOwner
+    {   
+        require(subscriptionContract.isSubscriber(memberAddress) == false,"ERC20: Already a Subsciber");
+        subscriptionContract.subscribe(memberAddress, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
     }
 
 }
