@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
+import "hardhat/console.sol";
+import "./BaseDMContract.sol";
 
+contract DeamMetaverseConfig is BaseDMContract {
 
-contract DeamMetaverseConfig {
-
-    address public owner;    
-    mapping(address => address) private allowedContracts;
 
     address public communityPoolWallet;
     address public marketingWallet;
@@ -31,24 +30,10 @@ contract DeamMetaverseConfig {
     uint256[7] public levelPercentage = [500000,100000,30000,20000,10000,5000,2500];
 
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function");
-        _;
-    }
 
-    modifier onlyAllowedContract() {
-        require(allowedContracts[msg.sender] != address(0), "Only the authorized contracts can call this function");
-        _;
-    }
-
-
-    function updateAllowedContract(address _allowedContract) external onlyOwner{
-        allowedContracts[_allowedContract]=_allowedContract;
-    }
 
     constructor() {
-      owner = msg.sender;
-      allowedContracts[owner]=owner;
+        console.log("DMConfig contract initialised");
     }
 
     function updateAdminWalletAddresses(

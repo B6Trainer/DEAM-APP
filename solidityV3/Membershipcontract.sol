@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
+import "hardhat/console.sol";
+import "./BaseDMContract.sol";
 
-contract Membershipcontract {
-    
+contract Membershipcontract is BaseDMContract {
     enum UserType {
         Member,
         Promotor
     }
 
-    address public owner;
     struct Subscription {
         UserType userType;
         uint256 subscriptionBalance;
@@ -27,11 +27,11 @@ contract Membershipcontract {
     mapping(address => address) private allowedContracts;
 
     uint256 public totalSubscriptionAmountMembers = 0;
-    uint256 public totalMembers=0;
+    uint256 public totalMembers = 0;
 
     constructor() {
         owner = msg.sender;
-        allowedContracts[owner]=owner;
+        allowedContracts[owner] = owner;
         subscribers[owner] = Subscription({
             userType: UserType.Member,
             subscriptionBalance: 0,
@@ -40,57 +40,17 @@ contract Membershipcontract {
             referrals: new address[](0),
             referrer: address(0),
             subscriber: owner,
-            email:"test@test.com",
-            mobile:"+971502387786",
+            email: "test@test.com",
+            mobile: "+971502387786",
             name: "test"
         });
 
         memberAddresses.push(owner);
-        totalMembers +=1;
+        totalMembers += 1;
     }
 
     event Log(string message);
     event Logaddress(address add);
-    modifier onlyOwner() {
-
-
-        //string memory errormessage =String.concat("MembershipContract: Only the contract owner can call this function. OWner:",owner," MsgSender:",msg.sender);
-        string memory errormessage =string(abi.encodePacked("MembershipContract: Only the contract owner can call this function. Owner: ",
-                                            addressToString(owner),
-                                            " MsgSender: ",
-                                            addressToString(msg.sender),
-                                            " tx.origin: ",
-                                            addressToString(tx.origin)
-                                            ));
-        //string memory errormessage="MembershipContract: Only the contract owner can call this function.";
-        emit Log("MembershipContract: Only the contract owner can call this function. logged");
-        emit Logaddress(owner);
-        emit Logaddress(msg.sender);
-        require(msg.sender == owner,errormessage);
-        _;
-    }
-
-    function addressToString(address _address) internal pure returns(string memory) {
-    bytes32 _bytes = bytes32(uint256(uint160(_address)));
-    bytes memory HEX = "0123456789abcdef";
-    bytes memory _string = new bytes(42);
-    _string[0] = '0';
-    _string[1] = 'x';
-    for(uint i = 0; i < 20; i++) {
-        _string[2+i*2] = HEX[uint8(_bytes[i + 12] >> 4)];
-        _string[3+i*2] = HEX[uint8(_bytes[i + 12] & 0x0f)];
-    }
-    return string(_string);
-    }
-
-    modifier onlyAllowedContract() {
-        require(allowedContracts[msg.sender] != address(0), "Only the authorized contracts can call this function");
-        _;
-    }
-
-    function updateAllowedContract(address _allowedContract) external onlyOwner{
-        allowedContracts[_allowedContract]=_allowedContract;
-    }
 
     function getUserType(address userAddress) external view returns (UserType) {
         return subscribers[userAddress].userType;
@@ -149,7 +109,6 @@ contract Membershipcontract {
         string memory _email,
         string memory _mobile,
         string memory _name
-
     ) external onlyAllowedContract {
         subscribers[subscriber] = Subscription({
             userType: _usertype,
@@ -165,14 +124,12 @@ contract Membershipcontract {
         });
 
         subscribers[_referrer].referrals.push(subscriber);
-        if(_usertype == UserType.Member){
+        if (_usertype == UserType.Member) {
             totalSubscriptionAmountMembers += subscriptionAmount;
             memberAddresses.push(subscriber);
-            totalMembers +=1;
+            totalMembers += 1;
         }
     }
-
-
 
     function addReceivedReward(address account, uint256 amount)
         external
@@ -181,7 +138,11 @@ contract Membershipcontract {
         subscribers[account].rewardReceived += amount;
     }
 
-    function getPendingReward(address account,uint256 _rewardMultiplier) external view returns  (uint256)  {
+    function getPendingReward(address account, uint256 _rewardMultiplier)
+        external
+        view
+        returns (uint256)
+    {
         return
             (_rewardMultiplier * subscribers[account].subscriptionBalance) -
             subscribers[account].rewardReceived;
@@ -198,24 +159,37 @@ contract Membershipcontract {
         subscribers[account].subscriptionBalance += amount;
     }
 
-    function calculateShare(address account,uint256 totalPoolBalance) external view onlyAllowedContract returns (uint256)  {
+    function calculateShare(address account, uint256 totalPoolBalance)
+        external
+        view
+        onlyAllowedContract
+        returns (uint256)
+    {
         uint256 subscriptionBalance = subscribers[account].subscriptionBalance;
-        uint256 share = (subscriptionBalance * totalPoolBalance) / totalSubscriptionAmountMembers;
+        uint256 share = (subscriptionBalance * totalPoolBalance) /
+            totalSubscriptionAmountMembers;
         return share;
     }
 
-    function updateUserType(address account, UserType _userType) external onlyOwner returns (bool)  {
-        subscribers[account].userType = _userType; 
+    function updateUserType(address account, UserType _userType)
+        external
+        onlyOwner
+        returns (bool)
+    {
+        subscribers[account].userType = _userType;
         return true;
     }
 
-     function updateReferrer(address account, address _referrer) external onlyOwner returns (bool)  {
-        subscribers[account].referrer = _referrer; 
+    function updateReferrer(address account, address _referrer)
+        external
+        onlyOwner
+        returns (bool)
+    {
+        subscribers[account].referrer = _referrer;
         return true;
     }
 
     function getMemberAddresses() external view returns (address[] memory) {
         return memberAddresses;
     }
-
 }

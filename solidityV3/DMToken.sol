@@ -4,6 +4,7 @@ pragma solidity 0.8.0;
 import "./Membershipcontract.sol";
 import "./DeamMetaverseConfig.sol";
 import "./IERC20.sol";
+import "hardhat/console.sol";
 
 contract DMToken is IERC20 {
     string public name = "DEAM Metaverse";
@@ -27,12 +28,12 @@ contract DMToken is IERC20 {
     uint256 public percentageDecimals=10000;
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "DMToken: Only the owner can call this function ");
+        require(tx.origin == owner, "DMToken: Only the owner can call this function ");
         _;
     }
 
     modifier onlyAllowedContract() {
-        require(allowedContracts[msg.sender] != address(0), "Only the authorized contracts can call this function");
+        require(allowedContracts[msg.sender] != address(0), "DMToken: Only the authorized contracts can call this function");
         _;
     }
 

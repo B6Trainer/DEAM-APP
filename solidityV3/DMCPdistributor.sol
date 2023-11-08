@@ -5,8 +5,10 @@ pragma solidity 0.8.0;
 import "./Membershipcontract.sol";
 import "./DeamMetaverseConfig.sol";
 import "./DMToken.sol";
+import "hardhat/console.sol";
+import "./BaseDMContract.sol";
 
-contract DMCPdistributor  {
+contract DMCPdistributor  is BaseDMContract{
 
     uint256 public lastCommunityDistributionTime = block.timestamp;
     uint256 public communityDistributionFrequencyInDays = 30 seconds;
@@ -15,37 +17,15 @@ contract DMCPdistributor  {
     uint256 public communityPoolBalanceWhileCommunityDistribution=0;
     uint256 public startIndexOfNextBatch;
 
-    address public owner;
-    mapping(address => address) private allowedContracts;
-    address public thisContractAddress;
-
     Membershipcontract public membershipContract;
     DeamMetaverseConfig public dmConfigContract;
     DMToken public dmTokenContract;
 
     constructor() {        
-        owner = msg.sender;
-        allowedContracts[owner]=owner;
+        console.log("DMCPDistributor contract initialised");
              
     }
-
-    modifier onlyOwner() {
-        require(
-            msg.sender == owner,
-            "DMCPdistributor: Only the contract owner can call this function"
-        );
-        _;
-    }
-    
-    modifier onlyAllowedContract() {
-        require(allowedContracts[msg.sender] != address(0), "Only the authorized contracts can call this function");
-        _;
-    }
-
-
-    function updateAllowedContract(address _allowedContract) external onlyOwner{
-        allowedContracts[_allowedContract]=_allowedContract;
-    }
+  
 
     function mapContracts(address _membershipContractAddress,
                             address _configContractAddress,
@@ -66,7 +46,6 @@ contract DMCPdistributor  {
         if(_dmTokenAddress != address(0)){
             setDMToken(_dmTokenAddress, thisContractAddress);
         }
-
                     
     }
 
