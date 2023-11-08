@@ -22,17 +22,10 @@ contract DMManager  {
 
     //uint256 public conversionFeeMember = 100000;
 
-    uint256 public lastCommunityDistributionTime = block.timestamp;
-    uint256 public communityDistributionFrequencyInDays = 30 seconds;
-    uint256 public totalCommunityDistribution = 0;
-    uint256 public transactionFee_communityPoolFeePercentage = 30000;
-    uint256 public transactionFee_foundersFeePercentage = 20000;
-
-    uint256 public communityPoolBalanceWhileCommunityDistribution=0;
-    uint256 public startIndexOfNextBatch;
     uint256 public minimumWithdrawalLimit = 50 *10 ** 18;
     uint256 public withdrawalsAllowedADay = 1;
-    uint256 public initialSupply =0;
+
+
     uint256 public percentageDecimals=10000;
 
     modifier onlyOwner() {
@@ -54,15 +47,6 @@ contract DMManager  {
             
     }
 
-    function deductTransferFee(address from , uint256 amount) internal  returns (uint256) {
-        uint256 communityPoolFee = ((amount * transactionFee_communityPoolFeePercentage) / (100*percentageDecimals));
-        uint256 foundersFee = (amount * transactionFee_foundersFeePercentage) / (100*percentageDecimals);
-        address comPoolWalletAddress=deamMetaverseConfigContract.communityPoolWallet();
-        address founderWalletPoolAddress=deamMetaverseConfigContract.communityPoolWallet();
-        dmTokenContract.transfer(from, comPoolWalletAddress, communityPoolFee);
-        dmTokenContract.transfer(from, founderWalletPoolAddress, foundersFee);
-        return (amount-communityPoolFee-foundersFee);
-    }
 
 
    function withdraw(uint256 amount) external returns (bool) {
@@ -92,8 +76,8 @@ contract DMManager  {
             //dmTokenContract.balanceOf[deamMetaverseConfigContract.communityPoolWallet()] += communityPoolWalletAmount;
             dmTokenContract.reduceBalance(msg.sender,feeAmount);
            // dmTokenContract.balanceOf[msg.sender] -= feeAmount;
-            emit dmTokenContract.Transfer(msg.sender, deamMetaverseConfigContract.conversionFeeWallet(), conversionWalletAmount);
-            emit dmTokenContract.Transfer(msg.sender, deamMetaverseConfigContract.communityPoolWallet(), communityPoolWalletAmount);
+            dmTokenContract.emittransfer(msg.sender, deamMetaverseConfigContract.conversionFeeWallet(), conversionWalletAmount);
+            dmTokenContract.emittransfer(msg.sender, deamMetaverseConfigContract.communityPoolWallet(), communityPoolWalletAmount);
         }
         return amount - feeAmount;
     }
@@ -145,7 +129,7 @@ contract DMManager  {
         allocateAdminWallets(amount);
     }
 
-function allocateAdminWallets(uint256 amount) internal {
+    function allocateAdminWallets(uint256 amount) internal {
         uint256 communityPoolShare = (amount * deamMetaverseConfigContract.communityPoolSharePercent()) / 100; 
         uint256 marketingShare = (amount * deamMetaverseConfigContract.marketingSharePercent()) / 100;
         uint256 technologyShare = (amount * deamMetaverseConfigContract.technologySharePercent()) / 100; 
@@ -242,56 +226,9 @@ function allocateAdminWallets(uint256 amount) internal {
         distributeRewardsForMembers(topupAmount,referrer);
     }
 
-    function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) external onlyOwner returns (uint256){
-    address[] memory memberAddressList =  subscriptionContract.getMemberAddresses();
-    require(block.timestamp >lastCommunityDistributionTime + communityDistributionFrequencyInDays, "Community Distribution Frequency Not Met");
-    require(_startIndex == startIndexOfNextBatch,"Start Index Should be greater than Last Distributed Index");
-    require(memberAddressList.length > 0, "No Members");
-    require(_startIndex < memberAddressList.length, "Start index out of bounds");
-    require(batchSize > 0, "Batch size must be greater than 0");
-
-    uint256 endIndex = _startIndex + batchSize -1;
-    if (endIndex > memberAddressList.length) {
-        endIndex = memberAddressList.length-1;
-    }
-
-    startIndexOfNextBatch = endIndex+1;
 
 
-    if(communityPoolBalanceWhileCommunityDistribution<=0){
-        communityPoolBalanceWhileCommunityDistribution = dmTokenContract.getBalance(deamMetaverseConfigContract.communityPoolWallet());
-    }
-    require(communityPoolBalanceWhileCommunityDistribution > 0, "No balance in the transaction pool");
-    uint256 pendingReward;
-    uint256 share;
 
-    for (uint256 i = _startIndex; i <= endIndex; i++) {
-            pendingReward = subscriptionContract.getPendingReward(memberAddressList[i],deamMetaverseConfigContract.maxRewardsMultiplier());
-            if (pendingReward > 0) {
-                share = subscriptionContract.calculateShare(memberAddressList[i], communityPoolBalanceWhileCommunityDistribution);
-                if (pendingReward < share) {
-                    share = pendingReward;
-                }
-                dmTokenContract.transfer(deamMetaverseConfigContract.communityPoolWallet(), memberAddressList[i], share);
-                totalCommunityDistribution += share;
-        }
-    }
-    if(endIndex == memberAddressList.length-1){
-        lastCommunityDistributionTime = block.timestamp;
-        communityPoolBalanceWhileCommunityDistribution = 0;
-        startIndexOfNextBatch = 0;
-    }
-    return startIndexOfNextBatch;
-    }
-
-
-    function setCommunityDistributionFrequencyInDays(
-        uint256 _communityDistributionFrequencyInDays
-    ) external {
-        communityDistributionFrequencyInDays =
-            _communityDistributionFrequencyInDays *
-            1 days;
-    }
 
 
 
@@ -301,13 +238,11 @@ function allocateAdminWallets(uint256 amount) internal {
         minimumWithdrawalLimit = _minimumWithdrawalLimit;
     }
 
-     function updateWithdrawalsAllowedADay(
+    function updateWithdrawalsAllowedADay(
         uint256 _withdrawalsAllowedADay
     ) external {
         withdrawalsAllowedADay = _withdrawalsAllowedADay;
     }
-
-
 
 
     function recoverStuckTokens(address tokenAddress) public onlyOwner{
@@ -320,8 +255,5 @@ function allocateAdminWallets(uint256 amount) internal {
     function withdrawNativeCurrency(address payable _to,uint256 _amount) external onlyOwner {
         payable(_to).transfer(_amount);
     }
-
-
-
 
 }

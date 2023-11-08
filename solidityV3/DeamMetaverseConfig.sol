@@ -42,9 +42,7 @@ contract DeamMetaverseConfig {
     }
 
 
-    function updateAllowedContract(address _allowedContract)
-    external
-    onlyOwner
+    function updateAllowedContract(address _allowedContract) external onlyOwner
     {
         allowedContracts[_allowedContract]=_allowedContract;
     }
@@ -72,9 +70,7 @@ contract DeamMetaverseConfig {
     }
 
 
-    function updateLevelPercentageWithDecimals(
-        uint256[7] memory _levelPercentage
-    ) external {
+    function updateLevelPercentageWithDecimals(uint256[7] memory _levelPercentage) external onlyOwner{
          uint256 sum = 0;
         for (uint8 i = 0; i < 7; i++) {
             sum += _levelPercentage[i];
@@ -90,13 +86,13 @@ contract DeamMetaverseConfig {
 
     function updateMinimumDepositMembers(
         uint256 _minmumDeposit
-    ) external {
+    ) external onlyOwner{
         minimumDepositForMembers = _minmumDeposit;
     }
 
       function updateMinimumTopUpAmountMembers(
         uint256 _minimumTopUpAmountMembers
-    ) external {
+    ) external onlyOwner {
         minimumTopUpAmountMembers = _minimumTopUpAmountMembers;
     }
 
