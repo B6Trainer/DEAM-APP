@@ -20,13 +20,14 @@ contract DMToken is IERC20 {
     mapping(address => uint256) public numberOfWithdrawals;
     
     address public owner;
+    address public thisContractAddress;
     mapping(address => address) private allowedContracts;
 
     uint256 public initialSupply =0;
     uint256 public percentageDecimals=10000;
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function");
+        require(msg.sender == owner, "DMToken: Only the owner can call this function ");
         _;
     }
 
@@ -40,20 +41,63 @@ contract DMToken is IERC20 {
         allowedContracts[_allowedContract]=_allowedContract;
     }
 
-    constructor(
-        address _membershipContractAddress,
-        address _configContractAddress,
-        address _usdtToken
-    ) {        
+    constructor(  ) {        
         _totalSupply = initialSupply * 10**uint256(decimals);
         balanceOf[msg.sender] = _totalSupply;
         owner = msg.sender;
+
         allowedContracts[owner]=owner;
-        membershipContract = Membershipcontract(_membershipContractAddress);
-        deamMetaverseConfigContract = DeamMetaverseConfig(_configContractAddress);
-        usdtToken = IERC20(_usdtToken);
+
         emit Transfer(address(0), owner, _totalSupply);
     }
+
+    function mapContracts(address _membershipContractAddress,
+                            address _configContractAddress,                            
+                            address _usdtToken,
+                            address _dmTokenAddress        ) external onlyOwner
+    {   
+        
+        if(_dmTokenAddress != address(0)){
+            thisContractAddress=_dmTokenAddress;
+        }
+        if(_membershipContractAddress != address(0)){
+            setMemberShipContract(_membershipContractAddress,thisContractAddress);
+        }
+        if(_configContractAddress != address(0)){
+            setDMConfig(_configContractAddress,thisContractAddress);
+        }
+
+        if(_usdtToken != address(0)){
+            setUSDTToken(_usdtToken);
+        }
+
+                   
+    }
+
+    function setMemberShipContract(address _membershipContractAddress, address _thisContractAddress) internal
+    {   
+        require(_membershipContractAddress != address(0), "Invalid address for Membership Contract");        
+        membershipContract = Membershipcontract(_membershipContractAddress); 
+        membershipContract.updateAllowedContract(_thisContractAddress);               
+    }
+    
+    function setDMConfig(address _configContractAddress, address _thisContractAddress) internal
+    {   
+        require(_configContractAddress != address(0), "Invalid address for DMConfiguration contract");        
+        deamMetaverseConfigContract = DeamMetaverseConfig(_configContractAddress);
+        deamMetaverseConfigContract.updateAllowedContract(_thisContractAddress);                
+    }
+
+    
+    function setUSDTToken(address _usdtToken) internal 
+    {   
+        require(_usdtToken != address(0), "Invalid address for USDT Token Contract");        
+        usdtToken = IERC20(_usdtToken);                
+    }
+
+
+
+
 
      function totalSupply() external view override  returns (uint256) {
         return _totalSupply;

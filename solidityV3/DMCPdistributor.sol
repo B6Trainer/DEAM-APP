@@ -4,7 +4,6 @@ pragma solidity 0.8.0;
 
 import "./Membershipcontract.sol";
 import "./DeamMetaverseConfig.sol";
-import "./IERC20.sol";
 import "./DMToken.sol";
 
 contract DMCPdistributor  {
@@ -17,20 +16,17 @@ contract DMCPdistributor  {
     uint256 public startIndexOfNextBatch;
 
     address public owner;
+    mapping(address => address) private allowedContracts;
+    address public thisContractAddress;
+
     Membershipcontract public membershipContract;
     DeamMetaverseConfig public dmConfigContract;
     DMToken public dmTokenContract;
 
-    constructor(
-        address _membershipContractAddress,
-        address _configContractAddress,
-        address _dmTokenAddress
-    ) {        
+    constructor() {        
         owner = msg.sender;
-        membershipContract = Membershipcontract(_membershipContractAddress);
-        dmConfigContract = DeamMetaverseConfig(_configContractAddress);
-        dmTokenContract = DMToken(_dmTokenAddress);        
-            
+        allowedContracts[owner]=owner;
+             
     }
 
     modifier onlyOwner() {
@@ -39,6 +35,61 @@ contract DMCPdistributor  {
             "DMCPdistributor: Only the contract owner can call this function"
         );
         _;
+    }
+    
+    modifier onlyAllowedContract() {
+        require(allowedContracts[msg.sender] != address(0), "Only the authorized contracts can call this function");
+        _;
+    }
+
+
+    function updateAllowedContract(address _allowedContract) external onlyOwner{
+        allowedContracts[_allowedContract]=_allowedContract;
+    }
+
+    function mapContracts(address _membershipContractAddress,
+                            address _configContractAddress,
+                            address _dmTokenAddress,                           
+                            address _dcpDistAddress ) external onlyOwner
+    {   
+       
+        if(_dcpDistAddress != address(0)){
+            thisContractAddress=_dcpDistAddress;
+        }
+
+        if(_membershipContractAddress != address(0)){
+            setMemberShipContract(_membershipContractAddress, thisContractAddress);
+        }
+        if(_configContractAddress != address(0)){
+            setDMConfig(_configContractAddress, thisContractAddress);
+        }
+        if(_dmTokenAddress != address(0)){
+            setDMToken(_dmTokenAddress, thisContractAddress);
+        }
+
+                    
+    }
+
+    function setMemberShipContract(address _membershipContractAddress, address _thisContractAddress) internal
+    {   
+        require(_membershipContractAddress != address(0), "Invalid address for Membership Contract");        
+        membershipContract = Membershipcontract(_membershipContractAddress); 
+        membershipContract.updateAllowedContract(_thisContractAddress);               
+    }
+    
+    function setDMConfig(address _configContractAddress, address _thisContractAddress) internal
+    {   
+        require(_configContractAddress != address(0), "Invalid address for DMConfiguration contract");        
+        dmConfigContract = DeamMetaverseConfig(_configContractAddress);
+        dmConfigContract.updateAllowedContract(_thisContractAddress);                
+    }
+
+    function setDMToken(address _dmTokenAddress, address _thisContractAddress) internal
+    {   
+        require(_dmTokenAddress != address(0), "Invalid address for DM Token Contract");        
+        dmTokenContract = DMToken(_dmTokenAddress);  
+        dmTokenContract.updateAllowedContract(_thisContractAddress);     
+                    
     }
 
 
