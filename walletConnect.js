@@ -36,7 +36,7 @@ export const web3Modal = new Web3Modal(
   },
   ethereumClient
 );
-console.log("client",ethereumClient.getNetwork())
+console.log("Etheriem Wallet Client",ethereumClient.getNetwork())
 
 
 export default ethereumClient;

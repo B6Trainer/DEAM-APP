@@ -1,6 +1,8 @@
 import { switchNetwork,getNetwork } from "@wagmi/core";
 import ethereumClient from "./walletConnect";
 import {defaultChainId} from './config';
+import {TOKEN_PRICE,getShareData,subscriptionAddress,tokenAddress } from "./config";
+
 var connected = ethereumClient.getAccount().isConnected;
 var path = window.location.pathname;
 const switchChain = document.getElementById("switchChain");

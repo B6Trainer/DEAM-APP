@@ -89,10 +89,10 @@ const AdminWallets = await readContracts({
   document.getElementById("startIndex").value = AdminWallets[16].result;
   document.getElementById("startIndex").disabled = true;
   if(AdminWallets[6].result != ethereumClient.getAccount().address){
-    document.getElementById("adminaddress").innerHTML = "Unauthorozed!!You are not an admin!"
+    document.getElementById("adminaddress").innerHTML = "Unauthorized!! You are not an admin!"
     document.getElementById("adminaddress").style.color="red";
   }else{
-    document.getElementById("adminaddress").innerHTML = "You are admin!"
+    document.getElementById("adminaddress").innerHTML = "Welcome admin!"
   }
   
   var name = ["communityPoolWallet","marketingWallet","technologyWallet","transactionPoolWallet","foundersWallet","conversionFeeWallet"]

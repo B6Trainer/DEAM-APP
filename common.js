@@ -1,13 +1,12 @@
-import { switchNetwork,watchAccount,watchNetwork,getNetwork } from "@wagmi/core";
+import { watchAccount,watchNetwork,getNetwork } from "@wagmi/core";
 import ethereumClient from "./walletConnect";
 import {defaultChainId} from './config'
 
-const switchChain = document.getElementById("switchChain");
 
+console.log('common.js is being executed');
 var connected = ethereumClient.getAccount().isConnected;
 var previousAddress;
 var previousNetwork;
-
 if (connected) {
     const { chain } =  getNetwork();
 previousNetwork = chain.id;
@@ -25,23 +24,25 @@ previousNetwork = chain.id;
           previousNetwork = network.chain.id;
       if(previousNetwork != defaultChainId){
           //window.location.href="./home.html";
-          switchChain.style.display ="block";
-          connectBtn.style.display = "none";
-          openApp.style.display = "none";
+          //switchChain.style.display ="block";
+          //connectBtn.style.display = "none";
+          //openApp.style.display = "none";
       }
     }
   });
 }
 
-switchChain.addEventListener("click", async () => {
-  const networks__ = await switchNetwork({
-    chainId: defaultChainId,
-  })
-  console.log(networks__);
-});
 
-
-
+// Function to copy text to clipboard
+export function copyToClipboard(text) {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      alert("Copied to clipboard: " + text);
+    })
+    .catch(err => {
+      console.error('Unable to copy text: ', err);
+    });
+}
 
 
 // document.getElementById("footer-menu").style.zIndex = "100";
@@ -86,7 +87,7 @@ const footerMenu = `
     </li>
   </ul>
 </div>`;
-if(document.getElementById("footer-menu"))
+
 document.getElementById("footer-menu").innerHTML = footerMenu;
 
 
@@ -100,13 +101,10 @@ const HomenavbarMenuContent = `
   <h4 id="header-title" style="color:var(--primary-color)">
   <i onclick="history.back()" class="fa-solid fa-arrow-left"></i>${document.title}
   </h3>
-  <span class="navbar-text">
-  <div id="connectBtn">
-  <w3m-core-button id="wagmiButton"></w3m-core-button>
-</div>
-  <button style="display: none;" class="btn btn-info" id="switchChain">Switch Chain</button>
-  <button id="openApp" style="display: none;" onclick="window.location.href='./home.html'"  class="smooth-anchor ml-auto mr-auto ml-md-0 btn primary-button aos-init aos-animate" >Open App</button>
-</span>
+  <w3m-core-button
+    id="web3-login-button"
+    class="web3-login-button"
+  ></w3m-core-button>
   <div class="web3-wallet-address" style="display: none">
     <span></span>
   </div>

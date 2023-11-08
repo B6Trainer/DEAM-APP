@@ -59,10 +59,10 @@ withdrawable.innerHTML = withdrawable_;
 withdrawAmount.addEventListener("keyup",()=>{
   const withdrawAmount_ = withdrawAmount.value;
   if(AccountData[1].result[0]==0){
-    fee_.innerHTML =  (Number(String(AccountData[2].result)) * withdrawAmount_)/(100*10000);
+    fee_.innerHTML =  (Number(String(AccountData[2].result)) * withdrawAmount_)/(100);//Member Fee
    }
    if(AccountData[1].result[0]==1){
-     fee_.innerHTML =  (Number(String(AccountData[3].result)) * withdrawAmount_)/(100*10000);
+     fee_.innerHTML =  (Number(String(AccountData[3].result)) * withdrawAmount_)/(100);//Promoter Fee
     }
    
 });
@@ -70,10 +70,10 @@ withdrawAmount.addEventListener("keyup",()=>{
 
 submitWithdraw.addEventListener("click", async () => {
     const withdrawAmount_ = withdrawAmount.value;
-    if(withdrawAmount_ == ""){
+    if(withdrawAmount_ == "" || withdrawAmount_ <=0){
         errormsg.innerHTML =` <div class="alert alert-danger alert-dismissible fade show">
         <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
-        <strong >Error!</strong> Please Enter Amount
+        <strong >Error!</strong> Please Enter Amount above 0
       </div>`;
         return;
     }

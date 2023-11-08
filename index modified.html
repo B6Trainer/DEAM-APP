@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zxx">
+  <head>
+    <meta name="author" content="" />
+    <meta name="description" content="" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DEAM Home</title>
+
+    <!--Favicon-->
+    <link rel="shortcut icon" href="./images/logo-single.png" />
+
+    <!--Stylesheet-->
+    <link rel="stylesheet" href="/assets/css/stylesheet-main.css" />
+    <link rel="stylesheet" href="/assets/css/default-stylesheet.css" />
+    <link rel="stylesheet" href="/assets/css/pink-color.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:300,400,600,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--Theme Color Settings-->
+    <style>
+     web3-login-button button{background-color: red !important; }
+      :root {
+        --header-bg-color: #030301;
+        --nav-item-color: #f5f5f5;
+        --hero-bg-color: #030301;
+        --section-1-bg-color: #111111;
+        --section-2-bg-color: #030301;
+        --section-3-bg-color: #111111;
+        --section-4-bg-color: #030301;
+        --section-5-bg-color: #111111;
+        --section-6-bg-color: #030301;
+        --section-7-bg-color: #111111;
+        --section-8-bg-color: #030301;
+        --section-9-bg-color: #111111;
+        --section-10-bg-color: #030301;
+        --section-11-bg-color: #111111;
+        --section-12-bg-color: #030301;
+        --footer-bg-color: #000000;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="odd" >
+      <nav id="headerNavbar" class="navbar navbar-expand-lg fixed-top " style="background-color: transparent;">
+        <div class="container">
+        <a class="navbar-brand" href="#"><img src="./images/dmtklogo.png" width="200px"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"><i class="fa fa-bars" style="font-size:24px;color:#2cd9df"></i>          </span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText" style="background-color: #111111cb;">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link nav-link-header" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-link-header smooth-anchor" href="#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-link-header smooth-anchor" href="#features">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-link-header smooth-anchor" href="#benefits">Benefits</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-link-header smooth-anchor" href="#contact">Contact</a>
+            </li>
+          </ul>
+          <span class="navbar-text">
+            <div id="connectBtn">
+            <w3m-core-button id="wagmiButton"></w3m-core-button>
+          </div>
+            <button style="display: none;" class="btn btn-info" id="switchChain">Switch Chain</button>
+            <button id="openApp" style="display: none;" onclick="window.location.href='./home.html'"  
+                    class="smooth-anchor ml-auto mr-auto ml-md-0 btn primary-button aos-init aos-animate" >Open App</button>
+          </span>
+        </div>
+      </div>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="slider" class="p-0 odd featured all">
+      <div class="swiper-container no-slider animation slider-h-100">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide slide-center">
+            <div>
+            <img
+              data-aos="zoom-out-up"
+              data-aos-delay="800"
+              src="https://i.gifer.com/WGkW.gif"
+              class="hero-image over-image-item"
+              alt="Hero Image"
+            />
+            </div>
+            <div id="particles-js" class="full-image mask"></div>
+            <div class="slide-content row">
+              <div class="col-12 d-flex inner">
+                <div class="left align-self-center text-center text-md-left">
+                  <h1
+                    data-aos="zoom-out-up"
+                    data-aos-delay="400"
+                    class="title effect-static-text-main"
+                  >
+                    DEAM Metaverse Community
+                  </h1>
+                  <p
+                    data-aos="zoom-out-up"
+                    data-aos-delay="800"
+                    class="description full-slider-text-white"
+                  >
+                    Join our exclusive community passive income enthusiasts and
+                    embark on a journey towards unlimited success !!
+                  </p>
+                  <div class="intro-btn-item">
+                 
+                    <a
+                      href="./subscription.html"
+                      data-aos="zoom-out-up"
+                      data-aos-delay="1200"
+                      class=" ml-auto mr-auto ml-md-0 mt-4 btn primary-button"
+                      >Join -> Refer -> Earn Today <i class="icon-arrow-right-circle"></i
+                    ></a>
+                   
+                  </div>
+
+                  <div class="d-flex justify-content-between" style="margin-top: 30px">
+                    <div class="staked-amount no-margin">
+                      <p class="title no-margin">DEAM Community Contract: </p>
+                      <p class="value no-margin"><span id="deamcontract">Loading...</span></p>
+                      <i class="far fa-copy copy-icon" id="deamContractcopyicon"></i>
+                    </div>                   
+                  </div>
+                  <div class="d-flex justify-content-between" style="margin-top: 30px">
+                    <div class="staked-amount no-margin">
+                      <p class="title no-margin">DEAM Members Token Contract:</p>
+                      <p class="value no-margin"><span id="tokenContract">Loading...</span></p>
+                      <i class="far fa-copy copy-icon" id="tokencopybutton"></i>
+                    </div>                   
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </section>
+
+    <div class="line-page-wrapper">
+
+
+      <!-- About Info Section -->
+      <section
+        id="about"
+        class="odd utf-highlights image-right featured left item-left-shape"
+      >
+        
+      </section>
+
+  
+
+
+     
+
+
+
+    </div>
+
+    <div id="bodyContent"></div>
+
+    <div id="contactus"></div>
+
+
+    
+    <div id="footer-menu-2"></div>
+    
+    <script>
+    window.addEventListener("scroll", () => {
+      const header = document.querySelector("nav");
+      const scrollY = window.scrollY;
+  
+      if (scrollY > 200) {
+          header.style.backgroundColor = "#111111"; // Change to your desired background color
+      } else {
+          header.style.backgroundColor = "transparent";
+      }
+       });
+    </script>
+
+    <script type="module" src="./common.js" ></script>
+    <script type="module" src="./main.js" ></script>
+    <script type="module" src="./index.js" ></script>
+   
+    
+    <!--Scripts-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.easing.min.js"></script>
+    <script src="assets/js/ponyfill.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/slider.min.js"></script>
+    <script src="assets/js/gallery.min.js"></script>
+    <script src="assets/js/animation.min.js"></script>
+    <script src="assets/js/particles.min.js"></script>
+    <script src="assets/js/custom_script.js"></script>
+  </body>
+</html>

@@ -9,6 +9,7 @@ import ethereumClient from "./walletConnect";
 import {TOKEN_PRICE,getShareData,subscriptionAddress,tokenAddress } from "./config";
 
 
+
 const subscriptionContract = {
     address: subscriptionAddress,
     abi: ABI_SUBSCRIPTION,
@@ -35,6 +36,8 @@ if(connected ==true){
     const onboardBtn = document.getElementById('onboarding-btn');
     
     
+    
+
     const AccountData = await readContracts({
       contracts: [
         {
