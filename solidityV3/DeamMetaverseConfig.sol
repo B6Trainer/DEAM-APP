@@ -42,8 +42,7 @@ contract DeamMetaverseConfig {
     }
 
 
-    function updateAllowedContract(address _allowedContract) external onlyOwner
-    {
+    function updateAllowedContract(address _allowedContract) external onlyOwner{
         allowedContracts[_allowedContract]=_allowedContract;
     }
 
@@ -51,7 +50,6 @@ contract DeamMetaverseConfig {
       owner = msg.sender;
       allowedContracts[owner]=owner;
     }
-
 
     function updateAdminWalletAddresses(
         address _communityPoolWallet,

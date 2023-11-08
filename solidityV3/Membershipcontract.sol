@@ -2,6 +2,7 @@
 pragma solidity 0.8.0;
 
 contract Membershipcontract {
+    
     enum UserType {
         Member,
         Promotor
@@ -23,13 +24,14 @@ contract Membershipcontract {
 
     mapping(address => Subscription) private subscribers;
     address[] public memberAddresses;
-    address public allowedContract;
+    mapping(address => address) private allowedContracts;
 
     uint256 public totalSubscriptionAmountMembers = 0;
     uint256 public totalMembers=0;
 
     constructor() {
         owner = msg.sender;
+        allowedContracts[owner]=owner;
         subscribers[owner] = Subscription({
             userType: UserType.Member,
             subscriptionBalance: 0,
@@ -56,8 +58,12 @@ contract Membershipcontract {
     }
 
     modifier onlyAllowedContract() {
-        require(msg.sender == allowedContract, "Not authorized");
+        require(allowedContracts[msg.sender] != address(0), "Only the authorized contracts can call this function");
         _;
+    }
+
+    function updateAllowedContract(address _allowedContract) external onlyOwner{
+        allowedContracts[_allowedContract]=_allowedContract;
     }
 
     function getUserType(address userAddress) external view returns (UserType) {
@@ -140,12 +146,7 @@ contract Membershipcontract {
         }
     }
 
-    function updateAllowedContract(address _allowedContract)
-        external
-        onlyOwner
-    {
-        allowedContract = _allowedContract;
-    }
+
 
     function addReceivedReward(address account, uint256 amount)
         external

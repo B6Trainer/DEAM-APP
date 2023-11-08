@@ -22,9 +22,6 @@ contract DMToken is IERC20 {
     address public owner;
     mapping(address => address) private allowedContracts;
 
-    //uint256 public conversionFeeMember = 100000;
-    
-
     uint256 public initialSupply =0;
     uint256 public percentageDecimals=10000;
 
@@ -39,10 +36,7 @@ contract DMToken is IERC20 {
     }
 
 
-    function updateAllowedContract(address _allowedContract)
-    external
-    onlyOwner
-    {
+    function updateAllowedContract(address _allowedContract) external onlyOwner{
         allowedContracts[_allowedContract]=_allowedContract;
     }
 
@@ -54,6 +48,7 @@ contract DMToken is IERC20 {
         _totalSupply = initialSupply * 10**uint256(decimals);
         balanceOf[msg.sender] = _totalSupply;
         owner = msg.sender;
+        allowedContracts[owner]=owner;
         membershipContract = Membershipcontract(_membershipContractAddress);
         deamMetaverseConfigContract = DeamMetaverseConfig(_configContractAddress);
         usdtToken = IERC20(_usdtToken);

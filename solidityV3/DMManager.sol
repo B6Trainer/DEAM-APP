@@ -13,20 +13,15 @@ contract DMManager  {
     DeamMetaverseConfig public deamMetaverseConfigContract;
     DMToken public dmTokenContract;
     
-    
     mapping(address => uint256) public lastWithdrawTime;
     mapping(address => uint256) public numberOfWithdrawals;
     
     address public owner;
 
-
-    //uint256 public conversionFeeMember = 100000;
-
     uint256 public minimumWithdrawalLimit = 50 *10 ** 18;
     uint256 public withdrawalsAllowedADay = 1;
 
-
-    uint256 public percentageDecimals=10000;
+    //uint256 public percentageDecimals=10000;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
@@ -48,7 +43,6 @@ contract DMManager  {
     }
 
 
-
    function withdraw(uint256 amount) external returns (bool) {
         require(amount > 0, "ERC20: Amount must be greater than zero");
         uint256 tokenamount=dmTokenContract.getBalance(msg.sender);
@@ -65,6 +59,7 @@ contract DMManager  {
     }
 
     function deductConversionFee(uint256 amount) internal returns (uint256) {
+        uint256 percentageDecimals=dmTokenContract.percentageDecimals();
         uint256 feeAmount = (amount * deamMetaverseConfigContract.conversionFeeMember()) / (100*percentageDecimals);
         if (feeAmount > 0) {
             uint256 conversionWalletAmount = (feeAmount * 70) / 100;
@@ -153,6 +148,7 @@ contract DMManager  {
         }
 
         uint256 referralBonus;
+        uint256 percentageDecimals=dmTokenContract.percentageDecimals();
         uint256[7] memory levelPercentage = deamMetaverseConfigContract.getlevelPercentageArray();
 
         if (depth == 1) {
