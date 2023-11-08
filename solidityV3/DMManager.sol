@@ -8,6 +8,7 @@ import "./IERC20.sol";
 import "./DMToken.sol";
 contract DMManager  {
     
+    IERC20 public usdtToken;
     Membershipcontract public subscriptionContract;
     DeamMetaverseConfig public deamMetaverseConfigContract;
     DMToken public dmTokenContract;
@@ -40,14 +41,16 @@ contract DMManager  {
     }
 
     constructor(
-        address _subscriptionContractAddress,
+        address _membershipContractAddress,
         address _configContractAddress,
-        address _dmTokenAddress
+        address _dmTokenAddress,
+        address _usdtToken
     ) {        
         owner = msg.sender;
-        subscriptionContract = Membershipcontract(_subscriptionContractAddress);
+        subscriptionContract = Membershipcontract(_membershipContractAddress);
         deamMetaverseConfigContract = DeamMetaverseConfig(_configContractAddress);
         dmTokenContract = DMToken(_dmTokenAddress);
+        usdtToken = IERC20(_usdtToken);
             
     }
 
@@ -61,15 +64,17 @@ contract DMManager  {
         return (amount-communityPoolFee-foundersFee);
     }
 
-    function transfer(address to, uint256 amount) public override returns (bool success) {
-         return dmTokenContract.transfer(to, amount);
-    }
 
-
-
-    function withdraw(uint256 amount) external returns (bool) {
-        
-        dmTokenContract.transfer(amount);
+   function withdraw(uint256 amount) external returns (bool) {
+        require(amount > 0, "ERC20: Amount must be greater than zero");
+        uint256 tokenamount=dmTokenContract.getBalance(msg.sender);
+        require(tokenamount>= amount, "ERC20: Insufficient balance");
+        require(block.timestamp > lastWithdrawTime[msg.sender] + 1 days, "");
+        require(amount >= minimumWithdrawalLimit, "Minimum Withdrawal not met");
+        require(numberOfWithdrawals[msg.sender] <= withdrawalsAllowedADay, "Withdrawals For the Day Exceeded");
+        uint256 amountAfterFee = deductConversionFee(amount);
+        usdtToken.transfer(msg.sender, amountAfterFee);
+        dmTokenContract.burn(msg.sender, amountAfterFee);
         lastWithdrawTime[msg.sender] = block.timestamp;
         numberOfWithdrawals[msg.sender] +=1; 
         return true;
@@ -80,11 +85,15 @@ contract DMManager  {
         if (feeAmount > 0) {
             uint256 conversionWalletAmount = (feeAmount * 70) / 100;
             uint256 communityPoolWalletAmount = (feeAmount * 30) / 100;
-            balanceOf[deamMetaverseConfigContract.conversionFeeWallet()] += conversionWalletAmount;
-            balanceOf[deamMetaverseConfigContract.communityPoolWallet()] += communityPoolWalletAmount;
-            balanceOf[msg.sender] -= feeAmount;
-            emit Transfer(msg.sender, deamMetaverseConfigContract.conversionFeeWallet(), conversionWalletAmount);
-            emit Transfer(msg.sender, deamMetaverseConfigContract.communityPoolWallet(), communityPoolWalletAmount);
+            //dmTokenContract.balanceOf(deamMetaverseConfigContract.conversionFeeWallet());
+            dmTokenContract.addBalance(deamMetaverseConfigContract.conversionFeeWallet(),conversionWalletAmount);
+            dmTokenContract.addBalance(deamMetaverseConfigContract.communityPoolWallet(),communityPoolWalletAmount);
+            //dmTokenContract.balanceOf[deamMetaverseConfigContract.conversionFeeWallet()] += conversionWalletAmount;
+            //dmTokenContract.balanceOf[deamMetaverseConfigContract.communityPoolWallet()] += communityPoolWalletAmount;
+            dmTokenContract.reduceBalance(msg.sender,feeAmount);
+           // dmTokenContract.balanceOf[msg.sender] -= feeAmount;
+            emit dmTokenContract.Transfer(msg.sender, deamMetaverseConfigContract.conversionFeeWallet(), conversionWalletAmount);
+            emit dmTokenContract.Transfer(msg.sender, deamMetaverseConfigContract.communityPoolWallet(), communityPoolWalletAmount);
         }
         return amount - feeAmount;
     }
@@ -131,11 +140,23 @@ contract DMManager  {
             levelDistributionPart
         );
         if (amountLeft > 0) {
-            mint(deamMetaverseConfigContract.foundersWallet(),amountLeft);
+            dmTokenContract.mint(deamMetaverseConfigContract.foundersWallet(),amountLeft);
         }
         allocateAdminWallets(amount);
     }
 
+function allocateAdminWallets(uint256 amount) internal {
+        uint256 communityPoolShare = (amount * deamMetaverseConfigContract.communityPoolSharePercent()) / 100; 
+        uint256 marketingShare = (amount * deamMetaverseConfigContract.marketingSharePercent()) / 100;
+        uint256 technologyShare = (amount * deamMetaverseConfigContract.technologySharePercent()) / 100; 
+        uint256 foundersShare = (amount * deamMetaverseConfigContract.foundersSharePercent()) / 100; 
+        uint256 transactionPoolShare = (amount * deamMetaverseConfigContract.transactionPoolSharePercent()) / 100; 
+        dmTokenContract.mint(deamMetaverseConfigContract.communityPoolWallet(),communityPoolShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.marketingWallet(),marketingShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.technologyWallet(),technologyShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.foundersWallet(),foundersShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.transactionPoolWallet(),transactionPoolShare);
+    }
 
     function distributeLevelRewards(
         address referrer,
@@ -205,7 +226,7 @@ contract DMManager  {
         address referrer,
         uint256 remainingAmount
     ) internal returns (uint256) {
-        mint(referrer,referralBonus);
+        dmTokenContract.mint(referrer,referralBonus);
         subscriptionContract.addReceivedReward(referrer,referralBonus);
         remainingAmount -= referralBonus;
         return remainingAmount;
@@ -238,7 +259,7 @@ contract DMManager  {
 
 
     if(communityPoolBalanceWhileCommunityDistribution<=0){
-        communityPoolBalanceWhileCommunityDistribution = balanceOf[deamMetaverseConfigContract.communityPoolWallet()];
+        communityPoolBalanceWhileCommunityDistribution = dmTokenContract.getBalance(deamMetaverseConfigContract.communityPoolWallet());
     }
     require(communityPoolBalanceWhileCommunityDistribution > 0, "No balance in the transaction pool");
     uint256 pendingReward;
@@ -251,7 +272,7 @@ contract DMManager  {
                 if (pendingReward < share) {
                     share = pendingReward;
                 }
-                _transfer(deamMetaverseConfigContract.communityPoolWallet(), memberAddressList[i], share);
+                dmTokenContract.transfer(deamMetaverseConfigContract.communityPoolWallet(), memberAddressList[i], share);
                 totalCommunityDistribution += share;
         }
     }
@@ -301,11 +322,6 @@ contract DMManager  {
     }
 
 
-    function addAMemberFree(address memberAddress, uint256 subscriptionAmount, address _referrer, string memory _email, string memory  _mobile,string memory _name)
-        external onlyOwner
-    {   
-        require(subscriptionContract.isSubscriber(memberAddress) == false,"ERC20: Already a Subsciber");
-        subscriptionContract.subscribe(memberAddress, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
-    }
+
 
 }

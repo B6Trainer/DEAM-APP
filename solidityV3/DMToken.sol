@@ -83,6 +83,22 @@ contract DMToken is IERC20 {
         emit Transfer(sender, receiver, amount);
     }
 
+    function getBalance(address account) public view returns (uint256) {
+         return balanceOf[account];
+    }
+
+    function addBalance(address account, uint256 amount) external onlyAllowedContract  {
+         
+         balanceOf[account] += amount;
+    }
+
+    function reduceBalance(address account, uint256 amount) external onlyAllowedContract  {
+         
+         balanceOf[account] -= amount;
+    }
+
+
+
     function deductTransferFee(address from , uint256 amount) internal  returns (uint256) {
         uint256 communityPoolFee = ((amount * transactionFee_communityPoolFeePercentage) / (100*percentageDecimals));
         uint256 foundersFee = (amount * transactionFee_foundersFeePercentage) / (100*percentageDecimals);
@@ -124,14 +140,14 @@ contract DMToken is IERC20 {
         return true;
     }
 
-    function burn(address from, uint256 value) internal {
+    function burn(address from, uint256 value) public onlyAllowedContract  {
         require(balanceOf[from] >= value, "Insufficient balance");
         balanceOf[from] -= value;
         _totalSupply -= value;
         emit Transfer(from, address(0), value);
     }
 
-    function mint(address to, uint256 value) internal {
+    function mint(address to, uint256 value) public onlyAllowedContract  {
         balanceOf[to] += value;
         _totalSupply += value;
         emit Transfer(address(0), to, value);
@@ -144,89 +160,7 @@ contract DMToken is IERC20 {
         mint(msg.sender, amount);
         return true;
     }
-
-    function withdraw(uint256 amount) external returns (bool) {
-        require(amount > 0, "ERC20: Amount must be greater than zero");
-        require(balanceOf[msg.sender] >= amount, "ERC20: Insufficient balance");
-        require(block.timestamp > lastWithdrawTime[msg.sender] + 1 days, "");
-        require(amount >= minimumWithdrawalLimit, "Minimum Withdrawal not met");
-        require(numberOfWithdrawals[msg.sender] <= withdrawalsAllowedADay, "Withdrawals For the Day Exceeded");
-        uint256 amountAfterFee = deductConversionFee(amount);
-        usdtToken.transfer(msg.sender, amountAfterFee);
-        burn(msg.sender, amountAfterFee);
-        lastWithdrawTime[msg.sender] = block.timestamp;
-        numberOfWithdrawals[msg.sender] +=1; 
-        return true;
-    }
-
-    function deductConversionFee(uint256 amount) internal returns (uint256) {
-        uint256 feeAmount = (amount * deamMetaverseConfigContract.conversionFeeMember()) / (100*percentageDecimals);
-        if (feeAmount > 0) {
-            uint256 conversionWalletAmount = (feeAmount * 70) / 100;
-            uint256 communityPoolWalletAmount = (feeAmount * 30) / 100;
-            balanceOf[deamMetaverseConfigContract.conversionFeeWallet()] += conversionWalletAmount;
-            balanceOf[deamMetaverseConfigContract.communityPoolWallet()] += communityPoolWalletAmount;
-            balanceOf[msg.sender] -= feeAmount;
-            emit Transfer(msg.sender, deamMetaverseConfigContract.conversionFeeWallet(), conversionWalletAmount);
-            emit Transfer(msg.sender, deamMetaverseConfigContract.communityPoolWallet(), communityPoolWalletAmount);
-        }
-        return amount - feeAmount;
-    }
-
-
-
-    function addAMember(address memberAddress, uint256 subscriptionAmount, address _referrer, string memory _email, string memory  _mobile,string memory _name)
-        external
-    {   
-        require(usdtToken.balanceOf(msg.sender) >= subscriptionAmount,"ERC20: Insufficient Balance");
-        require(subscriptionAmount >= deamMetaverseConfigContract.minimumDepositForMembers(),"Minimum Deposit amount not met");
-        require(subscriptionContract.isSubscriber(memberAddress) == false,"ERC20: Already a Subsciber");
-        // require(_referrer != address(0),"ERC20: Referrer is Invalid");
-        usdtToken.transferFrom(msg.sender,address(this),subscriptionAmount);
-        subscriptionContract.subscribe(memberAddress, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
-        distributeRewardsForMembers(subscriptionAmount,_referrer);
-    }
-
-    function subscribeAsMember(uint256 subscriptionAmount, address _referrer, string memory _email, string memory  _mobile,string memory _name)
-        external
-    {   
-        require(usdtToken.balanceOf(msg.sender) >= subscriptionAmount,"ERC20: Insufficient Balance");
-        require(subscriptionAmount >= deamMetaverseConfigContract.minimumDepositForMembers(),"Minimum Deposit amount not met");
-        require(subscriptionContract.isSubscriber(msg.sender) == false,"ERC20: Already a Subsciber");
-        // require(_referrer != address(0),"ERC20: Referrer is Invalid");
-        usdtToken.transferFrom(msg.sender,address(this),subscriptionAmount);
-        subscriptionContract.subscribe(msg.sender, Membershipcontract.UserType.Member, subscriptionAmount, _referrer,0,_email,_mobile,_name);
-        distributeRewardsForMembers(subscriptionAmount,_referrer);
-    }
-
-
-
-    function distributeRewardsForMembers(uint256 amount,address referrer) internal {
-        uint256 levelDistributionPart = (deamMetaverseConfigContract.levelRewardPercentage() * amount) / 100; //71%
-        uint256 amountLeft = distributeLevelRewards(
-            referrer,
-            levelDistributionPart,
-            1,
-            levelDistributionPart
-        );
-        if (amountLeft > 0) {
-            mint(deamMetaverseConfigContract.foundersWallet(),amountLeft);
-        }
-        allocateAdminWallets(amount);
-    }
-
-    function allocateAdminWallets(uint256 amount) internal {
-        uint256 communityPoolShare = (amount * deamMetaverseConfigContract.communityPoolSharePercent()) / 100; 
-        uint256 marketingShare = (amount * deamMetaverseConfigContract.marketingSharePercent()) / 100;
-        uint256 technologyShare = (amount * deamMetaverseConfigContract.technologySharePercent()) / 100; 
-        uint256 foundersShare = (amount * deamMetaverseConfigContract.foundersSharePercent()) / 100; 
-        uint256 transactionPoolShare = (amount * deamMetaverseConfigContract.transactionPoolSharePercent()) / 100; 
-        mint(deamMetaverseConfigContract.communityPoolWallet(),communityPoolShare);
-        mint(deamMetaverseConfigContract.marketingWallet(),marketingShare);
-        mint(deamMetaverseConfigContract.technologyWallet(),technologyShare);
-        mint(deamMetaverseConfigContract.foundersWallet(),foundersShare);
-        mint(deamMetaverseConfigContract.transactionPoolWallet(),transactionPoolShare);
-    }
+    
 
     function distributeLevelRewards(
         address referrer,
@@ -303,16 +237,8 @@ contract DMToken is IERC20 {
     }
 
 
-    function topUpSubscriptionForMember(uint256 topupAmount) external {
-        require(subscriptionContract.isMember(msg.sender)==true, "ERC20: Not a member");
-        require(topupAmount >= deamMetaverseConfigContract.minimumTopUpAmountMembers(), "ERC20: Minimum TopUp Amount Not");
-        IERC20(usdtToken).transferFrom(msg.sender,address(this),topupAmount);
-        subscriptionContract.topUpSubscriptionBalance(msg.sender, topupAmount);
-        address referrer = subscriptionContract.getReferrer(msg.sender);
-        distributeRewardsForMembers(topupAmount,referrer);
-    }
 
-function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) external onlyOwner returns (uint256){
+    function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) external onlyOwner returns (uint256){
     address[] memory memberAddressList =  subscriptionContract.getMemberAddresses();
     require(block.timestamp >lastCommunityDistributionTime + communityDistributionFrequencyInDays, "Community Distribution Frequency Not Met");
     require(_startIndex == startIndexOfNextBatch,"Start Index Should be greater than Last Distributed Index");
@@ -376,8 +302,6 @@ function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) externa
     ) external {
         withdrawalsAllowedADay = _withdrawalsAllowedADay;
     }
-
-
 
 
     function recoverStuckTokens(address tokenAddress) public onlyOwner{
