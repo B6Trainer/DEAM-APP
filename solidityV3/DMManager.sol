@@ -133,7 +133,7 @@ contract DMManager is BaseDMContract {
             numberOfWithdrawals[msg.sender] <= withdrawalsAllowedADay,
             "Withdrawals For the Day Exceeded"
         );
-        uint256 amountAfterFee = deductConversionFee(amount);
+        uint256 amountAfterFee = deductConversionFee(amount,msg.sender);
         usdtToken.transfer(msg.sender, amountAfterFee);
         dmTokenContract.burn(msg.sender, amountAfterFee);
         lastWithdrawTime[msg.sender] = block.timestamp;
@@ -141,11 +141,17 @@ contract DMManager is BaseDMContract {
         return true;
     }
 
-    function deductConversionFee(uint256 amount) internal returns (uint256) {
+    function deductConversionFee(uint256 amount, address sendingMember) internal returns (uint256) {
         uint256 percentageDecimals = dmTokenContract.percentageDecimals();
-        uint256 feeAmount = (amount *
-            deamMetaverseConfigContract.conversionFeeMember()) /
-            (100 * percentageDecimals);
+        
+        uint256 conversionfee;
+        if(membershipContract.isMember(sendingMember)){
+            conversionfee=deamMetaverseConfigContract.conversionFeeMember();
+        }else if(membershipContract.isPromotor(sendingMember)){
+            conversionfee=deamMetaverseConfigContract.conversionFeePromoter();
+        }
+
+        uint256 feeAmount = (amount * conversionfee) /(100 * percentageDecimals);
         if (feeAmount > 0) {
             uint256 conversionWalletAmount = (feeAmount * 70) / 100;
             uint256 communityPoolWalletAmount = (feeAmount * 30) / 100;
@@ -221,18 +227,18 @@ contract DMManager is BaseDMContract {
         string memory _name
     ) external {
         require(
-            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
-            "ERC20: Insufficient Balance"
-        );
-        require(
-            subscriptionAmount >=
-                deamMetaverseConfigContract.minimumDepositForMembers(),
-            "Minimum Deposit amount not met"
-        );
-        require(
             membershipContract.isSubscriber(msg.sender) == false,
-            "ERC20: Already a Subsciber"
+            "DMManager: Already a Member"
         );
+        require(
+            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
+            "DMManager: Insufficient USDT Balance"
+        );
+        require(
+            subscriptionAmount >=deamMetaverseConfigContract.minimumDepositForMembers(),
+            "DMManager: Minimum Deposit amount not met"
+        );
+
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
         usdtToken.transferFrom(msg.sender, address(this), subscriptionAmount);
         membershipContract.subscribe(
@@ -248,23 +254,22 @@ contract DMManager is BaseDMContract {
         distributeRewardsForMembers(subscriptionAmount, _referrer);
     }
 
-    function addAMemberFree(
-        address memberAddress,
-        uint256 subscriptionAmount,
-        address _referrer,
+    function addPromotor(
+        address promoterAddress,            
         string memory _email,
         string memory _mobile,
         string memory _name
     ) external onlyOwner {
+        require(promoterAddress != address(0), string(abi.encodePacked("DMManager: Invalid wallet address : ",addressToString(promoterAddress))));
         require(
-            membershipContract.isSubscriber(memberAddress) == false,
-            "DMManager: Already a member"
+            membershipContract.isSubscriber(promoterAddress) == false,
+           string(abi.encodePacked("DMManager: Already a member/promoter : ",addressToString(promoterAddress)))
         );
         membershipContract.subscribe(
-            memberAddress,
-            Membershipcontract.UserType.Member,
-            subscriptionAmount,
-            _referrer,
+            promoterAddress,
+            Membershipcontract.UserType.Promotor,
+            0,//Setting subscription amount as zero for promoters
+            owner,
             0,
             _email,
             _mobile,
@@ -272,6 +277,11 @@ contract DMManager is BaseDMContract {
         );
     }
 
+    function getMemberList() external view onlyOwner returns (address[] memory){
+
+        return membershipContract.getMemberAddresses();
+    }
+        
     function distributeRewardsForMembers(uint256 amount, address referrer)
         internal
     {

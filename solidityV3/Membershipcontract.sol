@@ -40,9 +40,9 @@ contract Membershipcontract is BaseDMContract {
             referrals: new address[](0),
             referrer: address(0),
             subscriber: owner,
-            email: "test@test.com",
-            mobile: "+971502387786",
-            name: "test"
+            email: "owner@mydeam.co",
+            mobile: "+97100000000",
+            name: "The Owner"
         });
 
         memberAddresses.push(owner);
@@ -189,7 +189,7 @@ contract Membershipcontract is BaseDMContract {
         return true;
     }
 
-    function getMemberAddresses() external view returns (address[] memory) {
+    function getMemberAddresses() external view onlyAllowedContract returns (address[] memory) {
         return memberAddresses;
     }
 }

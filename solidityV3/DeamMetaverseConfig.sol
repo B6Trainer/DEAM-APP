@@ -13,6 +13,7 @@ contract DeamMetaverseConfig is BaseDMContract {
     address public foundersWallet;
     address public conversionFeeWallet;
     uint256 public conversionFeeMember = 100000;
+    uint256 public conversionFeePromoter = 250000;
     uint256 public maxRewardsMultiplier = 3;
     uint256 public transactionFee_communityPoolFeePercentage = 30000;
     uint256 public transactionFee_foundersFeePercentage = 20000;
@@ -50,6 +51,7 @@ contract DeamMetaverseConfig is BaseDMContract {
         transactionPoolWallet = _transactionPoolWallet;
         foundersWallet = _foundersWallet;
         conversionFeeWallet = _conversionFeeWallet;
+        console.log("DMConfig: Admin wallets updated.");
     }
 
 
@@ -88,8 +90,9 @@ contract DeamMetaverseConfig is BaseDMContract {
         uint256  _foundersSharePercent,
         uint256  _transactionPoolSharePercent
         ) external {
-            require(_communityPoolSharePercent+_marketingSharePercent+_technologySharePercent+_foundersSharePercent+_transactionPoolSharePercent== 100-levelRewardPercentage,
-            "Sum should be exactly 100-levelRewardPercentage");
+            require(_communityPoolSharePercent+_marketingSharePercent+_technologySharePercent+
+                        _foundersSharePercent+_transactionPoolSharePercent== 100-levelRewardPercentage,
+                            "Sum should be exactly 100-levelRewardPercentage");
             communityPoolSharePercent= _communityPoolSharePercent;
             marketingSharePercent=_marketingSharePercent;
             technologySharePercent=_technologySharePercent;
@@ -100,6 +103,11 @@ contract DeamMetaverseConfig is BaseDMContract {
     function setConversionFee_member(uint256 newFee) external onlyOwner {
         require(newFee <= (100*percentageDecimals), "Conversion fee percentage cannot exceed 100");
         conversionFeeMember = newFee;
+    }
+
+    function setConversionFee_Promoter(uint256 newFee) external onlyOwner {
+        require(newFee <= (100*percentageDecimals), "Conversion fee percentage cannot exceed 100");
+        conversionFeePromoter = newFee;
     }
 
     function setTransactionFees(
