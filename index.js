@@ -1,15 +1,11 @@
-import {TOKEN_PRICE,getShareData,subscriptionAddress,tokenAddress } from "./config";
+import {DM_MANAGER_ADDRESS,DM_TOKEN_ADDRESS } from "./config";
 import {copyToClipboard} from "./common.js";
 
 const deamcontractElement = document.getElementById("deamcontract");
 const tokenContractElement = document.getElementById("tokenContract");
 
-deamcontractElement.innerHTML = subscriptionAddress;
-tokenContractElement.innerHTML = tokenAddress;
-
-
-console.log('index.js is being executed');
-
+deamcontractElement.innerHTML = DM_MANAGER_ADDRESS;
+tokenContractElement.innerHTML = DM_TOKEN_ADDRESS;
 
 
 // Function to copy text to clipboard

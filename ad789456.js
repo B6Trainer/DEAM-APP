@@ -2,17 +2,35 @@ import {waitForTransaction, writeContract,readContracts} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
 import { usdtAddress,tokenAddress,subscriptionAddress } from './config';
+import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS } from './config';
 import ERC20_ABI from './ABI_ERC20.json'
 import ABI_DMTK from './ABI_DMTK.json'
 import subscriptionABI from './ABI_SUBSCRIPTION.json';
+import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
+import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
+import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 
 const addmembererrorx = document.getElementById("addmembererrorx");
 
- const dmtkContract = {
+const dmtkContract = {
     address: tokenAddress,
     abi: ABI_DMTK,
-    }
-    
+}
+
+const dmConfigContract = {
+        address: DM_CONFIG_ADDRESS,
+        abi: DM_CONFIG_ABI,
+}
+
+const dmManagerContract = {
+    address: DM_MANAGER_ADDRESS,
+    abi: DM_MANAGER_ABI,
+}
+
+const dmCPdistributorContract = {
+    address: DM_CPDISTRIBUTOR_ADDRESS,
+    abi: DM_CPDISTRIBUTOR_ABI,
+}
     
     // Load the header, body, and footer from their respective HTML files
     fetch('adheader.html')
@@ -21,10 +39,8 @@ const addmembererrorx = document.getElementById("addmembererrorx");
             document.getElementById('header').innerHTML = data;
         });
 
- 
-
-
-const AdminWallets = await readContracts({
+/*
+ const AdminWallets = await readContracts({
     contracts: [
     {
         ...dmtkContract,
@@ -96,10 +112,85 @@ const AdminWallets = await readContracts({
     }
     ],
   });
+*/
+
+
+const AdminWallets = await readContracts({
+    contracts: [
+    {
+        ...dmConfigContract,
+        functionName: 'communityPoolWallet',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'marketingWallet',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'technologyWallet',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'transactionPoolWallet',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'foundersWallet',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'conversionFeeWallet',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'owner',
+    },
+    {
+        ...dmCPdistributorContract,
+        functionName: 'lastCommunityDistributionTime',
+    },
+    {
+        ...dmCPdistributorContract,
+        functionName: 'communityDistributionFrequencyInDays',
+    },
+    {
+        ...dmCPdistributorContract,
+        functionName: 'totalCommunityDistribution',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'conversionFeeMember',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'conversionFeePromoter',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'transactionFee_communityPoolFeePercentage',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'transactionFee_foundersFeePercentage',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'minimumDepositForMembers',
+    },
+    {
+        ...dmConfigContract,
+        functionName: 'minimumTopUpAmountMembers',
+    },
+    {
+        ...dmCPdistributorContract,
+        functionName: 'startIndexOfNextBatch',
+    }
+    ],
+  });
   document.getElementById("startIndex").value = AdminWallets[16].result;
   document.getElementById("startIndex").disabled = true;
   if(AdminWallets[6].result != ethereumClient.getAccount().address){
-    document.getElementById("adminaddress").innerHTML = "Unauthorized!! You are not an admin!"
+    document.getElementById("adminaddress").innerHTML = "Unauthorized!! You are not an admin! Your wallet id:  "+ethereumClient.getAccount().address
     document.getElementById("adminaddress").style.color="red";
   }else{
     document.getElementById("adminaddress").innerHTML = "Welcome admin!"
@@ -136,8 +227,8 @@ const AdminWallets = await readContracts({
                 adminWalletAddArray[this.id] = newWalletAddressValue;
                 try{
                     var result = await writeContract({
-                        address: tokenAddress,
-                        abi: ABI_DMTK,
+                        address: DM_CONFIG_ADDRESS,
+                        abi: DM_CONFIG_ABI,
                         functionName: `updateAdminWalletAddresses`,
                         args: adminWalletAddArray,
                     });
@@ -173,8 +264,8 @@ changeFrequency.addEventListener("click", async function() {
 var newFrequency = document.getElementById("newfrequency").value;
     try{
         var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
+            address: DM_CPDISTRIBUTOR_ADDRESS,
+            abi: DM_CPDISTRIBUTOR_ABI,
             functionName: `setCommunityDistributionFrequencyInDays`,
             args: newFrequency,
         });
@@ -196,8 +287,8 @@ var startIndex = document.getElementById("startIndex").value
 var lastIndex = document.getElementById("lastIndex").value
     try{
         var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
+            address: DM_CPDISTRIBUTOR_ADDRESS,
+            abi: DM_CPDISTRIBUTOR_ABI,
             functionName: `DistributeCommunityPool`,
             args: [startIndex,lastIndex],
         });
@@ -219,18 +310,22 @@ document.getElementById("totalTillDate").innerHTML =`Total Token Distributed til
 
 var currentConversionFeeMembers = document.getElementById("currentConversionFeeMembers");
 var changeCoversionFeeMembers = document.getElementById("changeCoversionFeeMembers");
-currentConversionFeeMembers.innerHTML = `Current Conversion Fee : ${Number(AdminWallets[10].result)/10000}%`;
+currentConversionFeeMembers.innerHTML = `Current Member Fee : ${Number(AdminWallets[10].result)/10000}%`;
+
+var currentConversionFeePromoters = document.getElementById("currentConversionFeePromoters");
+var changeCoversionFeePromoters = document.getElementById("changeCoversionFeePromoters");
+currentConversionFeePromoters.innerHTML = `Current Promoter Fee : ${Number(AdminWallets[11].result)/10000}%`;
 
 changeCoversionFeeMembers.addEventListener("click", async function() {
     var newConversionFeeMembers = document.getElementById("newConversionFeeMembers").value;
     if(newConversionFeeMembers==""){
-        alert("Enter new Fee")
+        alert("Enter the new Member Fee")
         return;
     }
     try{
         var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
+            address: DM_CONFIG_ADDRESS,
+            abi: DM_CONFIG_ABI,
             functionName: `setConversionFee_member`,
             args: [newConversionFeeMembers],
         });
@@ -238,16 +333,40 @@ changeCoversionFeeMembers.addEventListener("click", async function() {
             hash: result.hash,
           })
           if(tr.status=='success'){
-            alert("success");
+            alert("Successfully updated the Member Conversion fee");
           }else{
-            alert("Error");
+            alert("Error!! Unable to update the Member Conversion fee");
           }
     }catch(e){
         alert(e);
     }
 })
 
-
+changeCoversionFeePromoters.addEventListener("click", async function() {
+    var newConversionFeePromoters = document.getElementById("newConversionFeePromoters").value;
+    if(newConversionFeePromoters==""){
+        alert("Enter the new Promoter Fee")
+        return;
+    }
+    try{
+        var result = await writeContract({
+            address: DM_CONFIG_ADDRESS,
+            abi: DM_CONFIG_ABI,
+            functionName: `setConversionFee_promoter`,
+            args: [newConversionFeePromoters],
+        });
+        var tr = await waitForTransaction({
+            hash: result.hash,
+          })
+          if(tr.status=='success'){
+            alert("Successfully updated the Promoter Conversion fee");
+          }else{
+            alert("Error!! Unable to update the Promoter Conversion fee");
+          }
+    }catch(e){
+        alert(e);
+    }
+})
 
 
 
@@ -303,8 +422,8 @@ changeTransactionFee.addEventListener("click", async function() {
     }
     try{
         var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
+            address: DM_CONFIG_ADDRESS,
+            abi: DM_CONFIG_ABI,
             functionName: `setTransactionFees`,
             args: [newTransactionFeeComm,newTransactionFeeFounder],
         });
@@ -337,8 +456,8 @@ changeMinimumDepositMembers.addEventListener("click", async function() {
     }
     try{
         var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
+            address: DM_CONFIG_ADDRESS,
+            abi: DM_CONFIG_ABI,
             functionName: `updateMinimumDepositMembers`,
             args: [Number(newMinimumDepositMembers)*Math.pow(10,18)],
         });
@@ -370,8 +489,8 @@ changeTopUpMembers.addEventListener("click", async function() {
     }
     try{
         var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
+            address: DM_CONFIG_ADDRESS,
+            abi: DM_CONFIG_ABI,
             functionName: `updateMinimumTopUpAmountMembers`,
             args: [Number(newTopUpMembers)*Math.pow(10,18)],
         });
@@ -395,30 +514,33 @@ addFreeMember.addEventListener("click", async function() {
     var name= document.getElementById("name__").value;
     var mobile= document.getElementById("mobile__").value;
     var email= document.getElementById("email__").value;
-    var referrer= document.getElementById("referrer__").value;
-    var memberAddress= document.getElementById("memberAddress__").value;
+    //var referrer= document.getElementById("referrer__").value;
+    var promoterAddress= document.getElementById("memberAddress__").value;
 
-    if(!name || !mobile || !referrer || !email || !memberAddress){
+    if(!name || !mobile || !email || !promoterAddress){
         addmembererrorx.innerHTML = "Please fill all the mandatory fields";
         return;
     }
 
     try{
         var result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
-            functionName: `addAMemberFree`,
-            args: [memberAddress,0,referrer,email,mobile,name],
+            address: DM_MANAGER_ADDRESS,
+            abi: DM_MANAGER_ABI,
+            functionName: `addPromotor`,
+            args: [promoterAddress,email,mobile,name],
         });
         var tr = await waitForTransaction({
             hash: result.hash,
           })
           if(tr.status=='success'){
+            addmembererrorx.innerHTML = "New member added successfully : "+promoterAddress;
             alert("success");
           }else{
+            addmembererrorx.innerHTML = "ERROR: while adding new member: "+promoterAddress;
             alert("Error");
           }
     }catch(e){
+        addmembererrorx.innerHTML = "ERROR!! : while adding new member: "+promoterAddress;
         alert(e);
     }
 })

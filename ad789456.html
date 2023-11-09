@@ -129,6 +129,13 @@
                 <div class="col-sm-4"> <input type="text" id="newConversionFeeMembers" placeholder="Enter percent"></div>
                 <div class="col-sm-4"> <button id="changeCoversionFeeMembers">Update</button></div>
             </div>
+            <div class="row">
+              <div class="col-sm-4"> <p id="currentConversionFeePromoters"></p> </div>
+              <div class="col-sm-4"> <input type="text" id="newConversionFeePromoters" placeholder="Enter percent"></div>
+              <div class="col-sm-4"> <button id="changeCoversionFeePromoters">Update</button></div>
+          </div>
+
+          
             
        
         <!-- 
@@ -174,12 +181,12 @@
 
 
 
-    <section id="addnewmember" style="padding: 10px;margin-top: 10px;">
+    <section id="registerpromoter" style="padding: 10px;margin-top: 10px;">
         <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
-            <h3>Add New Member (Free)</h3>
+            <h3>Register a Promoter</h3>
             <div class="row">
                 <div class="form-group" id="name" >
-                    <label for="memberAddress">Member Address*:</label>
+                    <label for="memberAddress">Promoter Wallet Address*:</label>
                     <input required type="text" class="form-control" id="memberAddress__" name="subcsriberName"
                       placeholder="0x00032.......10302130">
                 </div>
@@ -196,13 +203,8 @@
                 <label for="email">Email*:</label>
                 <input required type="text" class="form-control" id="email__" name="email" placeholder="xyz@abc.com">
                 </div>
-    
-                <div class="form-group" id="referrerAc">
-                <label for="Referrer">Referrer Address*:</label>
-                <input required type="text" class="form-control" id="referrer__" name="referrerAccount"
-                  placeholder="0x0321........41u41">
-                </div>
-              <input class="btn btn-info" type="button" id="addFreeMember" value ="Add Free Member">
+
+              <input class="btn btn-info" type="button" id="addFreeMember" value ="Register Promoter">
               <p class="text-center"><span style="color:#f25a67" id="addmembererrorx"></span></p>
             </div>
         </div>
