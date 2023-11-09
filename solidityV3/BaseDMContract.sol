@@ -3,6 +3,8 @@ pragma solidity 0.8.0;
 import "hardhat/console.sol";
 import "./IERC20.sol";
 
+
+
 abstract contract BaseDMContract {
 
     address public owner;    
@@ -16,7 +18,7 @@ abstract contract BaseDMContract {
     address dmManagerAddress;
     address thisContractAddress;
 
-    IERC20 public usdtToken;
+    //IERC20 public usdtToken;
 
     modifier onlyOwner() {
 
@@ -60,10 +62,7 @@ abstract contract BaseDMContract {
         return string(_string);
     }
 
-    function setUSDTToken(address _usdtToken) internal 
-    {   
-        require(_usdtToken != address(0), "Invalid address for USDT Token Contract");        
-        usdtToken = IERC20(_usdtToken);                
-    }
+
+
 
 }

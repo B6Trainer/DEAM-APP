@@ -32,7 +32,7 @@ contract DMCPdistributor  is BaseDMContract{
                             address _dmTokenAddress,                           
                             address _dcpDistAddress ) external onlyOwner
     {   
-       
+    console.log("DMCPdistributor : Executing Contract Mapping");
         if(_dcpDistAddress != address(0)){
             thisContractAddress=_dcpDistAddress;
         }

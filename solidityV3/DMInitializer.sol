@@ -8,15 +8,15 @@ import "./IERC20.sol";
 import "./DMToken.sol";
 import "hardhat/console.sol";
 import "./BaseDMContract.sol";
+import "./DMManager.sol";
 
 contract DMInitializer is BaseDMContract {
     Membershipcontract public subscriptionContract;
     DeamMetaverseConfig public deamMetaverseConfigContract;
     DMToken public dmTokenContract;
     DMCPdistributor public dcomdistributor;
+    DMManager public dmManagerContract;
 
-    uint256 public minimumWithdrawalLimit = 50 * 10**18;
-    uint256 public withdrawalsAllowedADay = 1;
 
     constructor() {
         console.log("DMInitialzer contract initialised");
@@ -28,21 +28,21 @@ contract DMInitializer is BaseDMContract {
         address _dmTokenAddress,
         address _usdtToken,
         address _dcpDistAddress,
-        address _dmManagerAddress
+        address _dmManagerAddress,
+         address _dmInitializerAddress
     ) external onlyOwner {
+
+        console.log("DMInitializer : Executing Contract Mapping");
         membershipContractAddress = _membershipContractAddress;
         configContractAddress = _configContractAddress;
         dmTokenAddress = _dmTokenAddress;
         usdtTokenAddress = _usdtToken;
         dcpDistAddress = _dcpDistAddress;
         dmManagerAddress = _dmManagerAddress;
-        thisContractAddress = _dmManagerAddress;
+        thisContractAddress = _dmInitializerAddress;
 
         if (_membershipContractAddress != address(0)) {
-            setMemberShipContract(
-                _membershipContractAddress,
-                thisContractAddress
-            );
+            setMemberShipContract(_membershipContractAddress,thisContractAddress);
         }
         if (_configContractAddress != address(0)) {
             setDMConfig(_configContractAddress, thisContractAddress);
@@ -57,9 +57,7 @@ contract DMInitializer is BaseDMContract {
             );
         }
 
-        if (_usdtToken != address(0)) {
-            setUSDTToken(_usdtToken);
-        }
+
         if (_dcpDistAddress != address(0)) {
             setDCPDistributor(_dcpDistAddress, thisContractAddress);
             dcomdistributor.mapContracts(
@@ -69,6 +67,20 @@ contract DMInitializer is BaseDMContract {
                 _dcpDistAddress
             );
         }
+
+        if (_dmManagerAddress != address(0)) {
+            setDMManager(_dmManagerAddress, thisContractAddress);
+
+            dmManagerContract.mapContracts(
+                _membershipContractAddress,
+                _configContractAddress,
+                _dmTokenAddress,
+                _usdtToken,                
+                _dcpDistAddress,
+                _dmManagerAddress
+            );
+        }
+
     }
 
     function setMemberShipContract(
@@ -118,6 +130,18 @@ contract DMInitializer is BaseDMContract {
         );
         dcomdistributor = DMCPdistributor(_dcpDistAddress);
         dcomdistributor.updateAllowedContract(_thisContractAddress);
+    }
+
+     function setDMManager(
+        address _dmManagerAddress,
+        address _thisContractAddress
+    ) internal {
+        require(
+            _dmManagerAddress != address(0),
+            "Invalid address for DMManager Contract"
+        );
+        dmManagerContract = DMManager(_dmManagerAddress);
+        dmManagerContract.updateAllowedContract(_thisContractAddress);
     }
 
 }

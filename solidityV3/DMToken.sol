@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import "./Membershipcontract.sol";
+
 import "./DeamMetaverseConfig.sol";
 import "./IERC20.sol";
 import "hardhat/console.sol";
+import "./Membershipcontract.sol";
 
 contract DMToken is IERC20 {
     string public name = "DEAM Metaverse";
@@ -57,7 +58,7 @@ contract DMToken is IERC20 {
                             address _usdtToken,
                             address _dmTokenAddress        ) external onlyOwner
     {   
-        
+        console.log("DMToken : Executing Contract Mapping");
         if(_dmTokenAddress != address(0)){
             thisContractAddress=_dmTokenAddress;
         }

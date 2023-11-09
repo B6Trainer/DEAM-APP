@@ -10,7 +10,8 @@ import "hardhat/console.sol";
 import "./BaseDMContract.sol";
 
 contract DMManager is BaseDMContract {
-    Membershipcontract public subscriptionContract;
+   
+    Membershipcontract public membershipContract;
     DeamMetaverseConfig public deamMetaverseConfigContract;
     DMToken public dmTokenContract;
     DMCPdistributor public dcomdistributor;
@@ -20,26 +21,29 @@ contract DMManager is BaseDMContract {
 
     uint256 public minimumWithdrawalLimit = 50 * 10**18;
     uint256 public withdrawalsAllowedADay = 1;
+    IERC20 public usdtToken;
 
     constructor() {
         console.log("DMManager contract initialised");
     }
 
     function mapContracts(
-        address _membershipContractAddress,
-        address _configContractAddress,
-        address _dmTokenAddress,
-        address _usdtToken,
-        address _dcpDistAddress,
+        address _membershipContractAddress, address _configContractAddress,
+        address _dmTokenAddress, address _usdtToken, address _dcpDistAddress,
         address _dmManagerAddress
     ) external onlyOwner {
+
+        console.log("DMManager : Executing Contract Mapping");
+
+        thisContractAddress = _dmManagerAddress;
+
         membershipContractAddress = _membershipContractAddress;
         configContractAddress = _configContractAddress;
         dmTokenAddress = _dmTokenAddress;
         usdtTokenAddress = _usdtToken;
         dcpDistAddress = _dcpDistAddress;
         dmManagerAddress = _dmManagerAddress;
-        thisContractAddress = _dmManagerAddress;
+       
 
         if (_membershipContractAddress != address(0)) {
             setMemberShipContract(
@@ -51,13 +55,7 @@ contract DMManager is BaseDMContract {
             setDMConfig(_configContractAddress, thisContractAddress);
         }
         if (_dmTokenAddress != address(0)) {
-            setDMToken(_dmTokenAddress, thisContractAddress);
-            dmTokenContract.mapContracts(
-                membershipContractAddress,
-                configContractAddress,
-                usdtTokenAddress,
-                dmTokenAddress
-            );
+            setDMToken(_dmTokenAddress, thisContractAddress);            
         }
 
         if (_usdtToken != address(0)) {
@@ -65,25 +63,20 @@ contract DMManager is BaseDMContract {
         }
         if (_dcpDistAddress != address(0)) {
             setDCPDistributor(_dcpDistAddress, thisContractAddress);
-            dcomdistributor.mapContracts(
-                _membershipContractAddress,
-                _configContractAddress,
-                _dmTokenAddress,
-                _dcpDistAddress
-            );
         }
+
+        console.log("DMManager : Completed Executing Contract Mapping");
     }
 
-    function setMemberShipContract(
-        address _membershipContractAddress,
+    function setMemberShipContract( address _membershipContractAddress,
         address _thisContractAddress
     ) internal {
         require(
             _membershipContractAddress != address(0),
             "Invalid address for Membership Contract"
         );
-        subscriptionContract = Membershipcontract(_membershipContractAddress);
-        subscriptionContract.updateAllowedContract(_thisContractAddress);
+        membershipContract = Membershipcontract(_membershipContractAddress);
+        membershipContract.updateAllowedContract(_thisContractAddress);
     }
 
     function setDMConfig(
@@ -98,6 +91,11 @@ contract DMManager is BaseDMContract {
             _configContractAddress
         );
         deamMetaverseConfigContract.updateAllowedContract(_thisContractAddress);
+    }
+    function setUSDTToken(address _usdtToken) internal 
+    {   
+        require(_usdtToken != address(0), "Invalid address for USDT Token Contract");        
+       usdtToken = IERC20(_usdtToken);                
     }
 
     function setDMToken(address _dmTokenAddress, address _thisContractAddress)
@@ -122,6 +120,8 @@ contract DMManager is BaseDMContract {
         dcomdistributor = DMCPdistributor(_dcpDistAddress);
         dcomdistributor.updateAllowedContract(_thisContractAddress);
     }
+
+
 
     function withdraw(uint256 amount) external returns (bool) {
         require(amount > 0, "ERC20: Amount must be greater than zero");
@@ -185,21 +185,22 @@ contract DMManager is BaseDMContract {
         string memory _name
     ) external {
         require(
-            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
-            "ERC20: Insufficient Balance"
-        );
-        require(
             subscriptionAmount >=
                 deamMetaverseConfigContract.minimumDepositForMembers(),
-            "Minimum Deposit amount not met"
+            "DMManager: Minimum Deposit amount not met"
         );
         require(
-            subscriptionContract.isSubscriber(memberAddress) == false,
-            "ERC20: Already a Subsciber"
+            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
+            "DMManager: Insufficient USDT Balance"
+        );
+        
+        require(
+            membershipContract.isSubscriber(memberAddress) == false,
+            "DMManager: Already a Subsciber"
         );
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
         usdtToken.transferFrom(msg.sender, address(this), subscriptionAmount);
-        subscriptionContract.subscribe(
+        membershipContract.subscribe(
             memberAddress,
             Membershipcontract.UserType.Member,
             subscriptionAmount,
@@ -229,12 +230,12 @@ contract DMManager is BaseDMContract {
             "Minimum Deposit amount not met"
         );
         require(
-            subscriptionContract.isSubscriber(msg.sender) == false,
+            membershipContract.isSubscriber(msg.sender) == false,
             "ERC20: Already a Subsciber"
         );
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
         usdtToken.transferFrom(msg.sender, address(this), subscriptionAmount);
-        subscriptionContract.subscribe(
+        membershipContract.subscribe(
             msg.sender,
             Membershipcontract.UserType.Member,
             subscriptionAmount,
@@ -256,10 +257,10 @@ contract DMManager is BaseDMContract {
         string memory _name
     ) external onlyOwner {
         require(
-            subscriptionContract.isSubscriber(memberAddress) == false,
+            membershipContract.isSubscriber(memberAddress) == false,
             "DMManager: Already a member"
         );
-        subscriptionContract.subscribe(
+        membershipContract.subscribe(
             memberAddress,
             Membershipcontract.UserType.Member,
             subscriptionAmount,
@@ -375,11 +376,11 @@ contract DMManager is BaseDMContract {
                 (amount * levelPercentage[6]) /
                 (100 * percentageDecimals);
         }
-        Membershipcontract.UserType usertype = subscriptionContract.getUserType(
+        Membershipcontract.UserType usertype = membershipContract.getUserType(
             referrer
         );
         if (usertype == Membershipcontract.UserType.Member) {
-            uint256 pendingReward = subscriptionContract.getPendingReward(
+            uint256 pendingReward = membershipContract.getPendingReward(
                 referrer,
                 deamMetaverseConfigContract.maxRewardsMultiplier()
             );
@@ -402,7 +403,7 @@ contract DMManager is BaseDMContract {
         }
 
         depth += 1;
-        address referrer_ = subscriptionContract.getReferrer(referrer);
+        address referrer_ = membershipContract.getReferrer(referrer);
         // Continue recursively to the next referrer
         remainingAmount = distributeLevelRewards(
             referrer_,
@@ -419,24 +420,24 @@ contract DMManager is BaseDMContract {
         uint256 remainingAmount
     ) internal returns (uint256) {
         dmTokenContract.mint(referrer, referralBonus);
-        subscriptionContract.addReceivedReward(referrer, referralBonus);
+        membershipContract.addReceivedReward(referrer, referralBonus);
         remainingAmount -= referralBonus;
         return remainingAmount;
     }
 
     function topUpSubscriptionForMember(uint256 topupAmount) external {
         require(
-            subscriptionContract.isMember(msg.sender) == true,
-            "ERC20: Not a member"
+            membershipContract.isMember(msg.sender) == true,
+            "DMManager: Not a member yet. Need to be a registerd member to topup"
         );
         require(
             topupAmount >=
                 deamMetaverseConfigContract.minimumTopUpAmountMembers(),
-            "ERC20: Minimum TopUp Amount Not"
+            "DMManager: Minimum TopUp Amount Not met"
         );
         IERC20(usdtToken).transferFrom(msg.sender, address(this), topupAmount);
-        subscriptionContract.topUpSubscriptionBalance(msg.sender, topupAmount);
-        address referrer = subscriptionContract.getReferrer(msg.sender);
+        membershipContract.topUpSubscriptionBalance(msg.sender, topupAmount);
+        address referrer = membershipContract.getReferrer(msg.sender);
         distributeRewardsForMembers(topupAmount, referrer);
     }
 

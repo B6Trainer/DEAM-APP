@@ -33,7 +33,7 @@ contract DeamMetaverseConfig is BaseDMContract {
 
 
     constructor() {
-        console.log("DMConfig contract initialised");
+        console.log("DMConfig contract constructed");
     }
 
     function updateAdminWalletAddresses(
