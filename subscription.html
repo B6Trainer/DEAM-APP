@@ -81,15 +81,15 @@
 
       <div id="actionform" style="display:block">
         <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Choose your action</u></h3>
-        <label for="amountsubscriptionnew">Action:</label>
+        
         <select class="form-control" id="actionsselect" name="actionsselect">          
           <option value="H">Home</option>
+          <option value="S">Join Membership</option>
           <option value="R">Refer a Member</option>
           <option value="T">Top up my account</option>          
         </select>
-      </div>
-
-      <div id="benefits" style=" margin-top: 15px;">
+        
+          <div id="benefits" style=" margin-top: 15px;">
       </div>
 
 
@@ -148,6 +148,39 @@
           <div id="subscribeBtnCont">
 
             <button id="subscribeBtnxx" style="margin-right: 5px; width: 100%;" class="mt-3 btn-lg btn-info btn-lg ">
+              Join 
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="selfregisterform" style="display:none">
+        <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Register as Member</u></h3>
+        <!--<h4 style="color: var(--secondary-color);" class="text-center mt-2">Available USDT: <span
+            id="availableUSDT1">0</span> USDT</h4>-->
+        
+          <div id="benefits-section"></div>
+
+          <div class="form-group" id="myreferrerAc" style="display:block">
+            <label for="Referrer">Referral Address: *</label>
+            <input required type="text" class="form-control" id="myreferrerAccount" name="referrerAccount"
+              placeholder="0x0321........41u41">
+          </div>
+          <div class="form-group" id="myamountInput" style="display: block;">
+            <label for="amount">
+              Amount *: (Minimum deposit <span id="mymindeposit">              
+              </span> USDT)- Already approved allowance : <span id="myapprovedeposit"></span>
+            </label>
+            <input required type="text" class="form-control" id="myamount" name="amount"
+              placeholder="eg. 100">
+          </div>
+          <div class="form-group" id="mandatory" style="display: block;">
+            <label for="amount"> * - Mandatory values</label>            
+          </div>
+          <br>
+          <div id="joinBtnCont">
+
+            <button id="joinBtn" style="margin-right: 5px; width: 100%;" class="mt-3 btn-lg btn-info btn-lg ">
               Join 
             </button>
           </div>

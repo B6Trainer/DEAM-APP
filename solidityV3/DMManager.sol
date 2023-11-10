@@ -221,7 +221,18 @@ contract DMManager is BaseDMContract {
 
     event logMessage(string message);
 
-    function subscribeAsMember(
+    function SelfRegistrationasMember(
+        uint256 subscriptionAmount,
+        address _referrer
+
+    ) external {
+
+        registerMember(msg.sender,subscriptionAmount, _referrer, "NA", "NA", "NA");
+        
+    }
+
+    function registerForAMember(
+        address _memberAddress,
         uint256 subscriptionAmount,
         address _referrer,
         string memory _email,
@@ -229,14 +240,27 @@ contract DMManager is BaseDMContract {
         string memory _name
     ) external {
 
-        emit logMessage("Executing Member registration validation passed");
-        console.log("Executing Member registration validation passed");
+        registerMember(_memberAddress,subscriptionAmount, _referrer, _email, _mobile, _name);
+        
+    }
+
+    function registerMember(
+        address _memberAddress,
+        uint256 subscriptionAmount,
+        address _referrer,
+        string memory _email,
+        string memory _mobile,
+        string memory _name
+    ) internal {
+
+        emit logMessage("Executing Member registration validation ");
+        console.log("Executing Member registration validation ");
         require(
-            membershipContract.isSubscriber(msg.sender) == false,
+            membershipContract.isSubscriber(_memberAddress) == false,
             "DMManager: Already a Member"
         );
         require(
-            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
+            usdtToken.balanceOf(_memberAddress) >= subscriptionAmount,
             "DMManager: Insufficient USDT Balance"
         );
         require(
@@ -246,10 +270,10 @@ contract DMManager is BaseDMContract {
 
         console.log("Member registration validation passed");
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
-        usdtToken.transferFrom(msg.sender, address(this), subscriptionAmount);
+        usdtToken.transferFrom(_memberAddress, address(this), subscriptionAmount);
         console.log("USDT Token Transferred");
         membershipContract.subscribe(
-            msg.sender,
+            _memberAddress,
             Membershipcontract.UserType.Member,
             subscriptionAmount,
             _referrer,
@@ -260,6 +284,7 @@ contract DMManager is BaseDMContract {
         );
         distributeRewardsForMembers(subscriptionAmount, _referrer);
     }
+
 
     function addPromotor(
         address promoterAddress,            

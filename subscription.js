@@ -37,10 +37,14 @@ const btnApprove = document.getElementById("btn-approve");
 const availableUSDT = document.getElementById("availableUSDT");
 const mindeposit = document.getElementById("mindeposit");
 const approvedeposit = document.getElementById("approvedeposit");
+const myapprovedeposit = document.getElementById("myapprovedeposit");
 const approvedtopup = document.getElementById("approvedtopup");
 const subscribeBtn = document.getElementById("subscribeBtnxx");
 const subscribeBtnCont = document.getElementById("subscribeBtnCont");
+const joinBtn = document.getElementById("joinBtn");
+const joinBtnCont = document.getElementById("joinBtnCont");
 const amountsubscriptionnewx = document.getElementById("amountsubscriptionnew")
+const amountSelfRegister = document.getElementById("myamount")
 const membershipType = document.getElementById("membershipType")
 const benefitsSection = document.getElementById("benefits-section")
 const mindepositcontainer = document.getElementById("mindepositcontainer")
@@ -58,6 +62,7 @@ var connected = ethereumClient.getAccount().isConnected;
 var walletConnectedid="";
 
 var memberType=M_TYPE_Guest;
+var actionTab="";
    
 var MemberbenifitsHtml = null;
 
@@ -215,6 +220,7 @@ if(AccountData != null){
     if(AccountData[3].status == "success"){
       approvedeposit.innerHTML = Number(utils.formatEther(AccountData[3].result)).toFixed(2)
       approvedtopup.innerHTML = Number(utils.formatEther(AccountData[3].result)).toFixed(2)
+      myapprovedeposit.innerHTML = Number(utils.formatEther(AccountData[3].result)).toFixed(2)
     }
 
 
@@ -331,11 +337,13 @@ if(AccountData != null){
   btnApprove.addEventListener('click', async function (e) {
     
     var amountToApprove_ = 0;
-
-    if(memberType==M_TYPE_Guest){
+    
+    if(actionTab=="R"){
       amountToApprove_=amountsubscriptionnewx.value;
-    }else if(memberType==M_TYPE_Member){
+    }else if(actionTab=="T"){
       amountToApprove_=topupamount.value;
+    }else if(actionTab=="S"){
+      amountToApprove_=amountSelfRegister.value;
     }
 
     if(amountToApprove_==0 || amountToApprove_==""){
@@ -361,14 +369,14 @@ if(AccountData != null){
     if(resultTr.status=='success'){
       
       btnApprove.innerHTML  = `Approved successfully`;
-      if(memberType==M_TYPE_Guest){
+      if(actionTab=="R"){
         
         btnApprove.disabled = false;
         btnApprove.style.display = "none";
         
         subscribeBtnCont.style.display ="block"
 
-      }else if(memberType==M_TYPE_Member){
+      }else if(actionTab=="T"){
         
         btnApprove.disabled = false;
         btnApprove.style.display = "none";
@@ -377,7 +385,16 @@ if(AccountData != null){
         topupBtn.style.display = "block";
 
       }
-      window.location.reload();
+      else if(actionTab=="S"){
+        
+        btnApprove.disabled = false;
+        btnApprove.style.display = "none";
+
+        joinBtnCont.style.display = "block";
+        joinBtn.style.display = "block";
+
+      }
+      //window.location.reload();
 
     }
   })
@@ -385,7 +402,6 @@ if(AccountData != null){
 //Typing event on amount text new Joining member
   amountsubscriptionnewx.addEventListener("keyup",()=>{
     const amout__ = amountsubscriptionnewx.value;
-
 
     if(amout__>0){
       btnApprove.disabled = false;
@@ -434,6 +450,29 @@ if(AccountData != null){
     });
 
 
+  //Typing event on amount text self Joining member
+  amountSelfRegister.addEventListener("keyup",()=>{
+    const amout__ = amountSelfRegister.value;
+
+    if(amout__>0){
+      btnApprove.disabled = false;
+      joinBtn.disabled = false;
+    }else{
+      btnApprove.disabled = true;
+      joinBtn.disabled = true;
+    }
+
+    if(Number(amout__)<=Number(utils.formatEther(AccountData[3].result)).toFixed(2)){
+      btnApprove.style.display = "none";
+      joinBtnCont.style.display ="block"
+    }else{
+      btnApprove.style.display = "block";
+      joinBtnCont.style.display ="none"
+    }
+    
+  });
+
+  //Refer a member registration
   subscribeBtn.addEventListener('click', async function (e) {
 
     const amountsubscriptionnew = document.getElementById("amountsubscriptionnew").value;
@@ -449,10 +488,10 @@ if(AccountData != null){
     var selectMTypeElement = document.getElementById("membershipType");
     var mTypeSelectedValue = selectMTypeElement.value;
     
-    var min = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
+    var minDeposit = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
 
-    if(Number(amountsubscriptionnew)<min){
-      errorx.innerHTML = "Error:"+"Minimum Deposit is "+min;
+    if(Number(amountsubscriptionnew)<minDeposit){
+      errorx.innerHTML = "Error: Minimum Deposit is "+minDeposit;
       return;
     }
 
@@ -503,6 +542,81 @@ if(AccountData != null){
     }
   });
 
+  //self registration after approval event  
+  joinBtn.addEventListener('click', async function (e) {
+
+    const amountsubscriptionnew = document.getElementById("myamount").value;
+    const referrerAccount = document.getElementById("myreferrerAccount").value;
+    //const userAddress = document.getElementById("userAddress__").value;
+    //const name = document.getElementById("name__").value;
+    //const mobile = document.getElementById("mobile__").value;
+    //const email = document.getElementById("email__").value;
+    if(!referrerAccount){
+      errorx.innerHTML = "Please fill all the mandatory fields";
+      return;
+    }
+    var selectMTypeElement = document.getElementById("membershipType");
+    var mTypeSelectedValue = selectMTypeElement.value;
+    
+    var minDeposit = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
+
+    if(Number(amountsubscriptionnew)<minDeposit){
+      errorx.innerHTML = "Error: Minimum Deposit is "+minDeposit;
+      return;
+    }
+
+    if(actionTab=="S"){
+      subscribeBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
+      subscribeBtn.disabled =true;
+      try{
+        const result = await writeContract({
+          address: DM_MANAGER_ADDRESS,
+          abi: DM_MANAGER_ABI,
+          functionName: 'SelfRegistrationasMember',
+          args: [utils.parseUnits(String(amountsubscriptionnew), 18),referrerAccount],
+      });
+      
+      const resultTr = await waitForTransaction({
+          hash: result.hash,
+        })
+        if(resultTr.status=='success'){
+          errorx.innerHTML = "Joined SuccessFully!";
+          //window.location.reload();
+        }
+      }catch(e){
+        joinBtn.innerHTML = `Join`;
+        joinBtn.disabled =false;
+        errorx.innerHTML = "Error:"+e.shortMessage;
+      }
+    }else{
+      /*
+      
+            try{
+
+        const result = await writeContract({
+          address: DM_MANAGER_ADDRESS,
+          abi: DM_MANAGER_ABI,
+          functionName: 'subscribeAsPromotor',//Need to work on this
+          args: [referrerAccount],
+           });
+      
+
+          const resultTr = await waitForTransaction({
+                              hash: result.hash,        })
+
+        if(resultTr.status=='success'){
+          errorx.innerHTML = "SUCCESS";
+        }
+      }catch(e){
+        errorx.innerHTML = "Error:";
+        joinBtn.innerHTML = `Subscribe`;
+        joinBtn.disabled =false;
+      }
+      
+      */
+
+    }
+  });
 
 
 
@@ -584,25 +698,37 @@ if(AccountData != null){
 
   actionsselect.addEventListener("change", function() {
     const selectedActionValue = actionsselect.value;
-    alert("Selected action "+selectedActionValue);
+
+    actionTab=selectedActionValue;
     if (selectedActionValue == "R") {
-      subscribeform.style.display ="block";      
+      subscribeform.style.display ="block";    
+      selfregisterform.style.display ="none";    
       topupform.style.display ="none";
       commonform.style.display ="block";  
+      benefits.style.display ="none"; 
+    }else if (selectedActionValue == "S") {
+        subscribeform.style.display ="none";  
+        selfregisterform.style.display ="block";     
+        topupform.style.display ="none";
+        commonform.style.display ="block";  
+        benefits.style.display ="none"; 
     }else if (selectedActionValue == "T") {
       subscribeform.style.display ="none"; 
+      selfregisterform.style.display ="none"; 
       topupform.style.display ="block";  
-      commonform.style.display ="block";     
+      commonform.style.display ="block";  
+      benefits.style.display ="none";    
     }else{
       subscribeform.style.display ="none"; 
+      selfregisterform.style.display ="none"; 
       topupform.style.display ="none";
-      commonform.style.display ="none";       
+      commonform.style.display ="none";     
+      benefits.style.display ="block";   
     }
 
   });
 
 }
-
 
 
 
