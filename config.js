@@ -76,6 +76,7 @@ export const getShareData =(address)=> {
 //App Constants
 export const  M_TYPE_Member = 0;
 export const  M_TYPE_Promoter = 1;
+export const  M_TYPE_Guest = 2;
 
 
 

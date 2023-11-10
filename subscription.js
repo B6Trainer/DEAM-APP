@@ -1,20 +1,21 @@
 import {writeContract,waitForTransaction,readContract,readContracts, erc20ABI} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
-import {subscriptionAddress,tokenAddress,usdtAddress} from './config';
-import {M_TYPE_Member,M_TYPE_Promoter} from './config';
+import {M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Guest} from './config';
 import subscriptionABI from './ABI_SUBSCRIPTION.json';
 import ABI_ERC20 from './ABI_ERC20.json'
 import getPlanName from "./contractUtils";
 import ABI_DMTK from "./ABI_DMTK.json";
 import {copyToClipboard} from "./common.js";
 
-import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
+import { usdtAddress,DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
 import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
+
+const actionsselect = document.getElementById("actionsselect")
 
 const planName = document.getElementById("plan-name");
 const validity = document.getElementById("validity");
@@ -31,10 +32,12 @@ const topupBtn = document.getElementById("btn-topup");
 const labeltopup = document.getElementById("labeltopup");
 const renewalCharge = document.getElementById("renewalCharge");
 const errorx = document.getElementById("errorx");
-const amountx = document.getElementById("amountx");
+const topupamount = document.getElementById("amountx");
 const btnApprove = document.getElementById("btn-approve");
 const availableUSDT = document.getElementById("availableUSDT");
 const mindeposit = document.getElementById("mindeposit");
+const approvedeposit = document.getElementById("approvedeposit");
+const approvedtopup = document.getElementById("approvedtopup");
 const subscribeBtn = document.getElementById("subscribeBtnxx");
 const subscribeBtnCont = document.getElementById("subscribeBtnCont");
 const amountsubscriptionnewx = document.getElementById("amountsubscriptionnew")
@@ -54,7 +57,7 @@ const minimumDepositFee=100;
 var connected = ethereumClient.getAccount().isConnected;
 var walletConnectedid="";
 
-
+var memberType=M_TYPE_Guest;
    
 var MemberbenifitsHtml = null;
 
@@ -64,6 +67,26 @@ subscribeBtnCont.style.display ="none";
 renewbtndiv.style.display = "none";
 topupBtn.style.display = "none";
 labeltopup.style.display = "none";
+topupdiv.style.display = "none";
+depoandearningdiv.innerHTML ="";
+benefits.innerHTML = "";
+topupamount.style.display ="none";
+subscribeform.style.display ="none";
+errorx.innerHTML = "";
+
+
+
+function formatDateToDDMMYYYY(date) {
+  // Get the day, month, and year components from the Date object
+  const day = date.getDate().toString().padStart(2, '0'); // Ensure 2-digit day
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, so add 1
+  const year = date.getFullYear().toString();
+
+  // Create the formatted string in "DD-MM-YYYY" format
+  const formattedDate = `${day}-${month}-${year}`;
+
+  return formattedDate;
+}
 
 var AccountData=null;
 if(!connected){
@@ -76,17 +99,7 @@ if(!connected){
 
 }else{
       walletConnectedid=ethereumClient.getAccount().address;
-
-      const subscriptionContract = {
-        address: subscriptionAddress,
-        abi: subscriptionABI,
-      }
-        
-      const dmtkCOntract = {
-        address: tokenAddress,
-        abi: ABI_DMTK,
-      }
-      
+     
       const usdtContract = {
           address: usdtAddress,
           abi: ABI_ERC20,
@@ -137,7 +150,7 @@ if(!connected){
               {
                 ...usdtContract,
                 functionName: 'allowance',
-                args: [ethereumClient.getAccount().address,tokenAddress],
+                args: [ethereumClient.getAccount().address,DM_MANAGER_ADDRESS],
               },
               {
                 ...usdtContract,
@@ -160,17 +173,17 @@ if(!connected){
 
          
       MemberbenifitsHtml = `Benefits: <ul>
-      <li>Earn Level Rewards <a href="./index.html"> click for more </a></li>
-      <li>Earnigns upto 3X of investment</li>
-      <li>Get Weekly Community Rewards</li>
-      <li>Top Up Anytime</li>
+      <li style="font-size: x-small; line-height:1">Earn Level Rewards <a style="font-size: x-small" href="./index.html"> click for more </a></li>
+      <li style="font-size: x-small; line-height:1">Earnigns upto 3X of investment</li>
+      <li style="font-size: x-small; line-height:1">Get Weekly Community Rewards</li>
+      <li style="font-size: x-small; line-height:1">Top Up Anytime</li>
       </ul>`;
 
       PromotorbenifitsHtml = `    Benefits: <ul>
-      <li>Earn Level Rewards <a href="./index.html"> click for more </a></li>
-      <li>Unlimited Earnings</li>
-      <li>Valid For 1 Year</li>
-      <li>You can Renew Once Validity Expires</li>
+      <li style="font-size: x-small; line-height:1">Earn Level Rewards <a href="./index.html"> click for more </a></li>
+      <li style="font-size: x-small; line-height:1">Unlimited Earnings</li>
+      <li style="font-size: x-small; line-height:1">Valid For 1 Year</li>
+      <li style="font-size: x-small; line-height:1">You can Renew Once Validity Expires</li>
       </ul>`;
 
 }
@@ -178,6 +191,8 @@ if(!connected){
 
 
 if(AccountData != null){
+
+  walletid.innerHTML = walletConnectedid;
 
     var minTopupfees;
     if(AccountData[6].status == "failure"){
@@ -197,102 +212,64 @@ if(AccountData != null){
       availableUSDT.innerHTML = Number(utils.formatEther(AccountData[4].result)).toFixed(2)
     }
 
-    //minimumDepositFee
-    amountx.addEventListener("keyup",()=>{
-      const amout__ = amountx.value;
-      if(Number(amout__)<=Number(utils.formatEther(AccountData[3].result)).toFixed(2)){
-        topupBtn.style.display = "block";
-        btnApprove.style.display = "none";
-      }else{
-        btnApprove.style.display = "block";
-        topupBtn.style.display = "none";
-      }
-      
-    });
-}
+    if(AccountData[3].status == "success"){
+      approvedeposit.innerHTML = Number(utils.formatEther(AccountData[3].result)).toFixed(2)
+      approvedtopup.innerHTML = Number(utils.formatEther(AccountData[3].result)).toFixed(2)
+    }
 
 
-function formatDateToDDMMYYYY(date) {
-  // Get the day, month, and year components from the Date object
-  const day = date.getDate().toString().padStart(2, '0'); // Ensure 2-digit day
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, so add 1
-  const year = date.getFullYear().toString();
+ 
 
-  // Create the formatted string in "DD-MM-YYYY" format
-  const formattedDate = `${day}-${month}-${year}`;
-
-  return formattedDate;
-}
-
-
-
-if(AccountData != null){
   if(AccountData[1].status == "failure" || AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
+    
+    memberType=M_TYPE_Guest;
+
     planName.innerHTML = "Welcome, Dear Guest";
-      
-      walletid.innerHTML = walletConnectedid;
-      renewbtndiv.style.display = "none";
-      topupdiv.style.display = "none";
-      labeltopup.style.display ="none";
-      depoandearningdiv.innerHTML ="";
-      benefits.innerHTML = "";
-      amountx.style.display ="none";
-      
-      //subscribeform.style.display ="none";
-      subscribeform.style.display ="block";
+    subscribeform.style.display ="block";
 
   }else{
+
+    memberType=AccountData[1].result[0];
     planName.innerHTML = AccountData[1].result[0]==0?"Welcome, Dear Member":"Welcome, Dear Promoter";
-    walletid.innerHTML = walletConnectedid;
+  
     totalDeposits.innerHTML = Number(utils.formatEther(AccountData[1].result[1])).toFixed(2);
     totalEarnings.innerHTML = Number(utils.formatEther(AccountData[1].result[2])).toFixed(2);
  
     //promotor
-    if(AccountData[1].result[0]==M_TYPE_Promoter){
+    if(memberType==M_TYPE_Promoter){
       topupdiv.style.display = "none";
       labeltopup.style.display ="none";
       benefits.innerHTML = PromotorbenifitsHtml;
       validity.innerHTML = formatDateToDDMMYYYY(new Date(Number(String(AccountData[1].result[3]))*1000));
       renewalCharge.innerHTML = Number(utils.formatEther(AccountData[2].result)).toFixed(2);
-      amountx.style.display ="none";
+      topupamount.style.display ="none";
       //walletid.innerHTML = walletConnectedid;
-      subscribeform.style.display ="none";
-      renewbtndiv.style.display = "block";
+      //subscribeform.style.display ="none";
+      //renewbtndiv.style.display = "block";
     }
 
     //member
-    if(AccountData[1].result[0]==M_TYPE_Member){
-      subscribeform.style.display ="none";
-      //renewbtndiv.style.display = "none";
+    if(memberType==M_TYPE_Member){
+      //subscribeform.style.display ="none";
+      //renewbtndiv.style.display = "block";
       benefits.innerHTML = MemberbenifitsHtml;
       validity.innerHTML = "Lifetime";
-      //walletid.innerHTML = walletConnectedid;
-      amountx.style.display ="block";
+      
+      labeltopup.style.display = "block";
+      topupamount.style.display ="block";
 
-      topupBtn.addEventListener('click', async function (e) {
-        try{
-          topupBtn.disabled = true;
-          topupBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
-          var amountx_ = amountx.value;
-          const result = await writeContract({
-            address: DM_MANAGER_ADDRESS,
-            abi: DM_MANAGER_ABI,
-            functionName: 'topUpSubscriptionForMember',
-            args: [utils.parseUnits(String(amountx_), 18)],
-          })
+      btnApprove.innerHTML  = `Approve to Subscribe/Top-up `;
+      btnApprove.style.display = "block";
 
-          const resultTr = await waitForTransaction({
-            hash: result.hash,
-          })
-          if(resultTr.status=='success'){
-            window.location.reload();
-          }
-          }catch(e){
-            topupBtn.innerHTML = `Top Up`;
-            topupBtn.disabled = false;
-            errorx.innerHTML = "Error: "+e.shortMessage;
-          }
-      })
+      if(0<=Number(utils.formatEther(AccountData[3].result)).toFixed(2)){
+        topupdiv.style.display = "block";
+        topupBtn.style.display = "block";
+        topupBtn.disabled = true;
+        btnApprove.style.display = "none";
+      }else{
+        btnApprove.style.display = "block";
+        topupBtn.style.display = "none";
+      }
 
     }
 
@@ -302,14 +279,38 @@ if(AccountData != null){
       topupdiv.style.display = "none";
       labeltopup.style.display ="none";
       benefits.innerHTML = "";
-      amountx.style.display ="none";
+      topupamount.style.display ="none";
       subscribeform.style.display ="none";
       subscribeform.style.display ="block";
     }
-  
-    
+      
   }
 
+  topupBtn.addEventListener('click', async function (e) {
+    try{
+      errorx.innerHTML = "";
+      topupBtn.disabled = true;
+      topupBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
+      var amountoTopup_ = topupamount.value;
+      const result = await writeContract({
+        address: DM_MANAGER_ADDRESS,
+        abi: DM_MANAGER_ABI,
+        functionName: 'topUpSubscriptionForMember',
+        args: [utils.parseUnits(String(amountoTopup_), 18)],
+      })
+
+      const resultTr = await waitForTransaction({
+        hash: result.hash,
+      })
+      if(resultTr.status=='success'){
+        window.location.reload();
+      }
+      }catch(e){
+        topupBtn.innerHTML = `Top Up`;
+        topupBtn.disabled = false;
+        errorx.innerHTML = "Error: "+e.shortMessage;
+      }
+  })
 
   renewBtn.addEventListener('click', async function (e) {
     try{
@@ -326,14 +327,20 @@ if(AccountData != null){
     }
   })
 
+  //Approve button event
   btnApprove.addEventListener('click', async function (e) {
-    var amountx_p = amountx.value;
-    var amountx_ = amountx.value;
-    if(amountx_==""){
-      amountx_ =  amountsubscriptionnewx.value;
-      if(amountx_==""){
-        amountx_ = Number(utils.formatEther(AccountData[2].result)).toFixed(2);
-      }
+    
+    var amountToApprove_ = 0;
+
+    if(memberType==M_TYPE_Guest){
+      amountToApprove_=amountsubscriptionnewx.value;
+    }else if(memberType==M_TYPE_Member){
+      amountToApprove_=topupamount.value;
+    }
+
+    if(amountToApprove_==0 || amountToApprove_==""){
+      alert('Approval amount cannot be zero');
+      return;
     }
     
     var result;
@@ -341,29 +348,90 @@ if(AccountData != null){
         btnApprove.disabled = true;
         btnApprove.innerHTML  = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
         result = await writeContract({address: usdtAddress, abi: ABI_ERC20, functionName: 'approve',
-                                        args: [tokenAddress, utils.parseUnits(String(amountx_), 18)], });
+                                        args: [DM_MANAGER_ADDRESS, utils.parseUnits(String(amountToApprove_), 18)], });
+        
       }catch(e){
           btnApprove.disabled = false;
-          btnApprove.innerHTML  = `Approve`;
+          btnApprove.innerHTML  = `Approve to Subscribe/Top-up `;
           // btnApprove.disabled = false;
           errorx.innerHTML = "Error: "+e.shortMessage;
       }
-
-
+    
     const resultTr = await waitForTransaction({    hash: result.hash,  })
     if(resultTr.status=='success'){
-      if(amountx_p==""){
+      
+      btnApprove.innerHTML  = `Approved successfully`;
+      if(memberType==M_TYPE_Guest){
+        
         btnApprove.disabled = false;
         btnApprove.style.display = "none";
+        
         subscribeBtnCont.style.display ="block"
 
-      }else{
+      }else if(memberType==M_TYPE_Member){
+        
         btnApprove.disabled = false;
-      btnApprove.style.display = "none";
-      topupBtn.style.display = "block";
+        btnApprove.style.display = "none";
+
+        topupdiv.style.display = "block";
+        topupBtn.style.display = "block";
+
       }
+      window.location.reload();
+
     }
   })
+
+//Typing event on amount text new Joining member
+  amountsubscriptionnewx.addEventListener("keyup",()=>{
+    const amout__ = amountsubscriptionnewx.value;
+
+
+    if(amout__>0){
+      btnApprove.disabled = false;
+      subscribeBtn.disabled = false;
+    }else{
+      btnApprove.disabled = true;
+      subscribeBtn.disabled = true;
+    }
+
+    if(Number(amout__)<=Number(utils.formatEther(AccountData[3].result)).toFixed(2)){
+      btnApprove.style.display = "none";
+      subscribeBtnCont.style.display ="block"
+    }else{
+      btnApprove.style.display = "block";
+      subscribeBtnCont.style.display ="none"
+    }
+    
+  });
+
+//Typing event on amount text in Topup for memeber
+  topupamount.addEventListener("keyup",()=>{
+      const amout__ = topupamount.value;
+     
+      errorx.innerHTML = "";
+      btnApprove.innerHTML  = `Approve to Subscribe/Top-up `;
+
+      if(amout__>0){
+        btnApprove.disabled = false;
+        topupBtn.disabled = false;
+      }else{
+        btnApprove.disabled = true;
+        topupBtn.disabled = true;
+      }
+      
+
+
+      if(Number(amout__)<=Number(utils.formatEther(AccountData[3].result)).toFixed(2)){
+        topupdiv.style.display = "block";
+        topupBtn.style.display = "block";
+        btnApprove.style.display = "none";
+      }else{
+        btnApprove.style.display = "block";
+        topupBtn.style.display = "none";
+      }
+      
+    });
 
 
   subscribeBtn.addEventListener('click', async function (e) {
@@ -380,7 +448,7 @@ if(AccountData != null){
     }
     var selectMTypeElement = document.getElementById("membershipType");
     var mTypeSelectedValue = selectMTypeElement.value;
-    console.log("Membershiptype value: "+mTypeSelectedValue);
+    
     var min = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
 
     if(Number(amountsubscriptionnew)<min){
@@ -435,17 +503,7 @@ if(AccountData != null){
     }
   });
 
-  amountsubscriptionnewx.addEventListener("keyup",()=>{
-    const amout__ = amountsubscriptionnewx.value;
-    if(Number(amout__)<=Number(utils.formatEther(AccountData[3].result)).toFixed(2)){
-      btnApprove.style.display = "none";
-      subscribeBtnCont.style.display ="block"
-    }else{
-      btnApprove.style.display = "block";
-      subscribeBtnCont.style.display ="none"
-    }
-    
-  });
+
 
 
   membershipType.addEventListener("change", function() {
@@ -458,6 +516,8 @@ if(AccountData != null){
         mindeposit.innerHTML = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
       }
 
+
+
       benefitsSection.innerHTML =MemberbenifitsHtml;
       mindepositcontainer.style.display ="none";
       referrerAc___.style.display ="block";
@@ -465,10 +525,16 @@ if(AccountData != null){
       name_.style.display ="block";
       userAddress_.style.display = "block";
       mobile_.style.display ="block";
+      //approvedeposit.style.display="block;"
       
       email_.style.display ="block";
       mandatory.style.display ="block";
-      subscribeBtnCont.style.display ="block";
+      subscribeBtnCont.style.display ="none";
+
+      errorx.innerHTML = "";
+      btnApprove.innerHTML  = `Approve to Subscribe/Top-up `;
+      btnApprove.style.display = "block";
+      btnApprove.disabled = true;
 
     } else if(mTypeSelectedValue === "1"){
       $('#amountInput').hide();
@@ -514,7 +580,30 @@ if(AccountData != null){
         copyToClipboard(textToCopy);
   });
 
+
+
+  actionsselect.addEventListener("change", function() {
+    const selectedActionValue = actionsselect.value;
+    alert("Selected action "+selectedActionValue);
+    if (selectedActionValue == "R") {
+      subscribeform.style.display ="block";      
+      topupform.style.display ="none";
+      commonform.style.display ="block";  
+    }else if (selectedActionValue == "T") {
+      subscribeform.style.display ="none"; 
+      topupform.style.display ="block";  
+      commonform.style.display ="block";     
+    }else{
+      subscribeform.style.display ="none"; 
+      topupform.style.display ="none";
+      commonform.style.display ="none";       
+    }
+
+  });
+
 }
+
+
 
 
 

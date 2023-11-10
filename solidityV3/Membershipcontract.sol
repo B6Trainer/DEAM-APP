@@ -6,7 +6,8 @@ import "./BaseDMContract.sol";
 contract Membershipcontract is BaseDMContract {
     enum UserType {
         Member,
-        Promotor
+        Promotor,
+        Guest
     }
 
     struct Subscription {
@@ -17,12 +18,18 @@ contract Membershipcontract is BaseDMContract {
         address referrer;
         address[] referrals;
         address subscriber;
-        string email;
-        string mobile;
+    }
+
+    struct MemberProfile {
+        UserType userType;  
+        address memberAddress;      
         string name;
+        string email;
+        string mobile;        
     }
 
     mapping(address => Subscription) private subscribers;
+    mapping(address => MemberProfile) private memberProfiles;
     address[] public memberAddresses;
     mapping(address => address) private allowedContracts;
 
@@ -39,10 +46,15 @@ contract Membershipcontract is BaseDMContract {
             validity: 0,
             referrals: new address[](0),
             referrer: address(0),
-            subscriber: owner,
+            subscriber: owner
+        });
+
+        memberProfiles[owner] = MemberProfile({
+            userType: UserType.Member,  
+            memberAddress: owner,          
+            name: "The Owner",
             email: "owner@mydeam.co",
-            mobile: "+97100000000",
-            name: "The Owner"
+            mobile: "+97100000000"            
         });
 
         memberAddresses.push(owner);
@@ -78,13 +90,10 @@ contract Membershipcontract is BaseDMContract {
             uint256 validity,
             address[] memory referrals,
             address referrer,
-            address _subscriber,
-            string memory email,
-            string memory mobile,
-            string memory name
+            address _subscriber
         )
     {
-        require(userAddress != address(0), "Invalid address");
+        require(userAddress != address(0), "Membership: Invalid User address given");
         Subscription memory subscription = subscribers[userAddress];
         return (
             subscription.userType,
@@ -93,10 +102,33 @@ contract Membershipcontract is BaseDMContract {
             subscription.validity,
             subscription.referrals,
             subscription.referrer,
-            subscription.subscriber,
-            subscription.email,
-            subscription.mobile,
-            subscription.name
+            subscription.subscriber
+        );
+    }
+
+
+    function getMemberDetails(address userAddress)
+        external
+        view
+        returns (
+            UserType userType,
+            address memberAddress,
+            string memory name,
+            string memory email,
+            string memory mobile 
+        )
+    {
+
+ 
+
+        require(userAddress != address(0), "Membership: Invalid User address given");
+        MemberProfile memory memProfile = memberProfiles[userAddress];
+        return (
+            memProfile.userType,
+            memProfile.memberAddress,
+            memProfile.name,
+            memProfile.email,
+            memProfile.mobile
         );
     }
 
@@ -117,10 +149,15 @@ contract Membershipcontract is BaseDMContract {
             validity: _validity,
             referrals: new address[](0),
             referrer: _referrer,
-            subscriber: subscriber,
+            subscriber: subscriber
+        });
+
+        memberProfiles[subscriber] = MemberProfile({
+            userType: UserType.Member,  
+            memberAddress: subscriber,          
+            name: _name,    
             email: _email,
-            mobile: _mobile,
-            name: _name
+            mobile: _mobile        
         });
 
         subscribers[_referrer].referrals.push(subscriber);
@@ -177,6 +214,7 @@ contract Membershipcontract is BaseDMContract {
         returns (bool)
     {
         subscribers[account].userType = _userType;
+        memberProfiles[account].userType = _userType;
         return true;
     }
 

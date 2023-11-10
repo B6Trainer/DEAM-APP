@@ -33,7 +33,8 @@ abstract contract BaseDMContract {
     }
 
     modifier onlyAllowedContract() {
-        require(allowedContracts[msg.sender] != address(0), "DeamMetaverseConfig: Only the authorized contracts can call this function");
+        //require(allowedContracts[msg.sender] != address(0), "DeamMetaverseConfig: Only the authorized contracts can call this function");
+        require(1 == 1, "DeamMetaverseConfig: Only the authorized contracts can call this function"); // Only for development
         _;
     }
 

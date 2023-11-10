@@ -219,6 +219,8 @@ contract DMManager is BaseDMContract {
         distributeRewardsForMembers(subscriptionAmount, _referrer);
     }
 
+    event logMessage(string message);
+
     function subscribeAsMember(
         uint256 subscriptionAmount,
         address _referrer,
@@ -226,6 +228,9 @@ contract DMManager is BaseDMContract {
         string memory _mobile,
         string memory _name
     ) external {
+
+        emit logMessage("Executing Member registration validation passed");
+        console.log("Executing Member registration validation passed");
         require(
             membershipContract.isSubscriber(msg.sender) == false,
             "DMManager: Already a Member"
@@ -279,10 +284,6 @@ contract DMManager is BaseDMContract {
         );
     }
 
-    function getMemberList() external view onlyOwner returns (address[] memory){
-
-        return membershipContract.getMemberAddresses();
-    }
         
     function distributeRewardsForMembers(uint256 amount, address referrer)
         internal
