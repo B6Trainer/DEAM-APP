@@ -7,6 +7,14 @@ import ABI_DMTK from './ABI_DMTK.json'
 import stakeABI from './ABI_STAKE.json';
 import subscriptionABI from './ABI_SUBSCRIPTION.json';
 import QRCode from 'qrcode'
+
+import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
+import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
+import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
+import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
+import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
+import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
+
 const DFN_BAL = document.getElementById("swap_dfn_balance");
 const USDTBAL = document.getElementById("swap_usdt_balance");
 const TotalStakes = document.getElementById("total_stakes");
@@ -20,12 +28,7 @@ const qrcode__= document.getElementById("qrcode");
 
 
 
-
-
-
-
-
-const subscriptionContract = {
+    const subscriptionContract = {
     address: subscriptionAddress,
     abi: subscriptionABI,
     }
@@ -40,13 +43,37 @@ const subscriptionContract = {
     abi: ERC20_ABI,
     }
     
+    //New Contracts
+    const dmConfigContract = {
+      address: DM_CONFIG_ADDRESS,
+      abi: DM_CONFIG_ABI,
+    }
+
+    const dmManagerContract = {
+      address: DM_MANAGER_ADDRESS,
+      abi: DM_MANAGER_ABI,
+    }
+
+    const dmCPdistributorContract = {
+      address: DM_CPDISTRIBUTOR_ADDRESS,
+      abi: DM_CPDISTRIBUTOR_ABI,
+    }
+
+    const dmTokenContract = {
+      address: DM_TOKEN_ADDRESS,
+      abi: DM_TOKEN_ABI,
+    }
     
+    const dmMembershipContract = {
+      address: DM_MEMBERSHIP_ADDRESS,
+      abi: DM_MEMBERSHIP_ABI,
+    }
 
 
 const AccountData = await readContracts({
     contracts: [
     {
-        ...dmtkCOntract,
+        ...dmTokenContract,
         functionName: 'balanceOf',
         args: [ethereumClient.getAccount().address],
     },
@@ -56,14 +83,14 @@ const AccountData = await readContracts({
         args: [ethereumClient.getAccount().address],
     },
     {
-      ...subscriptionContract,
+      ...dmMembershipContract,
       functionName: 'getSubscriptionDetails',
       args:[ethereumClient.getAccount().address]
     },
     ],
   });
 
-console.log(AccountData[2])
+//console.log(AccountData[2])
 
 if(AccountData[0].status =="success"){  
   DFN_BAL.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);

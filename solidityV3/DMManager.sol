@@ -239,8 +239,10 @@ contract DMManager is BaseDMContract {
             "DMManager: Minimum Deposit amount not met"
         );
 
+        console.log("Member registration validation passed");
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
         usdtToken.transferFrom(msg.sender, address(this), subscriptionAmount);
+        console.log("USDT Token Transferred");
         membershipContract.subscribe(
             msg.sender,
             Membershipcontract.UserType.Member,

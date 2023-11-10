@@ -9,8 +9,8 @@ var previousAddress;
 var previousNetwork;
 if (connected) {
     const { chain } =  getNetwork();
-previousNetwork = chain.id;
-  previousAddress = ethereumClient.getAccount().address;
+    previousNetwork = chain.id;
+    previousAddress = ethereumClient.getAccount().address;
 
   const unwatch = watchAccount((account) => {
     if (account.address!=undefined && previousAddress != account.address) {

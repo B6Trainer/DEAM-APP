@@ -9,6 +9,7 @@ var DM_MANAGER_ADD;
 var DM_CONFIG_ADD;
 var DM_CPDISTRIBUTOR_ADD;
 var DM_TOKEN_ADD;
+var DM_MEMBERSHIP_ADD;
 
 const appEnv = import.meta.env.VITE_APP_ENV;
 console.log("Application is starting in ENV: "+appEnv);
@@ -25,6 +26,7 @@ if(appEnv=='PROD'){
      DM_CONFIG_ADD=import.meta.env.VITE_PROD_DM_CONFIG_ADDRESS;
      DM_CPDISTRIBUTOR_ADD=import.meta.env.VITE_PROD_DM_CPDISTRIBUTOR_ADDRESS;
      DM_TOKEN_ADD=import.meta.env.VITE_PROD_DM_TOKEN_ADDRESS;
+     DM_MEMBERSHIP_ADD=import.meta.env.VITE_PROD_DM_MEMBERSHIP_ADDRESS;
 
 }else{
      //TestNet
@@ -37,6 +39,7 @@ if(appEnv=='PROD'){
      DM_CONFIG_ADD=import.meta.env.VITE_TEST_DM_CONFIG_ADDRESS;
      DM_CPDISTRIBUTOR_ADD=import.meta.env.VITE_TEST_DM_CPDISTRIBUTOR_ADDRESS;
      DM_TOKEN_ADD=import.meta.env.VITE_TEST_DM_TOKEN_ADDRESS;
+     DM_MEMBERSHIP_ADD=import.meta.env.VITE_TEST_DM_MEMBERSHIP_ADDRESS;
 
 }
 
@@ -48,6 +51,7 @@ console.log("USDT Contract Address: "+usdtAdd);
 console.log("DM_MANAGER_ADDRESS: "+DM_MANAGER_ADD);
 console.log("DM_CONFIG_ADDRESS: "+DM_CONFIG_ADD);
 console.log("DM_CPDISTRIBUTOR_ADDRESS: "+DM_CPDISTRIBUTOR_ADD);
+console.log("DM_MEMBERSHIP_ADD: "+DM_MEMBERSHIP_ADD);
 
 export const usdtAddress = usdtAdd;
 export const subscriptionAddress = subAddress;
@@ -57,6 +61,7 @@ export const DM_MANAGER_ADDRESS = DM_MANAGER_ADD;
 export const DM_CONFIG_ADDRESS = DM_CONFIG_ADD;
 export const DM_CPDISTRIBUTOR_ADDRESS =DM_CPDISTRIBUTOR_ADD;
 export const DM_TOKEN_ADDRESS =DM_TOKEN_ADD;
+export const DM_MEMBERSHIP_ADDRESS =DM_MEMBERSHIP_ADD;
 
 export const stakingAddress = '0x95804085CcD0cDba510FCBCDA78355D15a5632f2';
 export const swapAddress = '0xC17F1Cf5d7a49f4b63BDeaf57De9645fDA3Aa68F';
@@ -68,7 +73,9 @@ export const getShareData =(address)=> {
 };
 
 
-
+//App Constants
+export const  M_TYPE_Member = 0;
+export const  M_TYPE_Promoter = 1;
 
 
 

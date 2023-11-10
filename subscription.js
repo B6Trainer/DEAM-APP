@@ -2,11 +2,19 @@ import {writeContract,waitForTransaction,readContract,readContracts, erc20ABI} f
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
 import {subscriptionAddress,tokenAddress,usdtAddress} from './config';
+import {M_TYPE_Member,M_TYPE_Promoter} from './config';
 import subscriptionABI from './ABI_SUBSCRIPTION.json';
 import ABI_ERC20 from './ABI_ERC20.json'
 import getPlanName from "./contractUtils";
 import ABI_DMTK from "./ABI_DMTK.json";
 import {copyToClipboard} from "./common.js";
+
+import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
+import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
+import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
+import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
+import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
+import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 
 const planName = document.getElementById("plan-name");
 const validity = document.getElementById("validity");
@@ -45,14 +53,17 @@ const minimumDepositFee=100;
 
 var connected = ethereumClient.getAccount().isConnected;
 var walletConnectedid="";
-var MTYPE_Memeber = "0";
-var MTYPE_Promoter = "1";
+
 
    
 var MemberbenifitsHtml = null;
 
 var PromotorbenifitsHtml = null;
 
+subscribeBtnCont.style.display ="none";
+renewbtndiv.style.display = "none";
+topupBtn.style.display = "none";
+labeltopup.style.display = "none";
 
 var AccountData=null;
 if(!connected){
@@ -81,20 +92,46 @@ if(!connected){
           abi: ABI_ERC20,
       }
 
+      //New Contracts
+      const dmConfigContract = {
+        address: DM_CONFIG_ADDRESS,
+        abi: DM_CONFIG_ABI,
+      }
+
+      const dmManagerContract = {
+        address: DM_MANAGER_ADDRESS,
+        abi: DM_MANAGER_ABI,
+      }
+
+      const dmCPdistributorContract = {
+        address: DM_CPDISTRIBUTOR_ADDRESS,
+        abi: DM_CPDISTRIBUTOR_ABI,
+      }
+
+      const dmTokenContract = {
+        address: DM_TOKEN_ADDRESS,
+        abi: DM_TOKEN_ABI,
+      }
+      
+      const dmMembershipContract = {
+        address: DM_MEMBERSHIP_ADDRESS,
+        abi: DM_MEMBERSHIP_ABI,
+      }
+
       AccountData = await readContracts({
         contracts: [
               {
-                  ...dmtkCOntract,
+                  ...dmTokenContract,
                   functionName: 'balanceOf',
                   args: [ethereumClient.getAccount().address],
               },
               {
-                ...subscriptionContract,
+                ...dmMembershipContract,
                 functionName: 'getSubscriptionDetails',
                 args:[ethereumClient.getAccount().address]
               },
               {
-                ...dmtkCOntract,
+                ...dmConfigContract,
                 functionName: 'conversionFeeWallet',
               },
               {
@@ -108,18 +145,18 @@ if(!connected){
                 args: [ethereumClient.getAccount().address],
               },
               {
-                ...dmtkCOntract,
+                ...dmConfigContract,
                 functionName: 'minimumDepositForMembers',
               },
       
               {
-                ...dmtkCOntract,
+                ...dmConfigContract,
                 functionName: 'minimumTopUpAmountMembers',
               },
         ],
       });
       console.log('Fetched the membership details for wallet: '+walletConnectedid);
-      console.log('Membership details : '+AccountData);
+      console.log(AccountData);
 
          
       MemberbenifitsHtml = `Benefits: <ul>
@@ -188,6 +225,7 @@ function formatDateToDDMMYYYY(date) {
 }
 
 
+
 if(AccountData != null){
   if(AccountData[1].status == "failure" || AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
     planName.innerHTML = "Welcome, Dear Guest";
@@ -210,7 +248,7 @@ if(AccountData != null){
     totalEarnings.innerHTML = Number(utils.formatEther(AccountData[1].result[2])).toFixed(2);
  
     //promotor
-    if(AccountData[1].result[0]==1){
+    if(AccountData[1].result[0]==M_TYPE_Promoter){
       topupdiv.style.display = "none";
       labeltopup.style.display ="none";
       benefits.innerHTML = PromotorbenifitsHtml;
@@ -219,12 +257,13 @@ if(AccountData != null){
       amountx.style.display ="none";
       //walletid.innerHTML = walletConnectedid;
       subscribeform.style.display ="none";
+      renewbtndiv.style.display = "block";
     }
 
     //member
-    if(AccountData[1].result[0]==0){
+    if(AccountData[1].result[0]==M_TYPE_Member){
       subscribeform.style.display ="none";
-      renewbtndiv.style.display = "none";
+      //renewbtndiv.style.display = "none";
       benefits.innerHTML = MemberbenifitsHtml;
       validity.innerHTML = "Lifetime";
       //walletid.innerHTML = walletConnectedid;
@@ -236,8 +275,8 @@ if(AccountData != null){
           topupBtn.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`;
           var amountx_ = amountx.value;
           const result = await writeContract({
-            address: tokenAddress,
-            abi: ABI_DMTK,
+            address: DM_MANAGER_ADDRESS,
+            abi: DM_MANAGER_ABI,
             functionName: 'topUpSubscriptionForMember',
             args: [utils.parseUnits(String(amountx_), 18)],
           })
@@ -274,7 +313,10 @@ if(AccountData != null){
 
   renewBtn.addEventListener('click', async function (e) {
     try{
-        const result = await writeContract({    address: tokenAddress,    abi: ABI_DMTK,    functionName: 'renewSubscriptionForPromotor',});
+        const result = await writeContract({   
+                                        address: DM_MANAGER_ADDRESS,
+                                        abi: DM_MANAGER_ABI,
+                                       functionName: 'renewSubscriptionForPromotor',});//Need to work on this
         const resultTr = await waitForTransaction({    hash: result.hash,  })
         if(resultTr.status=='success'){
             renewalCharge.innerHTML ="Membership  Renewed! Hash: "+result.hash;
@@ -351,8 +393,8 @@ if(AccountData != null){
       subscribeBtn.disabled =true;
       try{
         const result = await writeContract({
-          address: tokenAddress,
-          abi: ABI_DMTK,
+          address: DM_MANAGER_ADDRESS,
+          abi: DM_MANAGER_ABI,
           functionName: 'subscribeAsMember',
           args: [utils.parseUnits(String(amountsubscriptionnew), 18),referrerAccount,email,mobile,name],
       });
@@ -372,9 +414,9 @@ if(AccountData != null){
     }else{
       try{
         const result = await writeContract({
-          address: tokenAddress,
-          abi: ABI_DMTK,
-          functionName: 'subscribeAsPromotor',
+          address: DM_MANAGER_ADDRESS,
+          abi: DM_MANAGER_ABI,
+          functionName: 'subscribeAsPromotor',//Need to work on this
           args: [referrerAccount],
       });
       
@@ -426,6 +468,8 @@ if(AccountData != null){
       
       email_.style.display ="block";
       mandatory.style.display ="block";
+      subscribeBtnCont.style.display ="block";
+
     } else if(mTypeSelectedValue === "1"){
       $('#amountInput').hide();
       if(Number(utils.formatEther(AccountData[3].result))  < Number(utils.formatEther(AccountData[2].result))){

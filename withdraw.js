@@ -2,7 +2,14 @@ import {waitForTransaction,readContracts,writeContract} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
 import {stakingAddress,tokenAddress,subscriptionAddress } from './config';
-import stakeABI from './ABI_STAKE.json';
+
+import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
+import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
+import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
+import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
+import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
+import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
+
 import ABI_DMTK from './ABI_DMTK.json';
 import SUB_ABI from './ABI_SUBSCRIPTION.json';
 const withdrawable = document.getElementById("withdrawable-reward");
@@ -22,33 +29,60 @@ const subscriptionContract = {
   address: subscriptionAddress,
   abi: SUB_ABI,
   }
+
+
+    //New Contracts
+    const dmConfigContract = {
+      address: DM_CONFIG_ADDRESS,
+      abi: DM_CONFIG_ABI,
+    }
+
+    const dmManagerContract = {
+      address: DM_MANAGER_ADDRESS,
+      abi: DM_MANAGER_ABI,
+    }
+
+    const dmCPdistributorContract = {
+      address: DM_CPDISTRIBUTOR_ADDRESS,
+      abi: DM_CPDISTRIBUTOR_ABI,
+    }
+
+    const dmTokenContract = {
+      address: DM_TOKEN_ADDRESS,
+      abi: DM_TOKEN_ABI,
+    }
+    
+    const dmMembershipContract = {
+      address: DM_MEMBERSHIP_ADDRESS,
+      abi: DM_MEMBERSHIP_ABI,
+    }
   
 const AccountData = await readContracts({
     contracts: [
       {
-        ...dmtkCOntract,
+        ...dmTokenContract,
         functionName: 'balanceOf',
         args: [ethereumClient.getAccount().address],
     },
     {
-      ...subscriptionContract,
+      ...dmMembershipContract,
       functionName: 'getSubscriptionDetails',
       args:[ethereumClient.getAccount().address]
     },
     {
-      ...dmtkCOntract,
+      ...dmConfigContract,
       functionName: 'conversionFeeMember',
     },
 
     {
-      ...dmtkCOntract,
-      functionName: 'conversionFeePromotor',
+      ...dmConfigContract,
+      functionName: 'conversionFeePromoter',
     },
      
     ],
   });
 
-  console.log(AccountData)
+console.log(AccountData)
 
 const total = Number(utils.formatEther(AccountData[0].result));
 const withdrawable_ = (total)
@@ -78,6 +112,14 @@ submitWithdraw.addEventListener("click", async () => {
         return;
     }
 
+    if(withdrawable_ <=0){
+      errormsg.innerHTML =` <div class="alert alert-danger alert-dismissible fade show">
+      <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
+      <strong >Error!</strong> Withdraw is not possible as your balance is ${withdrawable_} DMTK
+    </div>`;
+      return;
+    }
+
     if(Number(withdrawAmount_) > withdrawable_){
         errormsg.innerHTML =` <div class="alert alert-danger alert-dismissible fade show">
         <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
@@ -90,8 +132,8 @@ submitWithdraw.addEventListener("click", async () => {
       submitWithdraw.innerHTML = `<i class="fa fa-refresh fa-spin"></i> Please Wait`
       submitWithdraw.disabled =true;
       result = await writeContract({
-        address: tokenAddress,
-        abi: ABI_DMTK,
+        address: DM_MANAGER_ADDRESS,
+        abi: DM_MANAGER_ABI,
         functionName: 'withdraw',
         args: [utils.parseUnits(String(withdrawAmount_), 18)],
     });
