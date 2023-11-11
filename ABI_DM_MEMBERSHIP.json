@@ -70,6 +70,25 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "allProfileAddresses",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "account",
 				"type": "address"
@@ -108,6 +127,45 @@
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "userAddress",
+				"type": "address"
+			}
+		],
+		"name": "getMemberDetails",
+		"outputs": [
+			{
+				"internalType": "enum Membershipcontract.UserType",
+				"name": "userType",
+				"type": "uint8"
+			},
+			{
+				"internalType": "address",
+				"name": "memberAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "email",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "mobile",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "account",
 				"type": "address"
 			},
@@ -123,6 +181,59 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getProfileDetails",
+		"outputs": [
+			{
+				"internalType": "enum Membershipcontract.UserType[]",
+				"name": "userTypeArr",
+				"type": "uint8[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "profileAddressArr",
+				"type": "address[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "nameArr",
+				"type": "string[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "emailArr",
+				"type": "string[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "mobileArr",
+				"type": "string[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "profileCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "subsBalance",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "rewardReceived",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "referrer",
+				"type": "address[]"
 			}
 		],
 		"stateMutability": "view",
@@ -191,21 +302,6 @@
 				"internalType": "address",
 				"name": "_subscriber",
 				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "email",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "mobile",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
 			}
 		],
 		"stateMutability": "view",

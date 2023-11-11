@@ -1,37 +1,40 @@
 import {waitForTransaction, writeContract,readContracts} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
-import {utils} from 'ethers';
-import { usdtAddress,tokenAddress,subscriptionAddress } from './config';
-import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS } from './config';
-import ERC20_ABI from './ABI_ERC20.json'
-import ABI_DMTK from './ABI_DMTK.json'
-import subscriptionABI from './ABI_SUBSCRIPTION.json';
+
+import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
 import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
+import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
+import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 
 const addmembererrorx = document.getElementById("addmembererrorx");
 
-const dmtkContract = {
-    address: tokenAddress,
-    abi: ABI_DMTK,
-}
 
-const dmConfigContract = {
-        address: DM_CONFIG_ADDRESS,
-        abi: DM_CONFIG_ABI,
-}
+  const dmConfigContract = {
+    address: DM_CONFIG_ADDRESS,
+    abi: DM_CONFIG_ABI,
+  }
 
-const dmManagerContract = {
+  const dmManagerContract = {
     address: DM_MANAGER_ADDRESS,
     abi: DM_MANAGER_ABI,
-}
+  }
 
-const dmCPdistributorContract = {
+  const dmCPdistributorContract = {
     address: DM_CPDISTRIBUTOR_ADDRESS,
     abi: DM_CPDISTRIBUTOR_ABI,
-}
-    
+  }
+
+  const dmTokenContract = {
+    address: DM_TOKEN_ADDRESS,
+    abi: DM_TOKEN_ABI,
+  }
+  
+  const dmMembershipContract = {
+    address: DM_MEMBERSHIP_ADDRESS,
+    abi: DM_MEMBERSHIP_ABI,
+  }
     // Load the header, body, and footer from their respective HTML files
     fetch('adheader.html')
         .then(response => response.text())
@@ -184,18 +187,25 @@ const AdminWallets = await readContracts({
     {
         ...dmCPdistributorContract,
         functionName: 'startIndexOfNextBatch',
+    },
+    {
+        ...dmMembershipContract,
+        functionName: 'getProfileDetails',
     }
+
     ],
   });
+
+
   document.getElementById("startIndex").value = AdminWallets[16].result;
   document.getElementById("startIndex").disabled = true;
   if(AdminWallets[6].result != ethereumClient.getAccount().address){
     document.getElementById("adminaddress").innerHTML = "Unauthorized!! You are not an admin! Your wallet id:  "+ethereumClient.getAccount().address
     document.getElementById("adminaddress").style.color="red";
   }else{
-    document.getElementById("adminaddress").innerHTML = "Welcome admin!"
+    document.getElementById("adminaddress").innerHTML = "Welcome admin! "+ethereumClient.getAccount().address
   }
-  
+  //--------------------------------------------------------------Admin Wallet details------------------------------------------------------------------------------------
   var walletnamearray = ["communityPoolWallet","marketingWallet","technologyWallet","transactionPoolWallet","foundersWallet","conversionFeeWallet"]
   var table = document.getElementById("myTable");
   var tbody = document.getElementById("myTableBody");
@@ -254,6 +264,69 @@ const AdminWallets = await readContracts({
     }
 
 
+  //--------------------------------------------------------------Profile details------------------------------------------------------------------------------------
+
+  var profResultLoc=17;
+
+  if(AdminWallets!=null || AdminWallets[profResultLoc]!=null){
+
+    var profiletypeArr = AdminWallets[profResultLoc].result[0]; 
+    var walletaddArr = AdminWallets[profResultLoc].result[1];     
+    var nameArr = AdminWallets[profResultLoc].result[2]; 
+    var phoneArr = AdminWallets[profResultLoc].result[3]; 
+    var emailArr = AdminWallets[profResultLoc].result[4]; 
+    var profilecount = AdminWallets[profResultLoc].result[5]; 
+    var subsBalance = AdminWallets[profResultLoc].result[6]; 
+    var rewardsReceived = AdminWallets[profResultLoc].result[7]; 
+    var sponsor = AdminWallets[profResultLoc].result[8]; 
+  
+    var profiletable = document.getElementById("profileTable");
+    var profiletheader = document.getElementById("profileTableHeader");
+    var profiletbody = document.getElementById("profileTableBody");
+    
+    var profileCountSpan = document.getElementById("profileCount");
+    profileCountSpan.innerHTML = profilecount;
+
+
+    // Prepare the profile table header
+    var headerRow=profiletheader.insertRow(0);
+    var profileTableheaders = ["Wallet Address", "Profile type", "Name", "Phone", "Email","Subs Balance", "Rewards", "Sponsor"]; // Profile header values
+ 
+    for (var i = 0; i < profileTableheaders.length; i++) {
+        var headerCell = document.createElement("th");
+        var text = document.createTextNode(profileTableheaders[i]);
+        headerCell.appendChild(text);
+        headerRow.appendChild(headerCell);
+    }
+
+    // Prepare the profile table body
+    for(var i=0;i<profilecount;i++){
+          
+          var newRow = profiletable.insertRow(profiletbody.rows.length); 
+          var walletaddcell = newRow.insertCell(0); 
+          var profiletypecell = newRow.insertCell(1); 
+          var namecell = newRow.insertCell(2); 
+          var phonecell = newRow.insertCell(3); 
+          var emailcell = newRow.insertCell(4);
+          var subscell = newRow.insertCell(5);
+          var rewardscell = newRow.insertCell(6);
+          var sponsorcell = newRow.insertCell(7); 
+  
+          walletaddcell.innerHTML = walletaddArr[i];
+          profiletypecell.innerHTML = profiletypeArr[i];
+          namecell.innerHTML = nameArr[i];
+          phonecell.innerHTML = phoneArr[i];
+          emailcell.innerHTML = emailArr[i];
+          subscell.innerHTML = subsBalance[i];
+          rewardscell.innerHTML = rewardsReceived[i];
+          sponsorcell.innerHTML = sponsor[i];
+    
+    }
+
+  }
+
+//--------------------------------------------------------------Distribution logic------------------------------------------------------------------------------------
+
 var lastDistributeTime = document.getElementById("lastDistributeTime");
     lastDistributeTime.innerHTML = `Last Distribution Time : ${new Date(Number(AdminWallets[7].result)*1000)}`;
 
@@ -281,6 +354,7 @@ var newFrequency = document.getElementById("newfrequency").value;
         alert(e);
     }
 });
+
 var distributeButton = document.getElementById("distributeButton")
 distributeButton.addEventListener("click", async function() {
 var startIndex = document.getElementById("startIndex").value

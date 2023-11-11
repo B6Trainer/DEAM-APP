@@ -227,6 +227,10 @@ contract DMManager is BaseDMContract {
 
     ) external {
 
+        require(
+            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
+            "DMManager: Insufficient USDT Balance in the user wallet"
+        );
         registerMember(msg.sender,subscriptionAmount, _referrer, "NA", "NA", "NA");
         
     }
@@ -240,6 +244,10 @@ contract DMManager is BaseDMContract {
         string memory _name
     ) external {
 
+        require(
+            usdtToken.balanceOf(_referrer) >= subscriptionAmount,
+            "DMManager: Insufficient USDT Balance in the sponsor wallet"
+        );
         registerMember(_memberAddress,subscriptionAmount, _referrer, _email, _mobile, _name);
         
     }
@@ -257,12 +265,9 @@ contract DMManager is BaseDMContract {
         console.log("Executing Member registration validation ");
         require(
             membershipContract.isSubscriber(_memberAddress) == false,
-            "DMManager: Already a Member"
+            "DMManager: User trying to register is already a member, Please top up"
         );
-        require(
-            usdtToken.balanceOf(_memberAddress) >= subscriptionAmount,
-            "DMManager: Insufficient USDT Balance"
-        );
+
         require(
             subscriptionAmount >=deamMetaverseConfigContract.minimumDepositForMembers(),
             "DMManager: Minimum Deposit amount not met"
@@ -473,6 +478,14 @@ contract DMManager is BaseDMContract {
                 deamMetaverseConfigContract.minimumTopUpAmountMembers(),
             "DMManager: Minimum TopUp Amount Not met"
         );
+        console.log("Transfer amount:");
+        console.log(topupAmount);
+        console.log("Allowance available amount:");
+        //uint256 allowance =IERC20(usdtToken).allowance(msg.sender,msg.sender);
+        uint256 balance =IERC20(usdtToken).balanceOf(msg.sender);
+        console.log(balance);
+        //console.log(allowance);
+
         IERC20(usdtToken).transferFrom(msg.sender, address(this), topupAmount);
         membershipContract.topUpSubscriptionBalance(msg.sender, topupAmount);
         address referrer = membershipContract.getReferrer(msg.sender);

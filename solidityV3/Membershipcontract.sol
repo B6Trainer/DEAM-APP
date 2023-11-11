@@ -30,6 +30,7 @@ contract Membershipcontract is BaseDMContract {
 
     mapping(address => Subscription) private subscribers;
     mapping(address => MemberProfile) private memberProfiles;
+    address[] public allProfileAddresses;
     address[] public memberAddresses;
     mapping(address => address) private allowedContracts;
 
@@ -58,6 +59,7 @@ contract Membershipcontract is BaseDMContract {
         });
 
         memberAddresses.push(owner);
+        allProfileAddresses.push(owner);
         totalMembers += 1;
     }
 
@@ -118,9 +120,6 @@ contract Membershipcontract is BaseDMContract {
             string memory mobile 
         )
     {
-
- 
-
         require(userAddress != address(0), "Membership: Invalid User address given");
         MemberProfile memory memProfile = memberProfiles[userAddress];
         return (
@@ -159,7 +158,7 @@ contract Membershipcontract is BaseDMContract {
             email: _email,
             mobile: _mobile        
         });
-
+        allProfileAddresses.push(subscriber);
         subscribers[_referrer].referrals.push(subscriber);
         if (_usertype == UserType.Member) {
             totalSubscriptionAmountMembers += subscriptionAmount;
@@ -230,4 +229,54 @@ contract Membershipcontract is BaseDMContract {
     function getMemberAddresses() external view onlyAllowedContract returns (address[] memory) {
         return memberAddresses;
     }
+
+    function getProfileDetails() external view onlyAllowedContract
+     returns (
+        UserType[] memory userTypeArr,
+            address[] memory profileAddressArr,
+            string[] memory nameArr,
+            string[] memory emailArr,
+            string[] memory mobileArr,
+            uint profileCount,
+            uint256 [] memory subsBalance,
+            uint256[] memory rewardReceived,
+            address[] memory referrer ) {
+
+        
+        profileCount=allProfileAddresses.length;
+        
+        userTypeArr = new UserType[] (profileCount) ;
+        profileAddressArr= new address[] (profileCount);
+        nameArr= new string[](profileCount) ;
+        emailArr= new string[](profileCount) ;
+        mobileArr= new string[](profileCount) ; 
+        subsBalance= new uint256[](profileCount) ;
+        rewardReceived= new uint256[](profileCount) ;
+        referrer= new address[](profileCount) ; 
+
+        for (uint i = 0; i < profileCount; i++) {
+                
+            MemberProfile memory memProfile = memberProfiles[allProfileAddresses[i]];
+        
+            userTypeArr[i]=memProfile.userType;
+            profileAddressArr[i]=memProfile.memberAddress;
+            nameArr[i]=memProfile.name;
+            emailArr[i]=memProfile.email;
+            mobileArr[i]=memProfile.mobile;
+
+            Subscription memory subscription = subscribers[allProfileAddresses[i]];     
+            
+            subsBalance[i]=subscription.subscriptionBalance;
+            rewardReceived[i]=subscription.rewardReceived;                      
+            referrer[i]=subscription.referrer;
+            
+
+        
+        }
+
+            return (userTypeArr, profileAddressArr, nameArr,emailArr,mobileArr,
+                    profileCount,subsBalance,rewardReceived,referrer);
+
+    }
+
 }

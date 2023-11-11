@@ -64,6 +64,13 @@ abstract contract BaseDMContract {
     }
 
 
+    function getContractAddress() public view returns(address _address) {
+        
+        _address=address(this);
+        return _address;
+
+    }
+
 
 
 }

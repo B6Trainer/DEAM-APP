@@ -27,17 +27,7 @@ const AvailableRewards= document.getElementById("availableRewards");
 const qrcode__= document.getElementById("qrcode");
 
 
-
-    const subscriptionContract = {
-    address: subscriptionAddress,
-    abi: subscriptionABI,
-    }
-    
-    const dmtkCOntract = {
-    address: tokenAddress,
-    abi: ABI_DMTK,
-    }
-    
+   
     const usdtContract = {
     address: usdtAddress,
     abi: ERC20_ABI,

@@ -73,31 +73,32 @@
     <script type="module" src="./main.js"></script>
     <script type="module" src="./common.js"></script>
     <script>
+      
       function copyToClipboard(id) {
-    const hiddenInputValue = document.getElementById(id).value;
+          const hiddenInputValue = document.getElementById(id).value;
 
-    // Create a temporary textarea element
-    const tempTextarea = document.createElement("textarea");
-    tempTextarea.value = hiddenInputValue;
-    document.body.appendChild(tempTextarea);
+          // Create a temporary textarea element
+          const tempTextarea = document.createElement("textarea");
+          tempTextarea.value = hiddenInputValue;
+          document.body.appendChild(tempTextarea);
+        
+          // Select the text inside the temporary textarea
+          tempTextarea.select();
+          tempTextarea.setSelectionRange(0, 99999); // For mobile devices
+        
+          try {
+            // Copy the selected text to the clipboard using Clipboard API
+            const successful = document.execCommand("copy");
+            const message = successful ? "Address copied to clipboard!" : "Failed to copy text";
+            alert(message);
+          } catch (err) {
+            console.error("Error copying text:", err);
+          }
+        
+          // Remove the temporary textarea from the DOM
+          document.body.removeChild(tempTextarea);
   
-    // Select the text inside the temporary textarea
-    tempTextarea.select();
-    tempTextarea.setSelectionRange(0, 99999); // For mobile devices
-  
-    try {
-      // Copy the selected text to the clipboard using Clipboard API
-      const successful = document.execCommand("copy");
-      const message = successful ? "Address copied to clipboard!" : "Failed to copy text";
-      alert(message);
-    } catch (err) {
-      console.error("Error copying text:", err);
-    }
-  
-    // Remove the temporary textarea from the DOM
-    document.body.removeChild(tempTextarea);
-  
-}
+      }
     </script>
   </body>
 </html>
