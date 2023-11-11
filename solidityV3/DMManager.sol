@@ -275,7 +275,7 @@ contract DMManager is BaseDMContract {
 
         console.log("Member registration validation passed");
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
-        usdtToken.transferFrom(_memberAddress, address(this), subscriptionAmount);
+        usdtToken.transferFrom(_referrer, address(this), subscriptionAmount);
         console.log("USDT Token Transferred");
         membershipContract.subscribe(
             _memberAddress,

@@ -10,6 +10,7 @@ var DM_CONFIG_ADD;
 var DM_CPDISTRIBUTOR_ADD;
 var DM_TOKEN_ADD;
 var DM_MEMBERSHIP_ADD;
+var DM_TXN_EXPLORER;
 
 const appEnv = import.meta.env.VITE_APP_ENV;
 console.log("Application is starting in ENV: "+appEnv);
@@ -21,6 +22,7 @@ if(appEnv=='PROD'){
      tokenAdd = import.meta.env.VITE_prod_tokenAdd;
      chain=import.meta.env.VITE_prod_chain;
      
+     DM_TXN_EXPLORER=import.meta.env.VITE_PROD_TXN_EXPLORER;
      
      DM_MANAGER_ADD=import.meta.env.VITE_PROD_DM_MANAGER_ADDRESS;
      DM_CONFIG_ADD=import.meta.env.VITE_PROD_DM_CONFIG_ADDRESS;
@@ -34,6 +36,8 @@ if(appEnv=='PROD'){
      usdtAdd = import.meta.env.VITE_test_usdtAdd;
      tokenAdd = import.meta.env.VITE_test_tokenAdd;
      chain=import.meta.env.VITE_test_chain;
+
+     DM_TXN_EXPLORER=import.meta.env.VITE_TEST_TXN_EXPLORER;
 
      DM_MANAGER_ADD=import.meta.env.VITE_TEST_DM_MANAGER_ADDRESS;
      DM_CONFIG_ADD=import.meta.env.VITE_TEST_DM_CONFIG_ADDRESS;
@@ -56,7 +60,7 @@ console.log("DM_MEMBERSHIP_ADD: "+DM_MEMBERSHIP_ADD);
 export const usdtAddress = usdtAdd;
 export const subscriptionAddress = subAddress;
 export const tokenAddress =tokenAdd;
-
+export const DM_TXN_HASH_EXPLORER=DM_TXN_EXPLORER;
 export const DM_MANAGER_ADDRESS = DM_MANAGER_ADD;
 export const DM_CONFIG_ADDRESS = DM_CONFIG_ADD;
 export const DM_CPDISTRIBUTOR_ADDRESS =DM_CPDISTRIBUTOR_ADD;

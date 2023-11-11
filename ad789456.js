@@ -1,6 +1,6 @@
 import {waitForTransaction, writeContract,readContracts} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
-
+import {utils} from 'ethers';
 import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
@@ -273,11 +273,11 @@ const AdminWallets = await readContracts({
     var profiletypeArr = AdminWallets[profResultLoc].result[0]; 
     var walletaddArr = AdminWallets[profResultLoc].result[1];     
     var nameArr = AdminWallets[profResultLoc].result[2]; 
-    var phoneArr = AdminWallets[profResultLoc].result[3]; 
-    var emailArr = AdminWallets[profResultLoc].result[4]; 
-    var profilecount = AdminWallets[profResultLoc].result[5]; 
-    var subsBalance = AdminWallets[profResultLoc].result[6]; 
-    var rewardsReceived = AdminWallets[profResultLoc].result[7]; 
+    var emailArr = AdminWallets[profResultLoc].result[3]; 
+    var phoneArr = AdminWallets[profResultLoc].result[4]; 
+     var profilecount = AdminWallets[profResultLoc].result[5]; 
+    var subsBalanceArr = AdminWallets[profResultLoc].result[6]; 
+    var rewardsReceivedArr = AdminWallets[profResultLoc].result[7] ; 
     var sponsor = AdminWallets[profResultLoc].result[8]; 
   
     var profiletable = document.getElementById("profileTable");
@@ -317,8 +317,8 @@ const AdminWallets = await readContracts({
           namecell.innerHTML = nameArr[i];
           phonecell.innerHTML = phoneArr[i];
           emailcell.innerHTML = emailArr[i];
-          subscell.innerHTML = subsBalance[i];
-          rewardscell.innerHTML = rewardsReceived[i];
+          subscell.innerHTML = Number(utils.formatEther(subsBalanceArr[i])).toFixed(2);;
+          rewardscell.innerHTML = Number(utils.formatEther(rewardsReceivedArr[i])).toFixed(2);
           sponsorcell.innerHTML = sponsor[i];
     
     }

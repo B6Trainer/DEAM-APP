@@ -1,4 +1,4 @@
- 
+import { DM_TXN_HASH_EXPLORER } from './config';
 
 
 export function maskWalletAddress(walletAddress) {
@@ -17,3 +17,56 @@ export function maskWalletAddress(walletAddress) {
   return `${firstFive}${middleAsterisks}${lastFive}`;
 }
     
+
+export function getInfoMessageContent(message){
+
+  var constructedMessage=` <div class="alert alert-info alert-dismissible fade show">
+  <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
+  <strong >Info!</strong> ${message} !</div>`;
+
+  return constructedMessage;
+}
+
+export function getErrorMessageContent(message){
+
+  var constructedMessage=` <div class="alert alert-danger alert-dismissible fade show">
+  <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
+  <strong >Error!</strong> ${message} !</div>`;
+
+
+  return constructedMessage;
+}
+
+export function getErrorMessageandTxn(message,txn){
+
+  var constructedHashlink=constructTxnLink(txn)
+
+  var constructedMessage=` <div class="alert alert-danger alert-dismissible fade show">
+  <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
+  <strong >Error!</strong> ${message}<br> Txn Hash:${constructedHashlink} </div>`;
+
+  return constructedMessage;
+}
+
+export function getInfoMessageandTxn(message,txn){
+
+  var constructedHashlink=constructTxnLink(txn)
+
+  var constructedMessage=` <div class="alert alert-info alert-dismissible fade show">
+  <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
+  <strong >Info!</strong> ${message}<br> Txn Hash:${constructedHashlink} </div>`;
+
+  return constructedMessage;
+}
+
+function constructTxnLink(txn){
+  //var explorerlink="https://testnet.ftmscan.com/tx/";
+  var fullurl=DM_TXN_HASH_EXPLORER+txn;
+  var maskedTxnHash=maskWalletAddress(txn);
+  
+  var constructedHashLink=`<a href="${fullurl}" target="_blank" class="no-decoration">${maskedTxnHash}
+                          <i class="fa-solid fa-arrow-up-right-from-square"></i></a>`;
+  
+  return constructedHashLink;
+
+}

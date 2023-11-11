@@ -15,9 +15,9 @@ import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 
-const DFN_BAL = document.getElementById("swap_dfn_balance");
-const USDTBAL = document.getElementById("swap_usdt_balance");
-const TotalStakes = document.getElementById("total_stakes");
+const DMTK_BAL = document.getElementById("dmtk_balance");
+const USDTBAL = document.getElementById("usdt_balance");
+const TotalStakes = document.getElementById("total_mem_purchases");
 const RealtimeRewards = document.getElementById("realtimeReward");
 const referralRewards = document.getElementById("referralRewards");
 const totalRewards = document.getElementById("totalRewards");
@@ -83,7 +83,7 @@ const AccountData = await readContracts({
 //console.log(AccountData[2])
 
 if(AccountData[0].status =="success"){  
-  DFN_BAL.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);
+  DMTK_BAL.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);
   AvailableRewards.innerHTML = Number(utils.formatEther(AccountData[0].result)).toFixed(2);
 }else{
   console.log("No data on DMTK Balance of operation. Status: "+AccountData[0].status);

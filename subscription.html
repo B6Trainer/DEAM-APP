@@ -33,8 +33,8 @@
   </div>
   <div id="navbarmenu"></div>
   <div class="container" id="carddiv">
-    <div class="card-withImage">
-      <!--<h5 style="color:var(--primary-color)"><span></span>Welcome</h5> -->
+    <div class="card-withImage">   
+
       <h5 style="color:var(--primary-color); font-size: medium" class="balance"><span id="plan-name">-</span></h5>
 
       <p class="usd-value-main">
@@ -42,13 +42,6 @@
         <i class="far fa-copy copy-icon" id="walletidCopybutton"></i>
       </p>
 
-     <!--<p class="title no-margin">
-        Available USDT: <span id="availableUSDT"> </span>
-      </p>
-
-      <p class="title no-margin">
-        Validity Till: <span id="validity"> </span>
-      </p>--> 
 
       <div class="d-flex justify-content-between" style="margin-top: 30px">
         <div class="staked-amount no-margin">
@@ -89,10 +82,9 @@
           <option value="T">Top up my account</option>          
         </select>
         
-          <div id="benefits" style=" margin-top: 15px;">
+        <div id="benefits" style=" margin-top: 15px;"></div>
+
       </div>
-
-
       <div id="subscribeform" style="display:none">
         <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Register a Member</u></h3>
         <!--<h4 style="color: var(--secondary-color);" class="text-center mt-2">Available USDT: <span
@@ -129,6 +121,8 @@
 
           <div class="form-group" id="referrerAc" style="display:none">
             <label for="Referrer">Referral Address: *</label>
+            <label id="copymineassponsor">  <i class="far fa-copy copy-icon" > </i> Copy my address</label>
+            
             <input required type="text" class="form-control" id="referrerAccount" name="referrerAccount"
               placeholder="0x0321........41u41">
           </div>
@@ -242,17 +236,7 @@
   <script type="module" src="./main.js"></script>
   <script type="module" src="./common.js"></script>
   <script type="module" src="./subscription.js"></script>
-  <script>
-      // $(document).ready(function() {
-      //     $('#membershipType').change(function() {
-      //         if ($(this).val() === '0') {
-      //             $('#amountInput').show();
-      //         } else {
-      //             $('#amountInput').hide();
-      //         }
-      //     });
-      // });
-  </script>
+
 </body>
 
 </html>

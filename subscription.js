@@ -11,7 +11,7 @@ import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
 import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
-import { maskWalletAddress } from "./dm_utils";
+import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn } from "./dm_utils";
 
 const actionsselect = document.getElementById("actionsselect")
 
@@ -88,7 +88,7 @@ if(!connected){
                         Please connect your wallet <br> to join as a member.
                       <span>`;
   
-                      console.log('Warning: Unable to fetch the membership details as wallet is not connected ');
+  console.log('Warning: Unable to fetch the membership details as wallet is not connected ');
 
 }else{
       walletConnectedid=ethereumClient.getAccount().address;
@@ -190,7 +190,7 @@ function updateApprovedUSDTValue(newapprovedtopupValue){
 
 if(AccountData != null){
 
-  
+  walletid.value=walletConnectedid;
   walletid.innerHTML = maskWalletAddress(String(walletConnectedid));
 
     var minTopupfees;
@@ -287,14 +287,14 @@ if(AccountData != null){
           hash: result.hash,
         })
           if(resultTr.status=='success'){          
-            errorx.innerHTML = amountoTopup_+" USDT top up was successfull with hash: "+result.hash;
+            errorx.innerHTML = getInfoMessageContent(amountoTopup_+" USDT top up was successfull with hash: "+result.hash);
             topupamount.value=0;
           }else{
-            errorx.innerHTML = amountoTopup_+" USDT top up failed hash: "+result.hash;
+            errorx.innerHTML = getErrorMessageContent(amountoTopup_+" USDT top up failed hash: "+result.hash);
             topupBtn.disabled = false;   
           }
       }catch(e){
-        errorx.innerHTML = "Error: "+e.shortMessage;
+        errorx.innerHTML = getErrorMessageContent("Error: "+e.shortMessage);
         topupBtn.disabled = false;   
       }finally{
         topupBtn.innerHTML = `Top Up`;             
@@ -346,17 +346,17 @@ if(AccountData != null){
           btnApprove.disabled = false;
           btnApprove.innerHTML  = `Approve to Subscribe/Top-up`;
           // btnApprove.disabled = false;
-          errorx.innerHTML = "Error: "+e.shortMessage;
+          errorx.innerHTML = getErrorMessageContent("Error: "+e.shortMessage);
       }
     
-    const resultTr = await waitForTransaction({    hash: result.hash,  })
+    const resultTr = await waitForTransaction({ hash: result.hash,  })
+    
     if(resultTr.status=='success'){
-      
-      
+            
       btnApprove.innerHTML  = `Approved successfully`;
 
       updateApprovedUSDTValue(amountToApprove_);
-      errorx.innerHTML=amountToApprove_+" USDT successfully approved with txn hash: "+result.hash;
+      errorx.innerHTML=getInfoMessageandTxn(amountToApprove_+" USDT successfully approved ",result.hash);
 
       if(actionTab=="R"){
         
@@ -384,7 +384,6 @@ if(AccountData != null){
 
       }
       //window.location.reload();
-
     }
   })
 
@@ -470,7 +469,7 @@ if(AccountData != null){
     const mobile = document.getElementById("mobile__").value;
     const email = document.getElementById("email__").value;
     if(!userAddress || !name || !mobile || !email || !referrerAccount){
-      errorx.innerHTML = "Please fill all the mandatory fields";
+      errorx.innerHTML = getErrorMessageContent("Please fill all the mandatory fields");
       return;
     }
     var selectMTypeElement = document.getElementById("membershipType");
@@ -479,7 +478,7 @@ if(AccountData != null){
     var minDeposit = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
 
     if(Number(amountsubscriptionnew)<minDeposit){
-      errorx.innerHTML = "Error: Minimum Deposit is "+minDeposit;
+      errorx.innerHTML =getErrorMessageContent( "Error: Minimum Deposit is "+minDeposit);
       return;
     }
 
@@ -499,11 +498,13 @@ if(AccountData != null){
         })
         if(resultTr.status=='success'){
           //errorx.innerHTML = "Joined SuccessFully!";
-          errorx.innerHTML=amountsubscriptionnew+" USDT paid & successfully registered for  your member with txn hash: "+result.hash;
+          errorx.innerHTML=getInfoMessageandTxn(amountsubscriptionnew+
+            " USDT paid & successfully registered for your member",result.hash);
           //window.location.reload();
         }
       }catch(e){
-        errorx.innerHTML = "Error: Unable to register for member "+userAddress+" Error Message:"+e.shortMessage;
+        errorx.innerHTML = getErrorMessageContent("Error: Unable to register for member "+
+                                userAddress+" Error Message:"+e.shortMessage);
         subscribeBtn.innerHTML = `Re-try Registering`;
         subscribeBtn.disabled =false;
         
@@ -522,7 +523,7 @@ if(AccountData != null){
           hash: result.hash,
         })
         if(resultTr.status=='success'){
-          errorx.innerHTML = "SUCCESS";
+          errorx.innerHTML = getInfoMessageandTxn("Sucessfully registered as a promoter ",result.hash);
         }
       }catch(e){
         errorx.innerHTML = "Error:";
@@ -542,7 +543,7 @@ if(AccountData != null){
     //const mobile = document.getElementById("mobile__").value;
     //const email = document.getElementById("email__").value;
     if(!referrerAccount){
-      errorx.innerHTML = "Please fill all the mandatory fields";
+      errorx.innerHTML = getErrorMessageContent("Please fill all the mandatory fields");
       return;
     }
     var selectMTypeElement = document.getElementById("membershipType");
@@ -551,7 +552,7 @@ if(AccountData != null){
     var minDeposit = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
 
     if(Number(amountsubscriptionnew)<minDeposit){
-      errorx.innerHTML = "Error: Minimum Deposit is "+minDeposit;
+      errorx.innerHTML = getErrorMessageContent("Error: Minimum Deposit is "+minDeposit);
       return;
     }
 
@@ -570,13 +571,13 @@ if(AccountData != null){
           hash: result.hash,
         })
         if(resultTr.status=='success'){
-          errorx.innerHTML = "Joined SuccessFully!";
+          errorx.innerHTML = getInfoMessageandTxn("Joined as memeber successFully!",result.hash);
           //window.location.reload();
         }
       }catch(e){
-        joinBtn.innerHTML = `Join`;
-        joinBtn.disabled =false;
-        errorx.innerHTML = "Error:"+e.shortMessage;
+        errorx.innerHTML = getErrorMessageContent("Error:"+e.shortMessage);
+        joinBtn.innerHTML = `Try again to Join`;
+        joinBtn.disabled =false;        
       }
     }else{
       /*
@@ -677,12 +678,17 @@ if(AccountData != null){
   });
 
   const walletidCopybutton = document.getElementById("walletidCopybutton");
-  const textToCopy = document.getElementById("walletid").textContent;
+  const textToCopyValue = document.getElementById("walletid").value;
   walletidCopybutton.addEventListener("click", () => {
-        copyToClipboard(textToCopy);
+        copyToClipboard(textToCopyValue);
   });
 
-
+  //Adding even for copy button on Sponsor input box.
+  const copymine = document.getElementById("copymineassponsor");
+  const referrerAccountInputBox = document.getElementById("referrerAccount");  
+  copymine.addEventListener("click", () => {
+       referrerAccountInputBox.value=walletConnectedid;
+  });
 
   actionsselect.addEventListener("change", function() {
 
