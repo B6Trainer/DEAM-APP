@@ -50,7 +50,7 @@ abstract contract BaseDMContract {
     }
 
    //Method to convert address into string
-    function addressToString(address _address) public pure returns(string memory) {
+    function addressToString(address _address) internal pure returns(string memory) {
         bytes32 _bytes = bytes32(uint256(uint160(_address)));
         bytes memory HEX = "0123456789abcdef";
         bytes memory _string = new bytes(42);
@@ -63,6 +63,30 @@ abstract contract BaseDMContract {
         return string(_string);
     }
 
+    function uintToString(uint256 _i) internal pure returns (string memory) {
+        if (_i == 0) {
+            return "0";
+        }
+
+        uint256 j = _i;
+        uint256 len;
+
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+
+        bytes memory bstr = new bytes(len);
+
+        while (_i != 0) {
+            len -= 1;
+            bstr[len] = bytes1(uint8(48 + _i % 10));
+            _i /= 10;
+        }
+
+        return string(bstr);
+    }
+
 
     function getContractAddress() public view returns(address _address) {
         
@@ -71,6 +95,8 @@ abstract contract BaseDMContract {
 
     }
 
+
+    event  logMessage(string message);
 
 
 }

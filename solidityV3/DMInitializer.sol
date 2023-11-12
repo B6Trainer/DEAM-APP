@@ -11,38 +11,46 @@ import "./BaseDMContract.sol";
 import "./DMManager.sol";
 
 contract DMInitializer is BaseDMContract {
+    
+    
     Membershipcontract public subscriptionContract;
     DeamMetaverseConfig public deamMetaverseConfigContract;
     DMToken public dmTokenContract;
     DMCPdistributor public dcomdistributor;
     DMManager public dmManagerContract;
-
+    //IERC20 public 
 
     constructor() {
         console.log("DMInitialzer contract initialised");
     }
 
+    
+    event logAddress(string message, address cAddress);
     function mapContracts(
         address _membershipContractAddress,
         address _configContractAddress,
         address _dmTokenAddress,
         address _usdtToken,
         address _dcpDistAddress,
-        address _dmManagerAddress,
-         address _dmInitializerAddress
+        address _dmManagerAddress
     ) external onlyOwner {
 
-        console.log("DMInitializer : Executing Contract Mapping");
-        membershipContractAddress = _membershipContractAddress;
-        configContractAddress = _configContractAddress;
-        dmTokenAddress = _dmTokenAddress;
-        usdtTokenAddress = _usdtToken;
-        dcpDistAddress = _dcpDistAddress;
-        dmManagerAddress = _dmManagerAddress;
-        thisContractAddress = _dmInitializerAddress;
+        //console.log("DMInitializer : Executing Contract Mapping");
+        emit logMessage("DMInitializer : Executing Contract Mapping");
+
+        membershipContractAddress = (_membershipContractAddress != address(0))?_membershipContractAddress:membershipContractAddress;
+        configContractAddress = (_configContractAddress != address(0))?_configContractAddress: configContractAddress; 
+        dmTokenAddress = (_dmTokenAddress != address(0))?_dmTokenAddress: dmTokenAddress; 
+        usdtTokenAddress = (_usdtToken != address(0))?_usdtToken: usdtTokenAddress; 
+        dcpDistAddress = (_dcpDistAddress != address(0))?_dcpDistAddress: dcpDistAddress; 
+        dmManagerAddress = (_dmManagerAddress != address(0))?_dmManagerAddress: dmManagerAddress; 
+        thisContractAddress = address(this);
+
+        emit logAddress("membershipContractAddress :",membershipContractAddress);
+        emit logAddress("configContractAddress :",configContractAddress);
 
         if (_membershipContractAddress != address(0)) {
-            setMemberShipContract(_membershipContractAddress,thisContractAddress);
+            setMemberShipContract(_membershipContractAddress,address(this));
         }
         if (_configContractAddress != address(0)) {
             setDMConfig(_configContractAddress, thisContractAddress);

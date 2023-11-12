@@ -5,78 +5,111 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <!--Stylesheet-->
     <link rel="stylesheet" href="/assets/css/stylesheet-main.css" />
     <link rel="stylesheet" href="/assets/css/default-stylesheet.css" />
     <link rel="stylesheet" href="/assets/css/pink-color.css" />
     <link rel="stylesheet" href="./style.css" />
- 
-
-    <meta
-      name="description"
-      content="DEAM Metaverse is a community to benfit by streams of passive income."
-    />
-
+  
+    <meta name="description"
+      content="DEAM Metaverse is a community to benfit by streams of passive income." />
     <style>
-      :root {
-        --header-bg-color: #030301;
-        --nav-item-color: #f5f5f5;
-        --hero-bg-color: #030301;
-        --section-1-bg-color: #111111;
-        --section-2-bg-color: #030301;
-        --section-3-bg-color: #111111;
-        --section-4-bg-color: #030301;
-        --section-5-bg-color: #111111;
-        --section-6-bg-color: #030301;
-        --section-7-bg-color: #111111;
-        --section-8-bg-color: #030301;
-        --section-9-bg-color: #111111;
-        --section-10-bg-color: #030301;
-        --section-11-bg-color: #111111;
-        --section-12-bg-color: #030301;
-        --footer-bg-color: #000000;
-      }
-    </style>
-    
+      .card-withImage {
+        height: 250px !important;
+        padding: 5px !important
+      }      ;
+        :root {
+          --header-bg-color: #030301;
+          --nav-item-color: #f5f5f5;
+          --hero-bg-color: #030301;
+          --section-1-bg-color: #111111;
+          --section-2-bg-color: #030301;
+          --section-3-bg-color: #111111;
+          --section-4-bg-color: #030301;
+          --section-5-bg-color: #111111;
+          --section-6-bg-color: #030301;
+          --section-7-bg-color: #111111;
+          --section-8-bg-color: #030301;
+          --section-9-bg-color: #111111;
+          --section-10-bg-color: #030301;
+          --section-11-bg-color: #111111;
+          --section-12-bg-color: #030301;
+          --footer-bg-color: #000000;
+        }
+      </style>
+  
+
   </head>
 
+    
   <body>
     <div id="loader" class="loader">
       <div class="spinner"></div>
     </div>
     <div id="navbarmenu"></div>
 
-    <div
-      class="container"
-      style="
-        margin-top: 60px;
-        width: 100%;
-        padding: 20px;
-        padding-bottom: 100px;
-        color:#c3c3c3;
-      "
-    >
-      <div
-        class="assets-rewards"
-        style="
-          padding: 5px;
-          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
-          border-radius: 5px;
-          margin-bottom: 15px;
-        "
-      >
+    <div class="container" id="carddiv">
+      <div class="card-withImage">   
+  
+        <h5 style="color:var(--primary-color); font-size: medium" class="balance"><span id="welcome-message">-</span></h5>
+  
+        <p class="usd-value-main">
+          <span style="font-size: small" id="walletid"> </span>
+          <i class="far fa-copy copy-icon" id="walletidCopybutton"></i>
+        </p>
+  
+  
+        <div class="d-flex justify-content-between" style="margin-top: 30px">
+          <div class="staked-amount no-margin">
+            <p class="title no-margin">Available USDT: </p>
+            <p class="value no-margin"><span id="availableUSDT">0</span> USDT</p>
+  
+          </div>
+          <div class="reward no-margin">
+            <p class="title no-margin">Available DMTK: </p>
+            <p class="value no-margin">
+              <span id="availableDMTK">0</span> DMTK
+            </p>
+          </div>
+        </div>
+  
+        <div class="d-flex justify-content-between" style="margin-top: 30px" id="depoandearningdiv" >
+          <div class="staked-amount no-margin">
+            <p class="title no-margin">Rewards Earned</p>
+            <p class="value no-margin"><span id="rewardsEarned">0</span> DMTK</p>
+          </div>
+          <div class="reward no-margin">
+            <p class="title no-margin">Withdrawable Rewards</p>
+            <p class="value no-margin">
+              <span id="withdrawableRewards">0</span> DMTK
+            </p>
+          </div>
+        </div>
+      </div><!-- end of card view section-->
+
+
+
+    </div>
+<!-- Action form -->
+    <div id="actionform" style="display:block">
+      <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Choose your Asset action</u></h3>
+      <p class="text-center"><span id="messageBox"></span></p>
+
+      <select class="form-control" id="actionsselect" name="actionsselect">          
+        <option value="H">-select your action-</option>
+        <option value="MI">My Investments</option>
+        <option value="W">Withdraw Rewards</option>              
+      </select>
+      
+      <div id="benefits" style=" margin-top: 15px;"></div>
+
+    </div>
+
+    <div id="assetscontainer" class="container" style="margin-top: 60px; width: 100%; padding: 20px; padding-bottom: 100px; color:#c3c3c3;">
+      <div id="mywalletContainer" class="assets-rewards" style="padding: 5px; box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1); border-radius: 5px; margin-bottom: 15px; display:none">
         <strong>My Wallet Balance:</strong>
         <div class="coin-row">
           <div class="coin-name">
@@ -118,15 +151,7 @@
         </button></a
       > -->
       </div>
-      <div
-        class="assets-rewards"
-        style="
-          padding: 5px;
-          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
-          border-radius: 5px;
-          margin-bottom: 15px;
-        "
-      >
+      <div id="myInvContainer" class="assets-rewards" style=" padding: 5px; box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1); border-radius: 5px; margin-bottom: 15px;">
       
         <strong>My Investments:</strong>
 
@@ -138,16 +163,8 @@
           <div class="coin-balance"><span id="total_mem_purchases">0 </span> USDT</div>
         </div>
       </div>
-
-      <div
-        class="assets-rewards"
-        style="
-          padding: 5px;
-          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
-          border-radius: 5px;
-          margin-bottom: 15px;
-        "
-      >
+      
+      <div id="myEarningsContainer" class="assets-rewards" style=" padding: 5px; box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1); border-radius: 5px; margin-bottom: 15px; display:none">
         <strong>My Rewards:</strong>
         <div class="coin-row">
           <div class="coin-name">
@@ -169,36 +186,38 @@
           </div>
         </div>
 
-       
-      <div
-        class="assets-rewards"
-        style="
-          padding: 5px;
-          box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1);
-          border-radius: 5px;
-          margin-bottom: 15px;
-        "
-      >
-       
-       
-        <div class="mt-1">
+        <div class="assets-rewards" style=" padding: 5px; box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.1); border-radius: 5px; margin-bottom: 15px; ">
+            
+        <div class="mt-1"> 
           <button
             onClick="location.href='./withdrawRewards.html'"
             style="margin-right: 5px;width: 100%;"
-            class="btn-info btn-lg"
-          >
+            class="btn-info btn-lg">
             Withdraw Reward
-          </button>
-         
+          </button>         
         </div>
-  
-      </div>
-
-     
-   
-     
+      </div>   
     </div>
 
+
+    <div id="myWithdrawContainer" class="container" style="display: none;">
+      <div class="card" style=" height: 200px;margin-top: 80px;">
+          <!--<div style="font-size:20px" class="card-title">Available Rewards : <span id="withdrawable-reward"> 0</span> DMTK</div>-->
+         
+          <input id="withdrawAmount" type="number" class="input-field" placeholder="00.00">
+          <span style="color:azure"> Enter Amount to Withdraw</span>
+      </div>
+      <p class="text-center" style="color:#17a2b8">Fee Applicable :<span id="fee">0 DMTK</span></p>   
+  
+      <div  id="withdrawIns" style="width:100%;word-wrap: break-word;" ></div>
+          <button id="submit-withdraw" value="Withdraw rewards" style="width:100%;margin-top: 50px;" class=" btn-lg btn-info btn-block">Withdraw</button>
+          <ul>
+              <li>Withdrawal is instant</li>
+              <li>Minimum Withdrawal applicable</li>
+              <li>Withdrawal fee applicable</li>
+              <li>Net withdrawal= Withdraw amount - fee applicable</li>          
+          </ul>    
+    </div>
 
     <!-- The Modal -->
 <div class="modal" id="myModal">
@@ -241,33 +260,32 @@
     <script type="module" src="./common.js"></script>
     <script type="module" src="./assets.js"></script>
     <script>
-      
-      
-      function copyToClipboard(id) {
-    const hiddenInputValue = document.getElementById(id).value;
+            
+        function copyToClipboard(id) {
+          const hiddenInputValue = document.getElementById(id).value;
 
-    // Create a temporary textarea element
-    const tempTextarea = document.createElement("textarea");
-    tempTextarea.value = hiddenInputValue;
-    document.body.appendChild(tempTextarea);
+          // Create a temporary textarea element
+          const tempTextarea = document.createElement("textarea");
+          tempTextarea.value = hiddenInputValue;
+          document.body.appendChild(tempTextarea);
+        
+          // Select the text inside the temporary textarea
+          tempTextarea.select();
+          tempTextarea.setSelectionRange(0, 99999); // For mobile devices
+        
+          try {
+            // Copy the selected text to the clipboard using Clipboard API
+            const successful = document.execCommand("copy");
+            const message = successful ? "Address copied to clipboard!" : "Failed to copy text";
+            alert(message);
+          } catch (err) {
+            console.error("Error copying text:", err);
+          }
+        
+          // Remove the temporary textarea from the DOM
+          document.body.removeChild(tempTextarea);
   
-    // Select the text inside the temporary textarea
-    tempTextarea.select();
-    tempTextarea.setSelectionRange(0, 99999); // For mobile devices
-  
-    try {
-      // Copy the selected text to the clipboard using Clipboard API
-      const successful = document.execCommand("copy");
-      const message = successful ? "Address copied to clipboard!" : "Failed to copy text";
-      alert(message);
-    } catch (err) {
-      console.error("Error copying text:", err);
-    }
-  
-    // Remove the temporary textarea from the DOM
-    document.body.removeChild(tempTextarea);
-  
-}
+        }
     </script>
   </body>
 </html>

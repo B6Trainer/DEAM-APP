@@ -6,20 +6,22 @@ import "./BaseDMContract.sol";
 contract DeamMetaverseConfig is BaseDMContract {
 
 
-    address public communityPoolWallet;
-    address public marketingWallet;
-    address public technologyWallet;
+    address public communityPoolWallet=0x9F03df34b0218373eF544b7386a05d8701768240;
+    address public marketingWallet=0x2Df4176b7285bf4970900e14C19F628f63fCfFDB;
+    address public technologyWallet=0x2e4c722122D9c89102B670dA53c91efb54bE73c7;
     address public transactionPoolWallet;
-    address public foundersWallet;
+    address public foundersWallet=0x9b0a5444E574a4c40870fdabEaDB224da22664F8;
     address public conversionFeeWallet;
     uint256 public conversionFeeMember = 100000;
     uint256 public conversionFeePromoter = 250000;
     uint256 public maxRewardsMultiplier = 3;
     uint256 public transactionFee_communityPoolFeePercentage = 30000;
-    uint256 public transactionFee_foundersFeePercentage = 20000;
+    uint256 public transactionFee_foundersFeePercentage = 70000;
     uint256 public minimumDepositForMembers = 100 * 10 ** 18;
     uint256 public minimumTopUpAmountMembers = 100 * 10 ** 18;
     
+    uint256 public withdrawdailyLimitCheck = 0;
+
 
     uint256 public percentageDecimals=10000;
     uint256 public levelRewardPercentage =71; //71%
@@ -34,7 +36,8 @@ contract DeamMetaverseConfig is BaseDMContract {
 
 
     constructor() {
-        console.log("DMConfig contract constructed");
+        console.log("DMConfig contract constructed");       
+        
     }
 
     function updateAdminWalletAddresses(
@@ -45,12 +48,12 @@ contract DeamMetaverseConfig is BaseDMContract {
         address _foundersWallet,
         address _conversionFeeWallet
     ) external onlyOwner {
-        communityPoolWallet = _communityPoolWallet;
-        marketingWallet = _marketingWallet;
-        technologyWallet = _technologyWallet;
-        transactionPoolWallet = _transactionPoolWallet;
-        foundersWallet = _foundersWallet;
-        conversionFeeWallet = _conversionFeeWallet;
+        communityPoolWallet = (_communityPoolWallet != address(0))?_communityPoolWallet:communityPoolWallet;
+        marketingWallet = (_marketingWallet != address(0))?_marketingWallet:marketingWallet;
+        technologyWallet = (_technologyWallet != address(0))?_technologyWallet:technologyWallet;
+        transactionPoolWallet = (_transactionPoolWallet != address(0))?_transactionPoolWallet:transactionPoolWallet;
+        foundersWallet = (_foundersWallet != address(0))?_foundersWallet:foundersWallet;
+        conversionFeeWallet = (_conversionFeeWallet != address(0))?_conversionFeeWallet:conversionFeeWallet;
         console.log("DMConfig: Admin wallets updated.");
     }
 

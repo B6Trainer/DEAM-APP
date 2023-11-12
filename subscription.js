@@ -1,9 +1,9 @@
 import {writeContract,waitForTransaction,readContract,readContracts, erc20ABI} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
-import {M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Guest} from './config';
-import ABI_ERC20 from './ABI_ERC20.json'
-import {copyToClipboard} from "./common.js";
+import {M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Guest,M_TYPE_Admin} from './config';
+
+import {copyToClipboard} from "./dm_utils";
 
 import { usdtAddress,DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
@@ -11,6 +11,7 @@ import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
 import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
+import ABI_ERC20 from './ABI_ERC20.json';
 import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn } from "./dm_utils";
 
 const actionsselect = document.getElementById("actionsselect")
@@ -253,15 +254,23 @@ if(AccountData != null){
 
     }
 
-      //neither
-      if(memberType==M_TYPE_Guest){
-        welMess="Welcome, Dear Guest";
-        if(AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
-          
-          benefits.innerHTML = "";
-          
-        }
+    //Admin
+    if(memberType==M_TYPE_Admin){
+      welMess="Welcome, Dear Admin";      
+      benefits.innerHTML = "";
+      validity.innerHTML = "Lifetime";   
+
+    }
+
+    //neither
+    if(memberType==M_TYPE_Guest){
+      welMess="Welcome, Dear Guest";
+      if(AccountData[1].result[6]=="0x0000000000000000000000000000000000000000"){
+        
+        benefits.innerHTML = "";
+        
       }
+    }
 
      welcomemessage.innerHTML = welMess; 
   }else{
@@ -287,14 +296,14 @@ if(AccountData != null){
           hash: result.hash,
         })
           if(resultTr.status=='success'){          
-            errorx.innerHTML = getInfoMessageContent(amountoTopup_+" USDT top up was successfull with hash: "+result.hash);
+            errorx.innerHTML = getInfoMessageandTxn(amountoTopup_+" USDT top up was successfull with hash: ",result.hash);
             topupamount.value=0;
           }else{
-            errorx.innerHTML = getErrorMessageContent(amountoTopup_+" USDT top up failed hash: "+result.hash);
+            errorx.innerHTML = getErrorMessageandTxn(amountoTopup_+" USDT top up failed hash: ",result.hash);
             topupBtn.disabled = false;   
           }
       }catch(e){
-        errorx.innerHTML = getErrorMessageContent("Error: "+e.shortMessage);
+        errorx.innerHTML = getErrorMessageContent("Error: Top up failed "+e.shortMessage);
         topupBtn.disabled = false;   
       }finally{
         topupBtn.innerHTML = `Top Up`;             
@@ -696,6 +705,17 @@ if(AccountData != null){
     const selectedActionValue = actionsselect.value;
     errorx.innerHTML="";
     actionTab=selectedActionValue;
+    if(memberType==M_TYPE_Guest){
+
+      errorx.innerHTML=getInfoMessageContent("Admin dont have access to Subscription actions");
+      subscribeform.style.display ="none"; 
+      selfregisterform.style.display ="none"; 
+      topupform.style.display ="none";
+      commonform.style.display ="none";     
+      benefits.style.display ="block";   
+      return;
+    }
+
     if (selectedActionValue == "R") {
       subscribeform.style.display ="block";    
       selfregisterform.style.display ="none";    

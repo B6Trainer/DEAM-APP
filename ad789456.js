@@ -275,7 +275,7 @@ const AdminWallets = await readContracts({
     var nameArr = AdminWallets[profResultLoc].result[2]; 
     var emailArr = AdminWallets[profResultLoc].result[3]; 
     var phoneArr = AdminWallets[profResultLoc].result[4]; 
-     var profilecount = AdminWallets[profResultLoc].result[5]; 
+    var profilecount = AdminWallets[profResultLoc].result[5]; 
     var subsBalanceArr = AdminWallets[profResultLoc].result[6]; 
     var rewardsReceivedArr = AdminWallets[profResultLoc].result[7] ; 
     var sponsor = AdminWallets[profResultLoc].result[8]; 
@@ -288,6 +288,81 @@ const AdminWallets = await readContracts({
     profileCountSpan.innerHTML = profilecount;
 
 
+//--------------------------------------------------------------Contract balance section------------------------------------------------------------------------------------
+    // Prepare the Contracts table header
+    var contractstable = document.getElementById("contractsTable");
+    var contractstheader = document.getElementById("contractsTableHeader");
+    var contractstbody = document.getElementById("contractsTableBody");
+    var contractsCountSpan = document.getElementById("contractsCount");
+   
+    var headerRow=contractstheader.insertRow(0);
+    var contractsTableheaders = ["Contract Name","Contract Address", "USDT Balance", "DMTK Balance"]; // Contract balance header values
+
+ 
+    for (var i = 0; i < contractsTableheaders.length; i++) {
+        var headerCell = document.createElement("th");
+        var text = document.createTextNode(contractsTableheaders[i]);
+        headerCell.appendChild(text);
+        headerRow.appendChild(headerCell);
+    }
+
+    var contractsNameList =["DM_MANAGER_ADDRESS"] ;
+    var contractsList =[DM_MANAGER_ADDRESS] ;
+    var contractscount =contractsList.length; 
+
+    const ContractBalanceDetails = await readContracts({
+        contracts: [
+        {
+            ...dmManagerContract,
+            functionName: 'getContractBalance',
+        },
+        ],
+    });
+    
+    console.log("Contract balance : ");
+    console.log(ContractBalanceDetails);
+
+    var dmMangerContractBalance;
+    if(ContractBalanceDetails[0].status=="success"){
+        dmMangerContractBalance =ContractBalanceDetails[0].result;
+    }else{
+        dmMangerContractBalance=[0,0];
+    }
+    console.log(dmMangerContractBalance);
+    console.log(ContractBalanceDetails[0].result);
+        
+    var ContractBalances =[dmMangerContractBalance];
+    //contractsCountSpan.innerHTML = contractscount+"";
+
+    // Prepare the contracts table body
+    for(var i=0;i<contractscount;i++){
+          
+          var newRow = contractstable.insertRow(contractstbody.rows.length); 
+          
+          var contractNameCell = newRow.insertCell(0); 
+          var contractCell = newRow.insertCell(1); 
+          var usdtBalanceCell = newRow.insertCell(2); 
+          var dmtkBalanceCell = newRow.insertCell(3); 
+          
+        
+          var contractBalance =ContractBalances[i];
+  
+          contractNameCell.innerHTML=contractsNameList[i];
+          contractCell.innerHTML = contractsList[i];
+          usdtBalanceCell.innerHTML = Number(utils.formatEther(contractBalance[0])).toFixed(2);
+          dmtkBalanceCell.innerHTML = Number(utils.formatEther(contractBalance[1])).toFixed(2);
+          
+          //phonecell.innerHTML = phoneArr[i];
+          //emailcell.innerHTML = emailArr[i];
+          //subscell.innerHTML = Number(utils.formatEther(subsBalanceArr[i])).toFixed(2);;
+          //rewardscell.innerHTML = Number(utils.formatEther(rewardsReceivedArr[i])).toFixed(2);
+          //sponsorcell.innerHTML = sponsor[i];
+    
+    }
+
+  
+
+//--------------------------------------------------------------Profile section------------------------------------------------------------------------------------
     // Prepare the profile table header
     var headerRow=profiletheader.insertRow(0);
     var profileTableheaders = ["Wallet Address", "Profile type", "Name", "Phone", "Email","Subs Balance", "Rewards", "Sponsor"]; // Profile header values

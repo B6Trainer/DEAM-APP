@@ -54,13 +54,13 @@ export function getInfoMessageandTxn(message,txn){
 
   var constructedMessage=` <div class="alert alert-info alert-dismissible fade show">
   <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
-  <strong >Info!</strong> ${message}<br> Txn Hash:${constructedHashlink} </div>`;
+  <strong >Info!</strong> ${message}<br> Txn Hash : ${constructedHashlink} </div>`;
 
   return constructedMessage;
 }
 
 function constructTxnLink(txn){
-  //var explorerlink="https://testnet.ftmscan.com/tx/";
+
   var fullurl=DM_TXN_HASH_EXPLORER+txn;
   var maskedTxnHash=maskWalletAddress(txn);
   
@@ -69,4 +69,16 @@ function constructTxnLink(txn){
   
   return constructedHashLink;
 
+}
+
+
+// Function to copy text to clipboard
+export function copyToClipboard(text) {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      alert("Copied to clipboard: " + text);
+    })
+    .catch(err => {
+      console.error('Unable to copy text: ', err);
+    });
 }

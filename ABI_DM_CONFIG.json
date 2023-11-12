@@ -5,23 +5,17 @@
 		"type": "constructor"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "addressToString",
-		"outputs": [
-			{
+				"indexed": false,
 				"internalType": "string",
-				"name": "",
+				"name": "message",
 				"type": "string"
 			}
 		],
-		"stateMutability": "pure",
-		"type": "function"
+		"name": "logMessage",
+		"type": "event"
 	},
 	{
 		"inputs": [],
@@ -108,6 +102,19 @@
 			{
 				"internalType": "address",
 				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getContractAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
 				"type": "address"
 			}
 		],
@@ -493,6 +500,19 @@
 		"name": "updateMinimumTopUpAmountMembers",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "withdrawdailyLimitCheck",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ]

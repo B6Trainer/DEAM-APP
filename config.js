@@ -81,6 +81,7 @@ export const getShareData =(address)=> {
 export const  M_TYPE_Member = 0;
 export const  M_TYPE_Promoter = 1;
 export const  M_TYPE_Guest = 2;
+export const  M_TYPE_Admin = 3;
 
 
 

@@ -1,51 +1,126 @@
-import { watchAccount,watchNetwork,getNetwork } from "@wagmi/core";
+import { readContracts,watchAccount,watchNetwork,getNetwork } from "@wagmi/core";
 import ethereumClient from "./walletConnect";
-import {defaultChainId} from './config'
+import {defaultChainId,M_TYPE_Guest,M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Admin} from './config'
+import { usdtAddress,DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
+import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
+import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
+import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
+import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
+import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
+import ABI_ERC20 from './ABI_ERC20.json'
 
-
-console.log('common.js is being executed');
-var connected = ethereumClient.getAccount().isConnected;
+export var wconnected = ethereumClient.getAccount().isConnected;
 var previousAddress;
 var previousNetwork;
-if (connected) {
+var walletAddress="";
+var membershipType=M_TYPE_Guest;
+var welMess="Welcome, Dear visitor"; 
+export const zeroaddress="0x0000000000000000000000000000000000000000";
+
+if (wconnected) {
+
     const { chain } =  getNetwork();
     previousNetwork = chain.id;
     previousAddress = ethereumClient.getAccount().address;
+    walletAddress=ethereumClient.getAccount().address;
 
-  const unwatch = watchAccount((account) => {
-    if (account.address!=undefined && previousAddress != account.address) {
-      window.location.reload();
+    console.log('Common.js : Wallet connected with address: '+walletAddress);
+
+    const usdtContract = {
+      address: usdtAddress,
+      abi: ABI_ERC20,
     }
-  });
-  
-  const unwatch1 = watchNetwork((network) =>
-      {
-        if(network.chain !=undefined){
-          previousNetwork = network.chain.id;
-      if(previousNetwork != defaultChainId){
-          //window.location.href="./home.html";
-          //switchChain.style.display ="block";
-          //connectBtn.style.display = "none";
-          //openApp.style.display = "none";
+
+    //New Contracts
+    const dmConfigContract = {
+      address: DM_CONFIG_ADDRESS,
+      abi: DM_CONFIG_ABI,
+    }
+
+    const dmMembershipContract = {
+      address: DM_MEMBERSHIP_ADDRESS,
+      abi: DM_MEMBERSHIP_ABI,
+    }
+
+
+    var ClientData = await readContracts({
+      contracts: [
+           
+            {
+              ...dmMembershipContract,
+              functionName: 'getSubscriptionDetails',
+              args:[ethereumClient.getAccount().address]
+            },
+            {
+              ...dmConfigContract,
+              functionName: 'conversionFeeWallet',
+            },
+            
+            {
+              ...usdtContract,
+              functionName: 'balanceOf',
+              args: [ethereumClient.getAccount().address],
+            }
+      ],
+    });
+
+    if(ClientData!=null){
+
+      if(ClientData[0].result[6]==zeroaddress){
+        membershipType=M_TYPE_Guest;
+      }else{
+        membershipType=ClientData[0].result[0];
+        console.log('Common.js : Fetched the membership details for wallet: '+walletAddress)+' Membership type: '+membershipType;
       }
+
+          //promotor
+      if(membershipType==M_TYPE_Promoter){
+        welMess="Welcome, Dear Promoter";      
+      }
+
+      //member
+      if(membershipType==M_TYPE_Member){
+        welMess="Welcome, Dear Member";      
+      }
+
+      //Guest
+      if(membershipType==M_TYPE_Guest){
+        welMess="Welcome, Dear Guest";      
+      }
+
+      if(membershipType==M_TYPE_Admin){
+        welMess="Welcome, Dear Admin";      
+      }
+
     }
-  });
-}
 
-
-// Function to copy text to clipboard
-export function copyToClipboard(text) {
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      alert("Copied to clipboard: " + text);
-    })
-    .catch(err => {
-      console.error('Unable to copy text: ', err);
+    const unwatch = watchAccount((account) => {
+      if (account.address!=undefined && previousAddress != account.address) {
+        window.location.reload();
+      }
+    });
+    
+    const unwatch1 = watchNetwork((network) =>
+        {
+          if(network.chain !=undefined){
+            previousNetwork = network.chain.id;
+        if(previousNetwork != defaultChainId){
+            //window.location.href="./home.html";
+            //switchChain.style.display ="block";
+            //connectBtn.style.display = "none";
+            //openApp.style.display = "none";
+        }
+      }
     });
 }
 
+export var walletAddress;
+export var membershipType;
+export var welMess;
 
-// document.getElementById("footer-menu").style.zIndex = "100";
+
+
+// Footer menu
 const footerMenu = `
 <div class="bottom-navbar">
   <ul class="nav">

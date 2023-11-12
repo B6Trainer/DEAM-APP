@@ -1,8 +1,7 @@
     import {readContracts,watchAccount} from "@wagmi/core";
     import ethereumClient from "./walletConnect";
     
-    import { maskWalletAddress } from "./dm_utils";
-  
+    import { maskWalletAddress } from "./dm_utils";  
     import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
     import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
     import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';

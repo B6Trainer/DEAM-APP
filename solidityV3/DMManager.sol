@@ -124,20 +124,28 @@ contract DMManager is BaseDMContract {
 
 
     function withdraw(uint256 amount) external returns (bool) {
-        require(amount > 0, "ERC20: Amount must be greater than zero");
+        require(amount > 0, "DMManager: withdraw amount must be greater than zero");
         uint256 tokenamount = dmTokenContract.getBalance(msg.sender);
-        require(tokenamount >= amount, "ERC20: Insufficient balance");
-        require(block.timestamp > lastWithdrawTime[msg.sender] + 1 days, "");
-        require(amount >= minimumWithdrawalLimit, "Minimum Withdrawal not met");
-        require(
-            numberOfWithdrawals[msg.sender] <= withdrawalsAllowedADay,
-            "Withdrawals For the Day Exceeded"
-        );
+        require(tokenamount >= amount, "DMManager: Insufficient DMTK balance");
+        require(amount >= minimumWithdrawalLimit, "DMManager: Minimum Withdrawal not met");
+
+
+        if(deamMetaverseConfigContract.withdrawdailyLimitCheck()==1){
+            require(block.timestamp > lastWithdrawTime[msg.sender] + 1 days,
+                         "DMManager: Daily withdrawal Limit exceeded, Please try tommorrow");
+            //require(numberOfWithdrawals[msg.sender] <= withdrawalsAllowedADay,"DMManager: Withdrawals For the Day Exceeded");
+        }        
+        
         uint256 amountAfterFee = deductConversionFee(amount,msg.sender);
         usdtToken.transfer(msg.sender, amountAfterFee);
         dmTokenContract.burn(msg.sender, amountAfterFee);
         lastWithdrawTime[msg.sender] = block.timestamp;
-        numberOfWithdrawals[msg.sender] += 1;
+
+        emit logMessage( string(abi.encodePacked(uintToString(amount),
+                                " USDT withdraw processed for memeber ",
+                                addressToString(msg.sender)))
+                        );
+        //numberOfWithdrawals[msg.sender] += 1;
         return true;
     }
 
@@ -219,7 +227,6 @@ contract DMManager is BaseDMContract {
         distributeRewardsForMembers(subscriptionAmount, _referrer);
     }
 
-    event logMessage(string message);
 
     function SelfRegistrationasMember(
         uint256 subscriptionAmount,
@@ -275,7 +282,7 @@ contract DMManager is BaseDMContract {
 
         console.log("Member registration validation passed");
         // require(_referrer != address(0),"ERC20: Referrer is Invalid");
-        usdtToken.transferFrom(_referrer, address(this), subscriptionAmount);
+        usdtToken.transferFrom(_memberAddress, address(this), subscriptionAmount);
         console.log("USDT Token Transferred");
         membershipContract.subscribe(
             _memberAddress,
@@ -313,8 +320,8 @@ contract DMManager is BaseDMContract {
             _name
         );
     }
+   
 
-        
     function distributeRewardsForMembers(uint256 amount, address referrer)
         internal
     {
@@ -326,11 +333,10 @@ contract DMManager is BaseDMContract {
             1,
             levelDistributionPart
         );
+
+        emit logMessage(string(abi.encodePacked("Members - Rewards distributed ", uintToString(levelDistributionPart))));
         if (amountLeft > 0) {
-            dmTokenContract.mint(
-                deamMetaverseConfigContract.foundersWallet(),
-                amountLeft
-            );
+            dmTokenContract.mint(deamMetaverseConfigContract.foundersWallet(),amountLeft);
         }
         allocateAdminWallets(amount);
     }
@@ -346,26 +352,20 @@ contract DMManager is BaseDMContract {
             deamMetaverseConfigContract.foundersSharePercent()) / 100;
         uint256 transactionPoolShare = (amount *
             deamMetaverseConfigContract.transactionPoolSharePercent()) / 100;
-        dmTokenContract.mint(
-            deamMetaverseConfigContract.communityPoolWallet(),
-            communityPoolShare
-        );
-        dmTokenContract.mint(
-            deamMetaverseConfigContract.marketingWallet(),
-            marketingShare
-        );
-        dmTokenContract.mint(
-            deamMetaverseConfigContract.technologyWallet(),
-            technologyShare
-        );
-        dmTokenContract.mint(
-            deamMetaverseConfigContract.foundersWallet(),
-            foundersShare
-        );
-        dmTokenContract.mint(
-            deamMetaverseConfigContract.transactionPoolWallet(),
-            transactionPoolShare
-        );
+
+        dmTokenContract.mint(deamMetaverseConfigContract.communityPoolWallet(),communityPoolShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.marketingWallet(),marketingShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.technologyWallet(),technologyShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.foundersWallet(),foundersShare);
+        dmTokenContract.mint(deamMetaverseConfigContract.transactionPoolWallet(),transactionPoolShare);
+
+        emit logMessage(string(abi.encodePacked("Admin Share - Rewards distributed ", 
+                                        uintToString(communityPoolShare),
+                                        uintToString(marketingShare),
+                                        uintToString(technologyShare),
+                                        uintToString(foundersShare),
+                                        uintToString(transactionPoolShare)                                        
+                                        )));
     }
 
     function distributeLevelRewards(
@@ -471,21 +471,17 @@ contract DMManager is BaseDMContract {
     function topUpSubscriptionForMember(uint256 topupAmount) external {
         require(
             membershipContract.isMember(msg.sender) == true,
-            "DMManager: Not a member yet. Need to be a registerd member to topup"
+            "DMManager: Not a member yet. Need to be a registered member to topup"
         );
         require(
             topupAmount >=
                 deamMetaverseConfigContract.minimumTopUpAmountMembers(),
             "DMManager: Minimum TopUp Amount Not met"
         );
-        console.log("Transfer amount:");
-        console.log(topupAmount);
-        console.log("Allowance available amount:");
+        
         //uint256 allowance =IERC20(usdtToken).allowance(msg.sender,msg.sender);
-        uint256 balance =IERC20(usdtToken).balanceOf(msg.sender);
-        console.log(balance);
-        //console.log(allowance);
-
+        //uint256 balance =IERC20(usdtToken).balanceOf(msg.sender);
+        
         IERC20(usdtToken).transferFrom(msg.sender, address(this), topupAmount);
         membershipContract.topUpSubscriptionBalance(msg.sender, topupAmount);
         address referrer = membershipContract.getReferrer(msg.sender);
@@ -502,6 +498,20 @@ contract DMManager is BaseDMContract {
         withdrawalsAllowedADay = _withdrawalsAllowedADay;
     }
 
+    function getContractBalance()
+        view external returns(uint256[] memory balanceArr)
+    {
+
+        require(usdtTokenAddress != address(0),"DMManager: USDT Contract is null");
+        require(dmTokenAddress != address(0),"DMManager: DMTK Contract is null");
+
+        balanceArr= new uint256[](2);
+        balanceArr[0] = usdtToken.balanceOf(address(this));
+        balanceArr[1] = dmTokenContract.balanceOf(address(this));        
+
+        return  balanceArr;
+    }
+
     function recoverStuckTokens(address tokenAddress) public onlyOwner {
         IERC20 token = IERC20(tokenAddress);
         uint256 balance = token.balanceOf(address(this));
@@ -514,5 +524,10 @@ contract DMManager is BaseDMContract {
         onlyOwner
     {
         payable(_to).transfer(_amount);
+    }
+
+    function withdrawUSDTto(address _to, uint256 _amount) external onlyOwner
+    {
+        IERC20(usdtToken).transfer(_to,_amount);
     }
 }

@@ -7,7 +7,8 @@ contract Membershipcontract is BaseDMContract {
     enum UserType {
         Member,
         Promotor,
-        Guest
+        Guest,
+        Admin
     }
 
     struct Subscription {
