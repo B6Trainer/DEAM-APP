@@ -35,7 +35,8 @@ contract DeamMetaverseConfig is BaseDMContract {
 
 
 
-    constructor() {
+    constructor(address _founderWallet) {
+        foundersWallet=_founderWallet;
         console.log("DMConfig contract constructed");       
         
     }

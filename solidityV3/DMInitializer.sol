@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "./Membershipcontract.sol";
 import "./DMCPdistributor.sol";
 import "./DeamMetaverseConfig.sol";
-import "./IERC20.sol";
+
 import "./DMToken.sol";
 import "hardhat/console.sol";
 import "./BaseDMContract.sol";

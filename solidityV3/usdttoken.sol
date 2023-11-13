@@ -1,17 +1,10 @@
+/**
+ *Submitted for verification at BscScan.com on 2020-09-04
+*/
 
-// ----------------------------------------------------------------------------
-//  'Vendom' token contract
-//
-// Symbol      : VDM
-// Name        : Vendom
-// Total supply: 2,000,000,000
-// Decimals    : 18
-// ----------------------------------------------------------------------------
+pragma solidity 0.5.16;
 
-pragma solidity 0.6.5;
-
-
-interface IERC20 {
+interface IBEP20 {
   /**
    * @dev Returns the amount of tokens in existence.
    */
@@ -33,7 +26,7 @@ interface IERC20 {
   function name() external view returns (string memory);
 
   /**
-   * @dev Returns the BEP20 token owner.
+   * @dev Returns the bep token owner.
    */
   function getOwner() external view returns (address);
 
@@ -347,7 +340,7 @@ contract Ownable is Context {
   }
 }
 
-contract Vendom is Context, IERC20, Ownable {
+contract BEP20USDT is Context, IBEP20, Ownable {
   using SafeMath for uint256;
 
   mapping (address => uint256) private _balances;
@@ -355,75 +348,61 @@ contract Vendom is Context, IERC20, Ownable {
   mapping (address => mapping (address => uint256)) private _allowances;
 
   uint256 private _totalSupply;
-  uint8 private _decimals;
-  string private _symbol;
-  string private _name;
-  uint256  private immutable _cap;
+  uint8 public _decimals;
+  string public _symbol;
+  string public _name;
 
   constructor() public {
-    _name = "USDT";
+    _name = "Tether USD";
     _symbol = "USDT";
     _decimals = 18;
-    _totalSupply = 2000000000 * 10 ** uint256(_decimals);
+    _totalSupply = 30000000000000000000000000;
     _balances[msg.sender] = _totalSupply;
-    _cap = _totalSupply;
 
     emit Transfer(address(0), msg.sender, _totalSupply);
   }
 
- struct LockDetails {
-        uint256 startTime;
-        uint256 initialLock;
-        uint256 lockedToken;
-        uint256 remainingLockedToken;
-        uint256 monthCount;
-        uint256 openingPercentage;
-    }
-
-    mapping(address => LockDetails) public locks;
-
   /**
-   * @dev Returns the BEP20 token owner.
+   * @dev Returns the bep token owner.
    */
-  function getOwner() external override view returns (address) {
+  function getOwner() external view returns (address) {
     return owner();
   }
 
   /**
    * @dev Returns the token decimals.
    */
-  function decimals() external override view returns (uint8) {
+  function decimals() external view returns (uint8) {
     return _decimals;
   }
 
   /**
    * @dev Returns the token symbol.
    */
-  function symbol() external override view returns (string memory) {
+  function symbol() external view returns (string memory) {
     return _symbol;
   }
 
   /**
   * @dev Returns the token name.
   */
-  function name() external view override returns (string memory) {
+  function name() external view returns (string memory) {
     return _name;
   }
 
   /**
    * @dev See {BEP20-totalSupply}.
    */
-  function totalSupply() external override view returns (uint256) {
+  function totalSupply() external view returns (uint256) {
     return _totalSupply;
   }
 
   /**
    * @dev See {BEP20-balanceOf}.
    */
-  function balanceOf(address account) override public view returns (uint256) {
+  function balanceOf(address account) external view returns (uint256) {
     return _balances[account];
   }
-
 
   /**
    * @dev See {BEP20-transfer}.
@@ -433,15 +412,15 @@ contract Vendom is Context, IERC20, Ownable {
    * - `recipient` cannot be the zero address.
    * - the caller must have a balance of at least `amount`.
    */
-  function transfer(address recipient, uint256 amount) override external returns (bool) {
+  function transfer(address recipient, uint256 amount) external returns (bool) {
     _transfer(_msgSender(), recipient, amount);
     return true;
   }
 
   /**
-   * @dev See {BEP20}.
+   * @dev See {BEP20-allowance}.
    */
-  function allowance(address owner, address spender) override external view returns (uint256) {
+  function allowance(address owner, address spender) external view returns (uint256) {
     return _allowances[owner][spender];
   }
 
@@ -452,7 +431,7 @@ contract Vendom is Context, IERC20, Ownable {
    *
    * - `spender` cannot be the zero address.
    */
-  function approve(address spender, uint256 amount) override external returns (bool) {
+  function approve(address spender, uint256 amount) external returns (bool) {
     _approve(_msgSender(), spender, amount);
     return true;
   }
@@ -469,7 +448,7 @@ contract Vendom is Context, IERC20, Ownable {
    * - the caller must have allowance for `sender`'s tokens of at least
    * `amount`.
    */
-  function transferFrom(address sender, address recipient, uint256 amount) override external returns (bool) {
+  function transferFrom(address sender, address recipient, uint256 amount) external returns (bool) {
     _transfer(sender, recipient, amount);
     _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "BEP20: transfer amount exceeds allowance"));
     return true;
@@ -510,15 +489,27 @@ contract Vendom is Context, IERC20, Ownable {
     _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "BEP20: decreased allowance below zero"));
     return true;
   }
-  
-  
-   /* * @dev Burns a specific amount of tokens.
-     * @param value The amount of lowest token units to be burned.
-     */
-    function burn(uint256 value) public onlyOwner {
-      _burn(msg.sender, value);
-    }
-    
+
+  /**
+   * @dev Creates `amount` tokens and assigns them to `msg.sender`, increasing
+   * the total supply.
+   *
+   * Requirements
+   *
+   * - `msg.sender` must be the token owner
+   */
+  function mint(uint256 amount) public onlyOwner returns (bool) {
+    _mint(_msgSender(), amount);
+    return true;
+  }
+
+  /**
+   * @dev Burn `amount` tokens and decreasing the total supply.
+   */
+  function burn(uint256 amount) public returns (bool) {
+    _burn(_msgSender(), amount);
+    return true;
+  }
 
   /**
    * @dev Moves tokens `amount` from `sender` to `recipient`.
@@ -537,97 +528,28 @@ contract Vendom is Context, IERC20, Ownable {
   function _transfer(address sender, address recipient, uint256 amount) internal {
     require(sender != address(0), "BEP20: transfer from the zero address");
     require(recipient != address(0), "BEP20: transfer to the zero address");
-    require(sender != recipient, "Invalid target");
 
-    if (locks[sender].lockedToken > 0) {
-            uint256 withdrawable = balanceOf(sender) - locks[sender].remainingLockedToken;
-            require(amount <= withdrawable,"Not enough Unlocked token Available");
-    }
-    
     _balances[sender] = _balances[sender].sub(amount, "BEP20: transfer amount exceeds balance");
     _balances[recipient] = _balances[recipient].add(amount);
     emit Transfer(sender, recipient, amount);
   }
 
+  /** @dev Creates `amount` tokens and assigns them to `account`, increasing
+   * the total supply.
+   *
+   * Emits a {Transfer} event with `from` set to the zero address.
+   *
+   * Requirements
+   *
+   * - `to` cannot be the zero address.
+   */
+  function _mint(address account, uint256 amount) internal {
+    require(account != address(0), "BEP20: mint to the zero address");
 
-    /**
-     * @dev it unlocks token from vesting period ,
-     * locked token for initially for initial days than unlock *openingPercentage of locked token every month
-     */ 
-
-    function unlock(address target_) external {
-        require(target_ != address(0), "Target address can not be zero address");
-        uint256 startTime = locks[target_].startTime;
-        uint256 lockedToken = locks[target_].lockedToken;
-        uint256 remainingLockedToken = locks[target_].remainingLockedToken;
-        uint256 monthCount = locks[target_].monthCount;
-        uint256 initialLock = locks[target_].initialLock;
-        uint256 openingPercentage = locks[target_].openingPercentage;
-        
-        require(remainingLockedToken != 0, "All tokens are unlocked");
-
-        require(
-            block.timestamp > startTime + (initialLock * 1 days),
-            "UnLocking period is not opened"
-        );
-        uint256 timePassed = block.timestamp -
-            (startTime + (initialLock * 1 days));
-
-        uint256 monthNumber = (uint256(timePassed) + (uint256(30 days) - 1)) /
-            uint256(30 days);
-        uint256 installment = uint256(100) / openingPercentage;
-        
-        if(monthNumber>installment) monthNumber=installment;
-
-        uint256 remainingMonth = monthNumber - monthCount;
-
-       if (remainingMonth > installment) remainingMonth = installment;
-        require(remainingMonth > 0, "Releasable token till now is released");
-
-        uint256 receivableToken = (lockedToken * (remainingMonth * openingPercentage)) / 100;
-
-        locks[target_].monthCount += remainingMonth; 
-        remainingLockedToken -= receivableToken;
-        locks[target_].remainingLockedToken = remainingLockedToken;
-
-        if (locks[target_].remainingLockedToken == 0) {
-            delete locks[target_];
-        }
-    }
-
-
-    /** @dev Transfer with lock
-     * @param recipient The recipient address.
-     * @param tAmount Amount that has to be locked (with decimals)
-     * @param initialLock duration in days for locking
-     */
-
-    function transferWithVesting(
-        address recipient,
-        uint256 tAmount,
-        uint256 initialLock,
-        uint256 openingPercentage
-    ) external onlyOwner {
-        require(recipient != address(0), "Invalid target");
-        require(
-            locks[recipient].lockedToken == 0,
-            "This address is already in vesting period"
-        );
-        require(
-            uint256(100) % openingPercentage == 0,
-            "Invalid openingPercentage, accepts only ( 1, 2, 4, 5, 10, 20, 25, 50)"
-        );
-        _transfer(_msgSender(), recipient, tAmount);
-        locks[recipient] = LockDetails(
-            block.timestamp,
-            initialLock,
-            tAmount,
-            tAmount,
-            0,
-            openingPercentage
-        );
-    }
- 
+    _totalSupply = _totalSupply.add(amount);
+    _balances[account] = _balances[account].add(amount);
+    emit Transfer(address(0), account, amount);
+  }
 
   /**
    * @dev Destroys `amount` tokens from `account`, reducing the
@@ -638,15 +560,15 @@ contract Vendom is Context, IERC20, Ownable {
    * Requirements
    *
    * - `account` cannot be the zero address.
-   * - `amount` must have at least `amount` tokens.
+   * - `account` must have at least `amount` tokens.
    */
   function _burn(address account, uint256 amount) internal {
     require(account != address(0), "BEP20: burn from the zero address");
+
     _balances[account] = _balances[account].sub(amount, "BEP20: burn amount exceeds balance");
     _totalSupply = _totalSupply.sub(amount);
     emit Transfer(account, address(0), amount);
   }
-  
 
   /**
    * @dev Sets `amount` as the allowance of `spender` over the `owner`s tokens.
@@ -664,7 +586,19 @@ contract Vendom is Context, IERC20, Ownable {
   function _approve(address owner, address spender, uint256 amount) internal {
     require(owner != address(0), "BEP20: approve from the zero address");
     require(spender != address(0), "BEP20: approve to the zero address");
+
     _allowances[owner][spender] = amount;
     emit Approval(owner, spender, amount);
+  }
+
+  /**
+   * @dev Destroys `amount` tokens from `account`.`amount` is then deducted
+   * from the caller's allowance.
+   *
+   * See {_burn} and {_approve}.
+   */
+  function _burnFrom(address account, uint256 amount) internal {
+    _burn(account, amount);
+    _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount, "BEP20: burn amount exceeds allowance"));
   }
 }

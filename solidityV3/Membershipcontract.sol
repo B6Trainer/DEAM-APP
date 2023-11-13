@@ -72,11 +72,15 @@ contract Membershipcontract is BaseDMContract {
     }
 
     function isPromotor(address userAddress) external view returns (bool) {
-        return subscribers[userAddress].userType == UserType.Promotor;
+        return (userAddress != address(0) && memberProfiles[userAddress].userType == UserType.Promotor);
+    }
+
+    function isAdmin(address userAddress) external view returns (bool) {
+        return (userAddress != address(0) && memberProfiles[userAddress].userType == UserType.Admin);
     }
 
     function isMember(address userAddress) external view returns (bool) {
-        return subscribers[userAddress].userType == UserType.Member;
+        return (userAddress != address(0) && memberProfiles[userAddress].userType == UserType.Member);
     }
 
     function isSubscriber(address userAddress) external view returns (bool) {
@@ -265,8 +269,8 @@ contract Membershipcontract is BaseDMContract {
             emailArr[i]=memProfile.email;
             mobileArr[i]=memProfile.mobile;
 
-            Subscription memory subscription = subscribers[allProfileAddresses[i]];     
-            
+            Subscription memory subscription = subscribers[allProfileAddresses[i]]; 
+
             subsBalance[i]=subscription.subscriptionBalance;
             rewardReceived[i]=subscription.rewardReceived;                      
             referrer[i]=subscription.referrer;

@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 import "./Membershipcontract.sol";
 import "./DMCPdistributor.sol";
 import "./DeamMetaverseConfig.sol";
-import "./IERC20.sol";
+import "./IBEP20.sol";
 import "./DMToken.sol";
 import "hardhat/console.sol";
 import "./BaseDMContract.sol";
@@ -21,7 +21,7 @@ contract DMManager is BaseDMContract {
 
     uint256 public minimumWithdrawalLimit = 50 * 10**18;
     uint256 public withdrawalsAllowedADay = 1;
-    IERC20 public usdtToken;
+    IBEP20 public usdtToken;
 
     constructor() {
         console.log("DMManager contract initialised");
@@ -95,7 +95,7 @@ contract DMManager is BaseDMContract {
     function setUSDTToken(address _usdtToken) internal 
     {   
         require(_usdtToken != address(0), "Invalid address for USDT Token Contract");        
-       usdtToken = IERC20(_usdtToken);                
+       usdtToken = IBEP20(_usdtToken);                
     }
 
     function setDMToken(address _dmTokenAddress, address _thisContractAddress)
@@ -190,6 +190,8 @@ contract DMManager is BaseDMContract {
         return amount - feeAmount;
     }
 
+    //Unused function
+    /*
     function addAMember(
         address memberAddress,
         uint256 subscriptionAmount,
@@ -226,19 +228,15 @@ contract DMManager is BaseDMContract {
         );
         distributeRewardsForMembers(subscriptionAmount, _referrer);
     }
-
+    */
 
     function SelfRegistrationasMember(
-        uint256 subscriptionAmount,
-        address _referrer
-
-    ) external {
-
-        require(
-            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
-            "DMManager: Insufficient USDT Balance in the user wallet"
-        );
-        registerMember(msg.sender,subscriptionAmount, _referrer, "NA", "NA", "NA");
+        uint256 subscriptionAmount,address _referrer) external {
+       
+        if(_referrer == address(0)){
+            _referrer=deamMetaverseConfigContract.foundersWallet();
+        }
+        registerMember(msg.sender,msg.sender,subscriptionAmount, _referrer, "NA", "NA", "NA");
         
     }
 
@@ -251,16 +249,13 @@ contract DMManager is BaseDMContract {
         string memory _name
     ) external {
 
-        require(
-            usdtToken.balanceOf(_referrer) >= subscriptionAmount,
-            "DMManager: Insufficient USDT Balance in the sponsor wallet"
-        );
-        registerMember(_memberAddress,subscriptionAmount, _referrer, _email, _mobile, _name);
+        registerMember(_memberAddress,msg.sender,subscriptionAmount, _referrer, _email, _mobile, _name);
         
     }
 
     function registerMember(
         address _memberAddress,
+        address _usdtSourceAddress,
         uint256 subscriptionAmount,
         address _referrer,
         string memory _email,
@@ -271,18 +266,30 @@ contract DMManager is BaseDMContract {
         emit logMessage("Executing Member registration validation ");
         console.log("Executing Member registration validation ");
         require(
-            membershipContract.isSubscriber(_memberAddress) == false,
-            "DMManager: User trying to register is already a member, Please top up"
+            !membershipContract.isSubscriber(_memberAddress),
+            "DMManager: The member trying to register is already a member, The member may top up"
+        );
+        require(
+            membershipContract.isSubscriber(_referrer),
+            "DMManager: The referrer is not a member, Please provide a registered member as referrer"
         );
 
         require(
             subscriptionAmount >=deamMetaverseConfigContract.minimumDepositForMembers(),
-            "DMManager: Minimum Deposit amount not met"
+            "DMManager: Given amount is less than Minimum Member Deposit "
+        );
+        require(
+            usdtToken.balanceOf(_usdtSourceAddress) >= subscriptionAmount,
+            "DMManager: Insufficient USDT Balance in the registrar wallet"
+        );
+        require(
+           usdtToken.allowance(_usdtSourceAddress,address(this)) >= subscriptionAmount,
+           "DMManager: Insufficient USDT approved by the registrar wallet"
         );
 
         console.log("Member registration validation passed");
-        // require(_referrer != address(0),"ERC20: Referrer is Invalid");
-        usdtToken.transferFrom(_memberAddress, address(this), subscriptionAmount);
+
+        usdtToken.transferFrom(_usdtSourceAddress, address(this), subscriptionAmount);
         console.log("USDT Token Transferred");
         membershipContract.subscribe(
             _memberAddress,
@@ -307,7 +314,7 @@ contract DMManager is BaseDMContract {
         require(promoterAddress != address(0), string(abi.encodePacked("DMManager: Invalid wallet address : ",addressToString(promoterAddress))));
         require(
             membershipContract.isSubscriber(promoterAddress) == false,
-           string(abi.encodePacked("DMManager: Already a member/promoter : ",addressToString(promoterAddress)))
+           string(abi.encodePacked("DMManager: The requested  member/promoter : ",addressToString(promoterAddress)))
         );
         membershipContract.subscribe(
             promoterAddress,
@@ -482,7 +489,7 @@ contract DMManager is BaseDMContract {
         //uint256 allowance =IERC20(usdtToken).allowance(msg.sender,msg.sender);
         //uint256 balance =IERC20(usdtToken).balanceOf(msg.sender);
         
-        IERC20(usdtToken).transferFrom(msg.sender, address(this), topupAmount);
+        IBEP20(usdtToken).transferFrom(msg.sender, address(this), topupAmount);
         membershipContract.topUpSubscriptionBalance(msg.sender, topupAmount);
         address referrer = membershipContract.getReferrer(msg.sender);
         distributeRewardsForMembers(topupAmount, referrer);
@@ -528,6 +535,6 @@ contract DMManager is BaseDMContract {
 
     function withdrawUSDTto(address _to, uint256 _amount) external onlyOwner
     {
-        IERC20(usdtToken).transfer(_to,_amount);
+        IBEP20(usdtToken).transfer(_to,_amount);
     }
 }

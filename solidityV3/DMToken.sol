@@ -17,7 +17,7 @@ contract DMToken is IERC20 {
     IERC20 public usdtToken;
 
     mapping(address => uint256) override public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => mapping(address => uint256)) public allowances;
     mapping(address => uint256) public lastWithdrawTime;
     mapping(address => uint256) public numberOfWithdrawals;
     
@@ -158,7 +158,7 @@ contract DMToken is IERC20 {
     }
 
     function approve(address spender, uint256 value) public override returns (bool success) {
-        allowance[msg.sender][spender] = value;
+        allowances[msg.sender][spender] = value;
         emit Approval(msg.sender, spender, value);
         return true;
     }
@@ -166,13 +166,13 @@ contract DMToken is IERC20 {
     function transferFrom(address from, address to, uint256 amount) override public returns (bool success) {
         require(to != address(0), "Invalid address");
         require(balanceOf[from] >= amount, "Insufficient balance");
-        require(allowance[from][msg.sender] >= amount, "Allowance exceeded");
+        require(allowances[from][msg.sender] >= amount, "Allowance exceeded");
         uint256 deduction = 0;
         if (membershipContract.isSubscriber(msg.sender)) {
             deduction = deductTransferFee(from,amount);
         }
         _transfer(from, to, amount-deduction);
-        allowance[from][msg.sender] -= amount;
+        allowances[from][msg.sender] -= amount;
         return true;
     }
 
@@ -207,6 +207,11 @@ contract DMToken is IERC20 {
 
     function withdrawNativeCurrency(address payable _to,uint256 _amount) external onlyOwner {
         payable(_to).transfer(_amount);
+    }
+
+    function allowance(address _owner, address spender) override external view returns (uint256){
+
+        return allowances[_owner][spender];
     }
 
 }
