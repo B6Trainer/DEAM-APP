@@ -32,7 +32,8 @@ contract DMInitializer is BaseDMContract {
         address _dmTokenAddress,
         address _usdtToken,
         address _dcpDistAddress,
-        address _dmManagerAddress
+        address _dmManagerAddress,
+        address _dmTransactionsAddress
     ) external onlyOwner {
 
         //console.log("DMInitializer : Executing Contract Mapping");
@@ -85,7 +86,7 @@ contract DMInitializer is BaseDMContract {
                 _dmTokenAddress,
                 _usdtToken,                
                 _dcpDistAddress,
-                _dmManagerAddress
+                _dmTransactionsAddress
             );
         }
 

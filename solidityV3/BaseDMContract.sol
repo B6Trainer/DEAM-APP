@@ -14,6 +14,7 @@ abstract contract BaseDMContract {
     address usdtTokenAddress;
     address dcpDistAddress;
     address dmManagerAddress;
+    address dmTransactionsAddress;
     address thisContractAddress;
 
     //IERC20 public usdtToken;
