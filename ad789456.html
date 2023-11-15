@@ -25,59 +25,81 @@
       }
 
    </style>
+     <style>
+        body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden; /* Prevent default margin/padding and enable scrolling */
+        }
+    
+        .admincontainer {
+          display: flex; /* Use flexbox for horizontal layout */
+          overflow-x: auto; /* Enable horizontal scrolling if needed */
+          white-space: nowrap; /* Prevent divs from wrapping to the next line */
+        }
+    
+        .box {
+          width: 300px;
+          height: 200px;
+          margin: 10px;
+          background-color: rgb(2, 2, 2);
+          display: inline-block; /* Align divs horizontally */
+        }
+
+        .container {
+          background-color: rgb(160, 234, 209);
+          padding: 10px;
+          margin-top: 10px;
+
+        }
+      </style>
 
 </head>
 
 <body style="background-color: #080808;">
 
     <div id="header"></div>
-    <!--
-      <header class="odd" >
-        <nav id="headerNavbar" class="navbar navbar-expand-lg fixed-top " style="background-color: transparent;">
-          <div class="container">
-          <a class="navbar-brand" href="#"><img src="./images/dmtklogo.png" style="background-color: #111111cb;" width="200px"></a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"><i class="fa fa-bars" style="font-size:24px;color:#8e9999"></i> </span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarText" style="background-color: #111111cb;">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link nav-link-header" href="#">Home <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link nav-link-header smooth-anchor" href="#adminwallets">Admin Wallets</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link nav-link-header smooth-anchor" href="#weeklydistribution">Weekly Distribution</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link nav-link-header smooth-anchor" href="#feesetup">Fee Setup</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link nav-link-header smooth-anchor" href="#addnewmember">Add New Member</a>
-              </li>
-            </ul>
-            <span class="navbar-text">
-              <div id="connectBtn">
-              <w3m-core-button id="wagmiButton"></w3m-core-button>
-            </div>
-              <button style="display: none;" class="btn btn-info" id="switchChain">Switch Chain</button>
-              <button id="openApp" style="display: none;" onclick="window.location.href='./home.html'"  
-                      class="smooth-anchor ml-auto mr-auto ml-md-0 btn primary-button aos-init aos-animate" >Open App</button>
-            </span>
-            </div>
-          </div>
-        </nav>
-       
+   
+    <section id="authorizemessage" style="background-color: #080808;" >               
+        
 
-      </header>
-      -->
-    <section id="authorizemessage" style="padding: 10;background-color: #080808;" >               
-        <div class="button-container"><h4 id="adminaddress"></h4></div>
     </section>
-  
-    <section id="contractsBalancedetails" style="padding: 10px;margin-top: 10px;">     
-      <div class="container" style="background-color: rgb(201, 247, 232);padding: 10px;margin-top: 10px;">
+
+    <section id="actionsection" style="padding: 3;background-color: #080808;" >               
+        <p class="text-center"><span id="messagex"></span></p>
+        <div id="actionform" style="display:block">
+
+            <div class="admincontainer">
+                <div > <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Admin actions -> </u></h3></div>
+                <div >
+                    <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color);" >          
+                        <option value="HM">Home</option>
+                        <option value="AW">Admin Wallets</option>
+                        <option value="P">Profiles</option>
+                        <option value="CB">Contracts Balance</option>
+                        <option value="WR">Weekly rewards</option>
+                        <option value="FS">Fee Setup</option>
+                        <option value="RP">Register Promoter</option>    
+            
+                    </select>
+                </div>
+                <div><h4 id="adminaddress"></h4></div>
+
+              </div>
+
+        </div>
+
+    </section>
+
+    <section id="homesection" style="padding: 10px;margin-top: 10px;" style="display:none">     
+        <div  class="container">
+          <h3>Admin Home </h3>         
+              
+        </div>
+    </section>
+
+    <section id="contractsBalancedetails" style="padding: 10px;margin-top: 10px;" style="display:none">     
+      <div class="container" >
         <h3>Contract Balances : Contract count = <span id="contractscount"></span> contracts</h3>         
             <table id="contractsTable">                             
               <thead id="contractsTableHeader" style="font-size: xx-small;"></thead>
@@ -86,9 +108,8 @@
       </div>
     </section>
    
-
-    <section id="profiledetails" style="padding: 10px;margin-top: 10px;">     
-      <div class="container" style="background-color: rgb(201, 247, 232);padding: 10px;margin-top: 10px;">
+    <section id="profiledetails" style="padding: 10px;margin-top: 10px;" style="display:none">     
+      <div class="container">
         <h3>Profile Members : Profile count = <span id="profileCount"></span> profiles</h3>         
             <table id="profileTable">                             
               <thead id="profileTableHeader" style="font-size: xx-small;"></thead>
@@ -97,15 +118,14 @@
       </div>
     </section>
     
+    <section id="adminwallets" style="padding: 10px;margin-top: 10px;" style="display:none">     
 
-    <section id="adminwallets" style="padding: 10px;margin-top: 10px;">     
-
-      <div class="container" style="background-color: rgb(201, 247, 232);padding: 10px;margin-top: 10px;">
+      <div class="container" >
         <h3>Admin Wallets</h3>         
             <table id="myTable">                             
               <thead>
                   <tr>
-                      <th>name</th>
+                      <th>Name</th>
                       <th>Wallet</th>
                       <th>New Address</th>
                       <th>Update?</th>
@@ -118,8 +138,8 @@
       </div>
     </section>
     
-    <section id="weeklydistribution" style="padding: 10px;margin-top: 10px;">
-        <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
+    <section id="weeklydistribution" style="padding: 10px;margin-top: 10px;" style="display:none">
+        <div class="container">
             <h3>Distribute Weekly Reward </h3>
             <p id="lastDistributeTime">loading..</p>
             <div class="row">
@@ -143,9 +163,7 @@
 
     </section>
 
-
-
-    <section id="feesetup" style="padding: 10px;margin-top: 10px;">
+    <section id="feesetup" style="padding: 10px;margin-top: 10px;" style="display:none">
         
         <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
             <h2>Fee Setup</h2>
@@ -206,10 +224,8 @@
 
     </section>
 
-
-
-    <section id="registerpromoter" style="padding: 10px;margin-top: 10px;">
-        <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
+    <section id="registerpromoter" style="padding: 10px;margin-top: 10px;" style="display:none">
+        <div class="container" >
             <h3>Register a Promoter</h3>
             <div class="row">
                 <div class="form-group" id="name" >
@@ -232,7 +248,7 @@
                 </div>
 
               <input class="btn btn-info" type="button" id="addFreeMember" value ="Register Promoter">
-              <p class="text-center"><span style="color:#f25a67" id="addmembererrorx"></span></p>
+
             </div>
         </div>
     </section>

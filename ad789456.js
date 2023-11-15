@@ -1,14 +1,14 @@
 import {waitForTransaction, writeContract,readContracts} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
-import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
+import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS, M_TYPE_Admin } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
 import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 
-const addmembererrorx = document.getElementById("addmembererrorx");
+const messagex = document.getElementById("messagex");
 
 
   const dmConfigContract = {
@@ -42,83 +42,8 @@ const addmembererrorx = document.getElementById("addmembererrorx");
             document.getElementById('header').innerHTML = data;
         });
 
-/*
- const AdminWallets = await readContracts({
-    contracts: [
-    {
-        ...dmtkContract,
-        functionName: 'communityPoolWallet',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'marketingWallet',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'technologyWallet',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'transactionPoolWallet',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'foundersWallet',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'conversionFeeWallet',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'owner',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'lastCommunityDistributionTime',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'communityDistributionFrequencyInDays',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'totalCommunityDistribution',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'conversionFeeMember',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'conversionFeeMember',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'transactionFee_communityPoolFeePercentage',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'transactionFee_foundersFeePercentage',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'minimumDepositForMembers',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'minimumTopUpAmountMembers',
-    },
-    {
-        ...dmtkContract,
-        functionName: 'startIndexOfNextBatch',
-    }
-    ],
-  });
-*/
 
-
-const AdminWallets = await readContracts({
+  const AdminWallets = await readContracts({
     contracts: [
     {
         ...dmConfigContract,
@@ -200,11 +125,68 @@ const AdminWallets = await readContracts({
   document.getElementById("startIndex").value = AdminWallets[16].result;
   document.getElementById("startIndex").disabled = true;
   if(AdminWallets[6].result != ethereumClient.getAccount().address){
-    document.getElementById("adminaddress").innerHTML = "Unauthorized!! You are not an admin! Your wallet id:  "+ethereumClient.getAccount().address
+    document.getElementById("adminaddress").innerHTML = "Unauthorized!! You are not an admin! <br>  Wallet id:  "+ethereumClient.getAccount().address
     document.getElementById("adminaddress").style.color="red";
   }else{
-    document.getElementById("adminaddress").innerHTML = "Welcome admin! "+ethereumClient.getAccount().address
+    document.getElementById("adminaddress").innerHTML = "Welcome admin! <br> Wallet id:"+ethereumClient.getAccount().address
+    document.getElementById("adminaddress").style.color="green";
   }
+
+  //-------------------------------------------------------------Action Select--------------------------------------------------------
+  
+  const contractsBalancedetails = document.getElementById("contractsBalancedetails");
+  const profiledetails = document.getElementById("profiledetails");
+  const adminwallets = document.getElementById("adminwallets");
+  const weeklydistribution = document.getElementById("weeklydistribution");
+  const feesetup = document.getElementById("feesetup");
+  const registerpromoter = document.getElementById("registerpromoter");
+  const homesection = document.getElementById("homesection");
+  
+  var actionTab;
+  var memberType=M_TYPE_Admin;
+  
+  
+  actionsselect.addEventListener("change", function() {
+
+    const selectedActionValue = actionsselect.value;
+    messagex.innerHTML="";
+    actionTab=selectedActionValue;
+
+    homesection.style.display ="none"; 
+    contractsBalancedetails.style.display ="none"; 
+    profiledetails.style.display ="none"; 
+    adminwallets.style.display ="none";
+    weeklydistribution.style.display ="none";     
+    feesetup.style.display ="none";   
+    registerpromoter.style.display ="none";  
+
+    if(memberType!=M_TYPE_Admin){
+
+      messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");
+ 
+      return;
+    }
+
+
+    if (selectedActionValue == "HM") {
+        homesection.style.display ="block";   
+    }else if (selectedActionValue == "AW") {
+        adminwallets.style.display ="block";  
+    }else if (selectedActionValue == "P") {
+        profiledetails.style.display ="block";  
+    }else if (selectedActionValue == "CB") {
+        contractsBalancedetails.style.display ="block";  
+    }else if (selectedActionValue == "WR") {
+        weeklydistribution.style.display ="block";  
+    }else if (selectedActionValue == "FS") {
+        feesetup.style.display ="block";  
+    }else if (selectedActionValue == "RP") {
+        registerpromoter.style.display ="block";  
+    }
+
+  });
+
+
   //--------------------------------------------------------------Admin Wallet details------------------------------------------------------------------------------------
   var walletnamearray = ["communityPoolWallet","marketingWallet","technologyWallet","transactionPoolWallet","foundersWallet","conversionFeeWallet"]
   var table = document.getElementById("myTable");
@@ -667,7 +649,7 @@ addFreeMember.addEventListener("click", async function() {
     var promoterAddress= document.getElementById("memberAddress__").value;
 
     if(!name || !mobile || !email || !promoterAddress){
-        addmembererrorx.innerHTML = "Please fill all the mandatory fields";
+        messagex.innerHTML = "Please fill all the mandatory fields";
         return;
     }
 
@@ -682,14 +664,14 @@ addFreeMember.addEventListener("click", async function() {
             hash: result.hash,
           })
           if(tr.status=='success'){
-            addmembererrorx.innerHTML = "New member added successfully : "+promoterAddress;
+            messagex.innerHTML = "New member added successfully : "+promoterAddress;
             alert("success");
           }else{
-            addmembererrorx.innerHTML = "ERROR: while adding new member: "+promoterAddress;
+            messagex.innerHTML = "ERROR: while adding new member: "+promoterAddress;
             alert("Error");
           }
     }catch(e){
-        addmembererrorx.innerHTML = "ERROR!! : while adding new member: "+promoterAddress;
+        messagex.innerHTML = "ERROR!! : while adding new member: "+promoterAddress;
         alert(e);
     }
 })
