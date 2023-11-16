@@ -6,11 +6,13 @@ import "./BaseDMContract.sol";
 
 contract DMTransactions is BaseDMContract{
 
-    mapping(address => LevelRewards) private memberLevelRewards;//Sponsoraddress-->Struct of Sum of rewards generated from the member
+    mapping(address => LevelRewards) private memberLevelRewards;//Key:Sponsoraddress-->Value: Struct of rewards generated from the member
 
     struct LevelRewards {        
         address sponsor;  
         mapping(uint256 => mapping(address => uint256)) rewards;  // Key: Level value: ( key: member address value: member reward)      
+        
+        //The below variables will be updated only for the first update of new member
         address[] allMembers; // All members under this sponsor is stored irrespective of the level
         mapping(address => uint8)  allMembersLevelMap;//Key=MemberAddress & Value=Level are stored same for iterative purpose
     }
@@ -31,8 +33,6 @@ contract DMTransactions is BaseDMContract{
                                 " levelValue: ",uintToString(levelValue)
 
                                 )));
-        
-
         
 
         if(uniqMember)  {

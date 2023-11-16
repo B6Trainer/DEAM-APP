@@ -39,8 +39,17 @@ contract Membershipcontract is BaseDMContract {
     uint256 public totalMembers = 0;
 
     constructor() {
-        owner = msg.sender;
+        owner = msg.sender;        
         allowedContracts[owner] = owner;
+
+        subscribeMembers( address(this),
+        UserType.Member,
+        0,
+        address(0),
+        0,
+        "owner@mydeam.co","+97100000000","The Owner");
+
+        /*
         subscribers[owner] = Subscription({
             userType: UserType.Member,
             subscriptionBalance: 0,
@@ -62,6 +71,7 @@ contract Membershipcontract is BaseDMContract {
         memberAddresses.push(owner);
         allProfileAddresses.push(owner);
         totalMembers += 1;
+        */
     }
 
     event Log(string message);
@@ -146,6 +156,23 @@ contract Membershipcontract is BaseDMContract {
         string memory _mobile,
         string memory _name
     ) external onlyAllowedContract {
+
+        subscribeMembers( subscriber,_usertype,subscriptionAmount,
+                           _referrer,_validity,_email,_mobile,_name);
+
+    }
+
+
+    function subscribeMembers(
+        address subscriber,
+        UserType _usertype,
+        uint256 subscriptionAmount,
+        address _referrer,
+        uint256 _validity,
+        string memory _email,
+        string memory _mobile,
+        string memory _name
+    ) internal  {
         subscribers[subscriber] = Subscription({
             userType: _usertype,
             subscriptionBalance: subscriptionAmount,
@@ -184,9 +211,30 @@ contract Membershipcontract is BaseDMContract {
         view
         returns (uint256)
     {
-        return
+        if(subscribers[account].subscriptionBalance>0){
+            return
             (_rewardMultiplier * subscribers[account].subscriptionBalance) -
             subscribers[account].rewardReceived;
+        }else{
+            return 0;
+        }
+        
+    }
+
+    function getSubscribedBalance(address account)
+        external view returns(uint256)
+    {
+
+        return subscribers[account].subscriptionBalance;
+        
+    }
+
+    function getRewardsReceived(address account)
+        external view returns(uint256)
+    {
+
+        return subscribers[account].rewardReceived;
+        
     }
 
     function getReferrer(address account) external view returns (address) {

@@ -29,14 +29,12 @@ contract DMCPdistributor  is BaseDMContract{
 
     function mapContracts(address _membershipContractAddress,
                             address _configContractAddress,
-                            address _dmTokenAddress,                           
-                            address _dcpDistAddress ) external onlyOwner
+                            address _dmTokenAddress) external onlyOwner
     {   
     console.log("DMCPdistributor : Executing Contract Mapping");
-        if(_dcpDistAddress != address(0)){
-            thisContractAddress=_dcpDistAddress;
-        }
-
+        
+        thisContractAddress=address(this);
+        
         if(_membershipContractAddress != address(0)){
             setMemberShipContract(_membershipContractAddress, thisContractAddress);
         }
@@ -83,7 +81,8 @@ contract DMCPdistributor  is BaseDMContract{
 
     function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) external onlyOwner returns (uint256){
         address[] memory memberAddressList =  membershipContract.getMemberAddresses();
-        require(block.timestamp >lastCommunityDistributionTime + communityDistributionFrequencyInDays, "Community Distribution Frequency Not Met");
+        require(block.timestamp >lastCommunityDistributionTime + communityDistributionFrequencyInDays,
+                                         "Community Distribution Frequency Not Met");
         require(_startIndex == startIndexOfNextBatch,"Start Index Should be greater than Last Distributed Index");
         require(memberAddressList.length > 0, "No Members");
         require(_startIndex < memberAddressList.length, "Start index out of bounds");
@@ -100,7 +99,7 @@ contract DMCPdistributor  is BaseDMContract{
         if(communityPoolBalanceWhileCommunityDistribution<=0){
             communityPoolBalanceWhileCommunityDistribution = dmTokenContract.getBalance(dmConfigContract.communityPoolWallet());
         }
-        require(communityPoolBalanceWhileCommunityDistribution > 0, "No balance in the transaction pool");
+        require(communityPoolBalanceWhileCommunityDistribution > 0, "Balance is Zero in the Community pool");
         uint256 pendingReward;
         uint256 share;
 
@@ -123,6 +122,17 @@ contract DMCPdistributor  is BaseDMContract{
         return startIndexOfNextBatch;
     }
 
+
+    function calculateShare(address account, uint256 totalPoolBalance)
+        internal
+        view        
+        returns (uint256)
+    {
+        uint256 subscriptionBalance = subscribers[account].subscriptionBalance;
+        uint256 share = (subscriptionBalance * totalPoolBalance) /
+            totalSubscriptionAmountMembers;
+        return share;
+    }
 
 
 }

@@ -692,7 +692,7 @@ if(AccountData != null){
     const selectedActionValue = actionsselect.value;
     errorx.innerHTML="";
     actionTab=selectedActionValue;
-    if(memberType==M_TYPE_Guest){
+    if(memberType==M_TYPE_Admin){
 
       errorx.innerHTML=getInfoMessageContent("Admin dont have access to Subscription actions");
       subscribeform.style.display ="none"; 

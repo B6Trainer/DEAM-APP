@@ -72,8 +72,7 @@ contract DMInitializer is BaseDMContract {
             dcomdistributor.mapContracts(
                 _membershipContractAddress,
                 _configContractAddress,
-                _dmTokenAddress,
-                _dcpDistAddress
+                _dmTokenAddress
             );
         }
 

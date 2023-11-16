@@ -302,8 +302,8 @@ if(!wconnected){
                 headerRow.appendChild(headerCell);
             }
 
-            var contractsNameList =["DM_MANAGER_ADDRESS","DM_MEMBERSHIP_ADDRESS"] ;
-            var contractsList =[DM_MANAGER_ADDRESS, DM_MEMBERSHIP_ADDRESS] ;
+            var contractsNameList =["DM_MANAGER_ADDRESS","DM_MEMBERSHIP_ADDRESS","DM_CONFIG_ADDRESS","DM_CPDISTRIBUTOR_ADDRESS"] ;
+            var contractsList =[DM_MANAGER_ADDRESS, DM_MEMBERSHIP_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS] ;
             var contractscount =contractsList.length; 
 
             
@@ -384,7 +384,7 @@ if(!wconnected){
             profileCountSpan.innerHTML = profilecount;
           
             var headerRow=profiletheader.insertRow(0);
-            var profileTableheaders = [ "Profile type", "Name","Wallet Address", "Phone", "Email","Subs Balance", "Rewards", "Sponsor"]; // Profile header values
+            var profileTableheaders = [ "Profile type", "Name","Wallet Address", "Phone", "Email","Subscribed Balance", "Rewards gained", "Sponsor"]; // Profile header values
         
             for (var i = 0; i < profileTableheaders.length; i++) {
                 var headerCell = document.createElement("th");

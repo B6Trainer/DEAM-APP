@@ -26,7 +26,7 @@ contract DMManager is BaseDMContract {
     IBEP20 public usdtToken;
 
     constructor() {
-        console.log("DMManager contract initialised");
+        logDMMessages("DMManager contract initialised");
     }
 
     function mapContracts(
@@ -35,7 +35,7 @@ contract DMManager is BaseDMContract {
         address _dmTransactionsAddress
     ) external onlyOwner {
 
-        console.log("DMManager : Executing Contract Mapping");
+        logDMMessages("DMManager : Executing Contract Mapping");
 
         thisContractAddress = address(this);
 
@@ -163,7 +163,7 @@ contract DMManager is BaseDMContract {
                 dmTokenContract.burn(msg.sender, amountAfterFee);//Conversion fee is burnt while conversion fee is calculated
                 lastWithdrawTime[msg.sender] = block.timestamp;
 
-                emit logMessage( string(abi.encodePacked(uintToString(amount),
+                logDMMessages( string(abi.encodePacked(uintToString(amount),
                                         " DMTK withdraw processed for memeber ",
                                         addressToString(msg.sender)))
                                 );
@@ -222,45 +222,7 @@ contract DMManager is BaseDMContract {
         return amount - feeAmount;
     }
 
-    //Unused function
-    /*
-    function addAMember(
-        address memberAddress,
-        uint256 subscriptionAmount,
-        address _referrer,
-        string memory _email,
-        string memory _mobile,
-        string memory _name
-    ) external {
-        require(
-            subscriptionAmount >=
-                deamMetaverseConfigContract.minimumDepositForMembers(),
-            "DMManager: Minimum Deposit amount not met"
-        );
-        require(
-            usdtToken.balanceOf(msg.sender) >= subscriptionAmount,
-            "DMManager: Insufficient USDT Balance"
-        );
-        
-        require(
-            membershipContract.isSubscriber(memberAddress) == false,
-            "DMManager: Already a Subsciber"
-        );
-        // require(_referrer != address(0),"ERC20: Referrer is Invalid");
-        usdtToken.transferFrom(msg.sender, address(this), subscriptionAmount);
-        membershipContract.subscribe(
-            memberAddress,
-            Membershipcontract.UserType.Member,
-            subscriptionAmount,
-            _referrer,
-            0,
-            _email,
-            _mobile,
-            _name
-        );
-        distributeRewardsForMembers(subscriptionAmount, _referrer);
-    }
-    */
+    
 
     function SelfRegistrationasMember(
         uint256 subscriptionAmount,address _referrer) external {
@@ -295,8 +257,8 @@ contract DMManager is BaseDMContract {
         string memory _name
     ) internal {
 
-        emit logMessage("Executing Member registration validation ");
-        console.log("Executing Member registration validation ");
+        logDMMessages("Executing Member registration validation ");
+  
         require(
             !membershipContract.isSubscriber(_memberAddress),
             "DMManager: The member trying to register is already a member, The member may top up"
@@ -311,19 +273,20 @@ contract DMManager is BaseDMContract {
             "DMManager: Given amount is less than Minimum Member Deposit "
         );
         require(
-            usdtToken.balanceOf(_usdtSourceAddress) >= subscriptionAmount,
-            "DMManager: Insufficient USDT Balance in the registrar wallet"
-        );
-        require(
            usdtToken.allowance(_usdtSourceAddress,address(this)) >= subscriptionAmount,
            "DMManager: Insufficient USDT approved by the registrar wallet"
         );
+        require(
+            usdtToken.balanceOf(_usdtSourceAddress) >= subscriptionAmount,
+            "DMManager: Insufficient USDT Balance in the registrar wallet"
+        );
 
-        console.log("Member registration validation passed");
+
+        logDMMessages("Member registration validation passed");
 
         usdtToken.transferFrom(_usdtSourceAddress, address(this), subscriptionAmount);
 
-        emit logMessage(string(abi.encodePacked("Starting the Rewards distribution for registration/topup amount: ",
+        logDMMessages(string(abi.encodePacked("Starting the Rewards distribution for registration/topup amount: ",
                              uintToString(subscriptionAmount))));
         
         membershipContract.subscribe(
@@ -346,14 +309,11 @@ contract DMManager is BaseDMContract {
            string(abi.encodePacked("DMManager: The requested  member/promoter : ",addressToString(promoterAddress)))
         );
         membershipContract.subscribe(
-            promoterAddress,
-            Membershipcontract.UserType.Promotor,
+            promoterAddress,Membershipcontract.UserType.Promotor,
             0,//Setting subscription amount as zero for promoters
             owner,
-            0,
-            _email,
-            _mobile,
-            _name
+            0,//Setting validity for lifetime
+            _email,_mobile,_name
         );
     }
    
@@ -362,8 +322,13 @@ contract DMManager is BaseDMContract {
         internal
     {
         uint256 maxRewardAllowed = (deamMetaverseConfigContract.levelRewardPercentage() * amount) / 100; //71%
+        logDMMessages(string(abi.encodePacked("Members - Distributing Level Rewards", 
+                                            uintToString(maxRewardAllowed),
+                                            " Amount: ",uintToString(amount),
+                                            " Referrer: ",addressToString(referrer)
+                                            )));
         uint256 rewardsLeft = distributeLevelRewards(referrer,amount,maxRewardAllowed,memberAddress);
-
+        
         emit logMessage(string(abi.encodePacked("Members - Level Rewards distributed ", uintToString(maxRewardAllowed))));
         if (rewardsLeft > 0) {
             dmTokenContract.mint(deamMetaverseConfigContract.foundersWallet(),rewardsLeft);
@@ -387,7 +352,7 @@ contract DMManager is BaseDMContract {
         dmTokenContract.mint(deamMetaverseConfigContract.foundersWallet(),foundersShare);
         dmTokenContract.mint(deamMetaverseConfigContract.transactionPoolWallet(),transactionPoolShare);
 
-        emit logMessage(string(abi.encodePacked("Admin - Rewards distributed to CommPool: ", 
+       logDMMessages(string(abi.encodePacked("Admin - Rewards distributed to CommPool: ", 
                                         uintToString(communityPoolShare),
                                         " Marketing: ",uintToString(marketingShare),
                                         " Tech: ",uintToString(technologyShare),
@@ -397,7 +362,7 @@ contract DMManager is BaseDMContract {
     }
 
     function distributeLevelRewards(address referrer,uint256 subsAmount,uint256 maxRewardAmount, address memberAddress) 
-                                                            internal returns (uint256 remainingAmount) {
+                                                            public returns (uint256 remainingAmount) {
 
         remainingAmount=maxRewardAmount;
 
@@ -410,27 +375,54 @@ contract DMManager is BaseDMContract {
         
         for (uint8 currentDepth = 1; currentDepth <= totalDepth; currentDepth++) {
 
-           
-            if(remainingAmount>=0){
+            logDMMessages(string(abi.encodePacked(uintToString(currentDepth),
+                        "-Level Reward1 for Sponsor: ", addressToString(_1up_sponsor),
+                        " Subs Amount: ",uintToString(subsAmount),                        
+                        " Remaining rewards: ",uintToString(remainingAmount)                                       
+                        )));
+
+            if(remainingAmount>0){
                 
                 uint256 levelReward=calculateLevelRewards(subsAmount, currentDepth,
                                                         levelPercentage, percentageDecimals);
 
         
+                logDMMessages(string(abi.encodePacked(uintToString(currentDepth),"-Level Reward2 for Sponsor: ", addressToString(_1up_sponsor),
+                                        " Subs Amount: ",uintToString(subsAmount),
+                                        " Reward: ",uintToString(levelReward),
+                                        " Remaining rewards: ",uintToString(remainingAmount)                                       
+                                        )));
+
+          
+
                 if (membershipContract.isMember(_1up_sponsor)) {
-                    uint256 pendingReward = membershipContract.getPendingReward(_1up_sponsor,
-                        deamMetaverseConfigContract.maxRewardsMultiplier()
-                    );
-                    if (pendingReward > 0) {
+                    
+                    uint256 subsBalance= membershipContract.getSubscribedBalance(_1up_sponsor);
+                    
+                    if(subsBalance>0){
+                       uint256 pendingReward=( subsBalance*
+                                                deamMetaverseConfigContract.maxRewardsMultiplier())
+                                                -membershipContract.getRewardsReceived(_1up_sponsor);
+
                         if (pendingReward < levelReward) {
                             levelReward = pendingReward;
                         }
-                  
+                    }else{
+                        levelReward =0;
                     }
+
+                  
+                    logDMMessages(string(abi.encodePacked(uintToString(currentDepth),
+                    "-Level Reward3 for Sponsor: ", addressToString(_1up_sponsor),
+                    " Subs Amount: ",uintToString(subsAmount),
+                    " Reward: ",uintToString(levelReward),
+                    " Remaining rewards: ",uintToString(remainingAmount)                                       
+                    )));
                 }                                                        
 
                 remainingAmount = depositRewards(levelReward,_1up_sponsor,remainingAmount, memberAddress,currentDepth);
-                logMessage(string(abi.encodePacked(uintToString(currentDepth),"-Level Reward for Sponsor: ", addressToString(_1up_sponsor),
+
+                logDMMessages(string(abi.encodePacked(uintToString(currentDepth),"-Level Reward for Sponsor: ", addressToString(_1up_sponsor),
                                         " Subs Amount: ",uintToString(subsAmount),
                                         " Reward: ",uintToString(levelReward),
                                         " Remaining rewards: ",uintToString(remainingAmount)                                       
@@ -439,13 +431,13 @@ contract DMManager is BaseDMContract {
                 //Get the next level sponsor
                 _1up_sponsor=membershipContract.getReferrer(_1up_sponsor);
 
-                //Exit the loop if the next level sposor is not available
+                //Exit the loop if the next level sponsor is not available
                 if(_1up_sponsor == address(0))
                 {
-                                    logMessage(string(abi.encodePacked("Reward Looping stopped at level: ",uintToString(currentDepth),
-                                                                            " Next Level sponsor: ", addressToString(_1up_sponsor),                                        
-                                                                            " Remaining rewards: ",uintToString(remainingAmount),
-                                                                            " Max rewards allowed: ",uintToString(maxRewardAmount)                                       
+                    logDMMessages(string(abi.encodePacked("Reward Looping stopped at level: ",uintToString(currentDepth),
+                                                            " Next Level sponsor: ", addressToString(_1up_sponsor),                                        
+                                                             " Remaining rewards: ",uintToString(remainingAmount),
+                                                           " Max rewards allowed: ",uintToString(maxRewardAmount)                                       
                                         )));
                     return remainingAmount;
                 }
@@ -519,6 +511,7 @@ contract DMManager is BaseDMContract {
         IBEP20(usdtToken).transferFrom(msg.sender, address(this), topupAmount);
         membershipContract.topUpSubscriptionBalance(msg.sender, topupAmount);
         address referrer = membershipContract.getReferrer(msg.sender);
+        console.log("Top up completed. Proceed with level rewards");
         distributeRewardsForMembers(topupAmount, referrer,msg.sender);
     }
 
@@ -532,19 +525,6 @@ contract DMManager is BaseDMContract {
         withdrawalsAllowedADay = _withdrawalsAllowedADay;
     }
 
-    function getContractBalance()
-        view external returns(uint256[] memory balanceArr)
-    {
-
-        require(usdtTokenAddress != address(0),"DMManager: USDT Contract is null");
-        require(dmTokenAddress != address(0),"DMManager: DMTK Contract is null");
-
-        balanceArr= new uint256[](2);
-        balanceArr[0] = usdtToken.balanceOf(address(this));
-        balanceArr[1] = dmTokenContract.balanceOf(address(this));        
-
-        return  balanceArr;
-    }
 
     function recoverStuckTokens(address tokenAddress) public onlyOwner {
         IERC20 token = IERC20(tokenAddress);

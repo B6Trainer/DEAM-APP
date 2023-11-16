@@ -94,6 +94,14 @@ abstract contract BaseDMContract {
 
     }
 
+    function logDMMessages(string memory message) internal   {
+        
+        emit logMessage(message);
+        console.log(message);
+        
+
+    }
+
 
     event  logMessage(string message);
 
