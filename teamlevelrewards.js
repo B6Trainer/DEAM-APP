@@ -98,45 +98,41 @@
 
             var arrLength= memAddressArr.length;
             console.log("Array length "+arrLength);
-
+            var table = document.createElement('table');
             var txntable = document.getElementById("txnTable");
             var txnHeader = document.getElementById("txnTableHeader");
             var txnbody = document.getElementById("txnTableBody");
             
             var txnTableheaders = [ "Level", "Member Wallet Address","Rewards generated"]; // Profile header values
             
-            var headerRow=txnHeader.insertRow(0);
-
+            // Create header row              
+            var headerRow1 = table.insertRow();
             for (var i = 0; i < txnTableheaders.length; i++) {
-              var headerCell = document.createElement("th");
-              var text = document.createTextNode(txnTableheaders[i]);
-              headerCell.appendChild(text);
-              headerRow.appendChild(headerCell);
-            }
+                var th = document.createElement('th');
+                th.textContent = txnTableheaders[i];
+                headerRow1.appendChild(th);
+             }
 
+            // Create body rows
             for ( let i = 0; i < arrLength; i++) {
-                
-              console.log(" Member Address "+memAddressArr[i]+" Level:"+levelArr[i]+" Level Reward:"+levelRewardsArr[i]);
-      
-              var newRow = txntable.insertRow(txnbody.rows.length); 
-              
-              var txnLevelcell = newRow.insertCell(0); 
-              var txnWalletAddresscell = newRow.insertCell(1); 
-              var txnLevelRewardscell = newRow.insertCell(2); 
+              var row = table.insertRow();
 
-              txnLevelcell.innerHTML = levelArr[i];
-              txnWalletAddresscell.innerHTML = maskWalletAddress(memAddressArr[i]);              
-              txnLevelRewardscell.innerHTML = Number(utils.formatEther(levelRewardsArr[i])).toFixed(2);
-          
-          }
-        
+              var txnLevelcell = row.insertCell(0); 
+              var txnWalletAddresscell = row.insertCell(1); 
+              var txnLevelRewardscell = row.insertCell(2); 
+
+              txnLevelcell.textContent = levelArr[i];
+              txnWalletAddresscell.textContent = maskWalletAddress(memAddressArr[i]);              
+              txnLevelRewardscell.textContent = Number(utils.formatEther(levelRewardsArr[i])).toFixed(2);
+              
+            }
+            
+            var txndetails1element=document.getElementById("txndetailstable");
+            txndetails1element.appendChild(table);
   
       }
   
-  
-
-
-
+ 
 
       }//End of Connected else block
       

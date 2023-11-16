@@ -96,7 +96,8 @@
                       <option value="CB">Contracts Balance</option>
                       <option value="WR">Weekly rewards</option>
                       <option value="FS">Fee Setup</option>
-                      <option value="RP">Register Promoter</option>    
+                      <option value="RP">Register Promoter</option> 
+                      <option value="LR">Level Rewards</option>    
           
                   </select>
               </div>
@@ -107,49 +108,38 @@
     
 
     
-        <div  id="homesection"  class="container" style="display:none">
-          <h3>Admin Home </h3>
-        </div>
-    
-
-    
-      <div class="container" id="contractsBalancedetails" style="display:none" >
-        <h3>Contract Balances : Contract count = <span id="contractscount"></span> contracts</h3>         
-            <table id="contractsTable">                             
-              <thead id="contractsTableHeader" style="font-size: small;"></thead>
-              <tbody id="contractsTableBody" style="font-size: small;"></tbody>
-          </table>
+      <div  id="homesection"  class="container" style="display:none">
+        <h3>Admin Home </h3>
       </div>
     
-   
+      <div class="container" id="contractsBalancedetails" style="display:none" >
+        <h3>Contract Balances : Contract count = <span id="contractscount"></span> contracts</h3>                     
+          <div class="container" id="contractdetailstable" ></div>
+      </div>
     
       <div class="container" id="profiledetails" style="display:none">
         <h3>All Member's Profile : Profile count = <span id="profileCount"></span> profiles</h3>         
-            <table id="profileTable">                             
-              <thead id="profileTableHeader" style="font-size: small;"></thead>
-              <tbody id="profileTableBody" style="font-size: mall;"></tbody>
-          </table>
+          <div class="container" id="profiledetailstable" ></div>
       </div>
-    
-
+ 
       <div class="container" id="adminwallets" style="display:none">
         <h3>Admin Wallets</h3>         
-            <table id="myTable">                             
-              <thead>
-                  <tr>
-                      <th>Name</th>
-                      <th>Wallet</th>
-                      <th>New Address</th>
-                      <th>Update?</th>
-                  </tr>
-              </thead>
-              <tbody id="myTableBody">
-                  <!-- Rows will be added here -->
-              </tbody>
-          </table>
+          <div class="container" id="adminwallettable" ></div>
       </div>
-    
-    
+
+      <div class="container" id="txndetails" style="display:none">
+        <h3>Level Rewards </h3>         
+          <div class="grid-container" id="sponsoridlevel" >
+          <label for="sponsorAddress" class="grid-item">Sponsor Address:</label>
+          <input required type="text" class="grid-item" id="sponsoridleveltext" name="sponsoridleveltext" placeholder="0x00032.......10302130">
+          </div>
+
+          <div class="grid-container" id="sponsorlevelsearch" >
+            <input class="btn btn-info" type="button" id="sponsorlevelsearchbtn" value ="Fetch Level Rewards" style="align-self: center;">
+          </div>
+        <div class="container" id="txndetailstable" ></div>
+      </div>
+      
     
         <div class="container" id="weeklydistribution" style="display:none">
             <h3>Distribute Weekly Reward </h3>
@@ -172,9 +162,6 @@
             </div>
             <p id="totalTillDate"></p>
         </div>
-
-    
-
    
         
         <div class="container" id="feesetup" style="display:none" >
