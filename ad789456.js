@@ -757,7 +757,7 @@ if(!wconnected){
     
                  if(arrLength<=0){
                     txndetails1element.innerHTML="No rewards available for Sponsor: "+sponsorAddress;
-                    txndetails1element.appendChild('<br>');
+                    
                  }else{
                                     // Create body rows
                     for ( let i = 0; i < arrLength; i++) {

@@ -34,6 +34,8 @@ contract Membershipcontract is BaseDMContract {
     address[] public allProfileAddresses;
     address[] public memberAddresses;
     mapping(address => address) private allowedContracts;
+    uint256 public activeMembersCount = 0;
+    mapping(address => bool) private activeMembers;
 
     uint256 public totalSubscriptionAmountMembers = 0;
     uint256 public totalMembers = 0;
@@ -195,6 +197,12 @@ contract Membershipcontract is BaseDMContract {
         if (_usertype == UserType.Member) {
             totalSubscriptionAmountMembers += subscriptionAmount;
             memberAddresses.push(subscriber);
+            
+            
+            activeMembersCount += 1;
+            activeMembers[subscriber]=true;
+            //mapping(address => bool) private activeMembers;
+
             totalMembers += 1;
         }
     }
@@ -204,6 +212,10 @@ contract Membershipcontract is BaseDMContract {
         onlyAllowedContract
     {
         subscribers[account].rewardReceived += amount;
+        if(subscribers[account].rewardReceived<=(subscribers[account].subscriptionBalance*3)){//Need to fetch it from configuration
+            activeMembersCount += 1;
+            activeMembers[account]=false;
+        }
     }
 
     function getPendingReward(address account, uint256 _rewardMultiplier)
@@ -246,6 +258,8 @@ contract Membershipcontract is BaseDMContract {
         onlyAllowedContract
     {
         subscribers[account].subscriptionBalance += amount;
+        activeMembersCount += 1;
+        activeMembers[account]=true;
     }
 
     function calculateShare(address account, uint256 totalPoolBalance)
