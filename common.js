@@ -1,6 +1,6 @@
 import { readContracts,watchAccount,watchNetwork,getNetwork } from "@wagmi/core";
 import ethereumClient from "./walletConnect";
-import {defaultChainId,M_TYPE_Guest,M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Admin} from './config'
+import {defaultChainId,M_TYPE_Guest,M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Admin,M_TYPE_Owner} from './config'
 import { usdtAddress,DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
@@ -26,17 +26,6 @@ if (wconnected) {
 
     console.log('Common.js : Wallet connected with address: '+walletAddress);
 
-    const usdtContract = {
-      address: usdtAddress,
-      abi: ABI_ERC20,
-    }
-
-    //New Contracts
-    const dmConfigContract = {
-      address: DM_CONFIG_ADDRESS,
-      abi: DM_CONFIG_ABI,
-    }
-
     const dmMembershipContract = {
       address: DM_MEMBERSHIP_ADDRESS,
       abi: DM_MEMBERSHIP_ABI,
@@ -50,17 +39,13 @@ if (wconnected) {
               ...dmMembershipContract,
               functionName: 'getSubscriptionDetails',
               args:[ethereumClient.getAccount().address]
-            },
+            },           
             {
-              ...dmConfigContract,
-              functionName: 'conversionFeeWallet',
-            },
-            
-            {
-              ...usdtContract,
-              functionName: 'balanceOf',
-              args: [ethereumClient.getAccount().address],
+              ...dmMembershipContract,
+              functionName: 'owner',
+              args:[ethereumClient.getAccount().address]
             }
+
       ],
     });
 
@@ -69,7 +54,13 @@ if (wconnected) {
       if(ClientData[0].result[6]==zeroaddress){
         membershipType=M_TYPE_Guest;
       }else{
-        membershipType=ClientData[0].result[0];
+        
+        if(walletAddress == ClientData[1].result){
+          membershipType=M_TYPE_Owner;
+        }else{
+          membershipType=ClientData[0].result[0];
+        }
+        
         console.log('Common.js : Fetched the membership details for wallet: '+walletAddress)+' Membership type: '+membershipType;
       }
 

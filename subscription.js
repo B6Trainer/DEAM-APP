@@ -12,7 +12,7 @@ import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 import ABI_ERC20 from './ABI_ERC20.json';
-import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn } from "./dm_utils";
+import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn,formatDateToDDMMYYYY } from "./dm_utils";
 
 const actionsselect = document.getElementById("actionsselect")
 
@@ -68,19 +68,6 @@ var MemberbenifitsHtml = null;
 
 var PromotorbenifitsHtml = null;
 
-
-
-function formatDateToDDMMYYYY(date) {
-  // Get the day, month, and year components from the Date object
-  const day = date.getDate().toString().padStart(2, '0'); // Ensure 2-digit day
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, so add 1
-  const year = date.getFullYear().toString();
-
-  // Create the formatted string in "DD-MM-YYYY" format
-  const formattedDate = `${day}-${month}-${year}`;
-
-  return formattedDate;
-}
 
 var AccountData=null;
 if(!connected){

@@ -1,5 +1,6 @@
 import { DM_TXN_HASH_EXPLORER } from './config';
-
+import {M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Guest,M_TYPE_Admin,M_TYPE_Owner} from './config';
+import {M_TYPE_Member_DEF,M_TYPE_Promoter_DEF,M_TYPE_Guest_DEF,M_TYPE_Admin_DEF,M_TYPE_Owner_DEF} from './config';
 
 export function maskWalletAddress(walletAddress) {
   if (typeof walletAddress !== 'string') {
@@ -81,4 +82,52 @@ export function copyToClipboard(text) {
     .catch(err => {
       console.error('Unable to copy text: ', err);
     });
+}
+
+
+
+export function formatDateToDDMMYYYY(date) {
+  // Get the day, month, and year components from the Date object
+  const day = date.getDate().toString().padStart(2, '0'); // Ensure 2-digit day
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, so add 1
+  const year = date.getFullYear().toString();
+
+  // Create the formatted string in "DD-MM-YYYY" format
+  const formattedDate = `${day}-${month}-${year}`;
+
+  return formattedDate;
+}
+
+
+export function defineMembership( memType){
+
+  var memTypeDef=""
+
+  switch (memType) {
+    case M_TYPE_Admin:
+      memTypeDef=M_TYPE_Admin_DEF
+      break;
+  
+    case M_TYPE_Member:
+      memTypeDef=M_TYPE_Member_DEF
+      break;
+  
+    case M_TYPE_Guest:
+      memTypeDef=M_TYPE_Guest_DEF
+      break;
+  
+    case M_TYPE_Promoter:
+      memTypeDef=M_TYPE_Promoter_DEF
+      break;
+  
+    case M_TYPE_Owner:
+      memTypeDef=M_TYPE_Owner_DEF
+      break;
+  
+    default:
+      memTypeDef=""
+  }
+
+
+  return memTypeDef;
 }

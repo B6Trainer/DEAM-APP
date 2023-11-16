@@ -16,8 +16,7 @@
     <link rel="stylesheet" href="./style.css" />
 
 
-    <meta name="description"
-    content="DEAM Metaverse is a community to benfit by streams of passive income." />
+   <meta name="description"    content="DEAM Metaverse is a community to benfit by streams of passive income." />
    <style>
       .headlabel{   
          font-weight: 100;
@@ -47,10 +46,23 @@
         }
 
         .container {
-          background-color: rgb(160, 234, 209);
+          background-color: rgb(7, 7, 7);
           padding: 10px;
           margin-top: 10px;
 
+        }
+      </style>
+
+      <style>
+        .grid-container {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr); /* Create three equal columns */
+          justify-content: center; /* Center the items horizontally */
+          gap: 10px; /* Optional: Add some gap between the items */
+        }
+
+        .grid-item {
+          text-align: center; /* Center the content inside each item */
         }
       </style>
 
@@ -60,67 +72,67 @@
 
     <div id="header"></div>
    
-    <section id="authorizemessage" style="background-color: #080808;" >               
-        
-
+    <section id="topmenuspacing" style="background-color: #080808; padding: 80px;" >                       
     </section>
 
-    <section id="actionsection" style="padding: 3;background-color: #080808;" >               
+
+      <div  id="messagesection"  class="container" style="display:block">
         <p class="text-center"><span id="messagex"></span></p>
-        <div id="actionform" style="display:block">
-
-            <div class="admincontainer">
-                <div > <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Admin actions -> </u></h3></div>
-                <div >
-                    <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color);" >          
-                        <option value="HM">Home</option>
-                        <option value="AW">Admin Wallets</option>
-                        <option value="P">Profiles</option>
-                        <option value="CB">Contracts Balance</option>
-                        <option value="WR">Weekly rewards</option>
-                        <option value="FS">Fee Setup</option>
-                        <option value="RP">Register Promoter</option>    
-            
-                    </select>
-                </div>
-                <div><h4 id="adminaddress"></h4></div>
-
+      </div>
+      <div id="walletconnectBtn" class="container" style="display:none ; align-items: center;">
+        <w3m-core-button id="wagmiButton"></w3m-core-button>
+      </div>
+        
+        
+      <div id="actionform" class="container"  style="display:block">
+        
+        <div class="grid-container">
+              <div class="grid-item"> <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Admin actions -> </u></h3></div>
+              <div class="grid-item">
+                  <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color); padding-left: 25px;" >          
+                      <option value="HM">Home</option>
+                      <option value="AW">Admin Wallets</option>
+                      <option value="P">Profiles</option>
+                      <option value="CB">Contracts Balance</option>
+                      <option value="WR">Weekly rewards</option>
+                      <option value="FS">Fee Setup</option>
+                      <option value="RP">Register Promoter</option>    
+          
+                  </select>
               </div>
+              <div class="grid-item"><h4 id="authmessage"></h4></div> 
+            </div>
+      </div>
 
+    
+
+    
+        <div  id="homesection"  class="container" style="display:none">
+          <h3>Admin Home </h3>
         </div>
+    
 
-    </section>
-
-    <section id="homesection" style="padding: 10px;margin-top: 10px;" style="display:none">     
-        <div  class="container">
-          <h3>Admin Home </h3>         
-              
-        </div>
-    </section>
-
-    <section id="contractsBalancedetails" style="padding: 10px;margin-top: 10px;" style="display:none">     
-      <div class="container" >
+    
+      <div class="container" id="contractsBalancedetails" style="display:none" >
         <h3>Contract Balances : Contract count = <span id="contractscount"></span> contracts</h3>         
             <table id="contractsTable">                             
-              <thead id="contractsTableHeader" style="font-size: xx-small;"></thead>
-              <tbody id="contractsTableBody" style="font-size: xx-small;"></tbody>
+              <thead id="contractsTableHeader" style="font-size: small;"></thead>
+              <tbody id="contractsTableBody" style="font-size: small;"></tbody>
           </table>
       </div>
-    </section>
-   
-    <section id="profiledetails" style="padding: 10px;margin-top: 10px;" style="display:none">     
-      <div class="container">
-        <h3>Profile Members : Profile count = <span id="profileCount"></span> profiles</h3>         
-            <table id="profileTable">                             
-              <thead id="profileTableHeader" style="font-size: xx-small;"></thead>
-              <tbody id="profileTableBody" style="font-size: xx-small;"></tbody>
-          </table>
-      </div>
-    </section>
     
-    <section id="adminwallets" style="padding: 10px;margin-top: 10px;" style="display:none">     
+   
+    
+      <div class="container" id="profiledetails" style="display:none">
+        <h3>All Member's Profile : Profile count = <span id="profileCount"></span> profiles</h3>         
+            <table id="profileTable">                             
+              <thead id="profileTableHeader" style="font-size: small;"></thead>
+              <tbody id="profileTableBody" style="font-size: mall;"></tbody>
+          </table>
+      </div>
+    
 
-      <div class="container" >
+      <div class="container" id="adminwallets" style="display:none">
         <h3>Admin Wallets</h3>         
             <table id="myTable">                             
               <thead>
@@ -136,10 +148,10 @@
               </tbody>
           </table>
       </div>
-    </section>
     
-    <section id="weeklydistribution" style="padding: 10px;margin-top: 10px;" style="display:none">
-        <div class="container">
+    
+    
+        <div class="container" id="weeklydistribution" style="display:none">
             <h3>Distribute Weekly Reward </h3>
             <p id="lastDistributeTime">loading..</p>
             <div class="row">
@@ -161,11 +173,11 @@
             <p id="totalTillDate"></p>
         </div>
 
-    </section>
+    
 
-    <section id="feesetup" style="padding: 10px;margin-top: 10px;" style="display:none">
+   
         
-        <div class="container" style="background-color: rgb(201, 247, 232);padding: 20px;">
+        <div class="container" id="feesetup" style="display:none" >
             <h2>Fee Setup</h2>
             <br>
             <h5>Set Conversion Fee Members</h5>
@@ -179,22 +191,6 @@
               <div class="col-sm-4"> <input type="text" id="newConversionFeePromoters" placeholder="Enter percent"></div>
               <div class="col-sm-4"> <button id="changeCoversionFeePromoters">Update</button></div>
           </div>
-
-          
-            
-       
-        <!-- 
-            <h3>Set Conversion Fee Promotor</h3>
-            <div class="row">
-                <div class="col-sm-4">
-                    <p id="currentConversionFeePromotor"></p>
-                </div>
-                <div class="col-sm-4"> <input type="text" id="newConversionFeePromotor" placeholder="Enter percent"></div>
-                <div class="col-sm-4"> <button id="changeCoversionFeePromotor">Change</button></div>
-            </div>
-            
-         -->
-        
         
             <h5>Set Conversion Fee split</h5>
             <div class="row">
@@ -222,36 +218,36 @@
             </div>
         </div>
 
-    </section>
-
-    <section id="registerpromoter" style="padding: 10px;margin-top: 10px;" style="display:none">
-        <div class="container" >
+   
+        <div class="container" id="registerpromoter" style="display:none" >
             <h3>Register a Promoter</h3>
-            <div class="row">
-                <div class="form-group" id="name" >
-                    <label for="memberAddress">Promoter Wallet Address*:</label>
-                    <input required type="text" class="form-control" id="memberAddress__" name="subcsriberName"
+            
+                <div id="promwalletid" class="grid-container">
+                    <label for="memberAddress" class="grid-item">Promoter Wallet Address*:</label>
+                    <input required type="text" class="grid-item" id="memberAddress__" name="promaddress"
                       placeholder="0x00032.......10302130">
                 </div>
-                <div class="form-group" id="name" >
-                <label for="name">Name*:</label>
-                <input required type="text" class="form-control" id="name__" name="subcsriberName"
+                <div class="grid-container" id="name" >
+                <label for="name" class="grid-item">Name*:</label>
+                <input required type="text" class="grid-item" id="name__" name="subcsriberName"
                   placeholder="eg .Mark James">
                 </div>
-                <div class="form-group" id="mobile" >
-                <label for="mobile">Mobile*:</label>
-                <input required type="text" class="form-control" id="mobile__" name="mobile" placeholder="+971 50*****33">
+                <div class="grid-container" id="mobile" >
+                <label for="mobile" class="grid-item">Mobile*:</label>
+                <input required type="text" class="grid-item" id="mobile__" name="mobile" placeholder="+971 50*****33">
                 </div>
-                <div class="form-group" id="email" >
-                <label for="email">Email*:</label>
-                <input required type="text" class="form-control" id="email__" name="email" placeholder="xyz@abc.com">
+                <div class="grid-container" id="email" >
+                <label for="email" class="grid-item">Email*:</label>
+                <input required type="text" class="grid-item" id="email__" name="email" placeholder="xyz@abc.com">
                 </div>
 
-              <input class="btn btn-info" type="button" id="addFreeMember" value ="Register Promoter">
-
-            </div>
+                <div class="grid-container" id="registerbtn" >
+                  <input class="btn btn-info" type="button" id="addPromoter" value ="Register Promoter" style="align-self: center;">
+                </div>
+              
+            
         </div>
-    </section>
+  
 
     <div id="footer-menu"></div>
 

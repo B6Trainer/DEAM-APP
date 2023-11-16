@@ -1,5 +1,5 @@
 import {DM_MANAGER_ADDRESS,DM_TOKEN_ADDRESS } from "./config";
-import {copyToClipboard} from "./common.js";
+import {copyToClipboard} from "./dm_utils";
 
 const deamcontractElement = document.getElementById("deamcontract");
 const tokenContractElement = document.getElementById("tokenContract");
