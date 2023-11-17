@@ -1,7 +1,6 @@
 import {waitForTransaction,readContracts,writeContract} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
-import {stakingAddress,tokenAddress,subscriptionAddress } from './config';
 
 import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
