@@ -2,8 +2,12 @@
 pragma solidity 0.8.0;
 import "hardhat/console.sol";
 import "./BaseDMContract.sol";
+import "./DeamMetaverseConfig.sol";
 
 contract Membershipcontract is BaseDMContract {
+
+    DeamMetaverseConfig public dmConfigContract;
+
     enum UserType {
         Member,
         Promotor,
@@ -34,6 +38,8 @@ contract Membershipcontract is BaseDMContract {
     address[] public allProfileAddresses;
     address[] public memberAddresses;
     mapping(address => address) private allowedContracts;
+
+    //Data store to perform Communitity distribution
     uint256 public activeMembersCount = 0;
     mapping(address => bool) private activeMembers;
 
@@ -43,15 +49,10 @@ contract Membershipcontract is BaseDMContract {
     constructor() {
         owner = msg.sender;        
         allowedContracts[owner] = owner;
+        
 
-        subscribeMembers( address(this),
-        UserType.Member,
-        0,
-        address(0),
-        0,
-        "owner@mydeam.co","+97100000000","The Owner");
-
-        /*
+        logDMMessages("Membership contract constructed");  
+        
         subscribers[owner] = Subscription({
             userType: UserType.Member,
             subscriptionBalance: 0,
@@ -73,11 +74,39 @@ contract Membershipcontract is BaseDMContract {
         memberAddresses.push(owner);
         allProfileAddresses.push(owner);
         totalMembers += 1;
-        */
+        
     }
 
     event Log(string message);
     event Logaddress(address add);
+
+    function mapContracts(address _configContractAddress) external onlyOwner {
+
+        logDMMessages("MemberShipContract : Executing Contract Mapping");
+
+        thisContractAddress = address(this);        
+        configContractAddress = _configContractAddress;
+            
+        if (_configContractAddress != address(0)) {
+            setDMConfig(_configContractAddress, thisContractAddress);
+        }
+    
+        logDMMessages("MemberShipContract : Completed Executing Contract Mapping");
+    }
+
+    function setDMConfig(
+        address _configContractAddress,
+        address _thisContractAddress
+    ) internal {
+        require(
+            _configContractAddress != address(0),
+            "Invalid address for DMConfiguration contract"
+        );
+        dmConfigContract = DeamMetaverseConfig(
+            _configContractAddress
+        );
+        dmConfigContract.updateAllowedContract(_thisContractAddress);
+    }
 
     function getUserType(address userAddress) external view returns (UserType) {
         return subscribers[userAddress].userType;
@@ -125,6 +154,16 @@ contract Membershipcontract is BaseDMContract {
         );
     }
 
+    function getMemberShipSummary() external view 
+                returns (uint256 ,uint256 ,uint256)
+    {
+
+        return (
+            totalMembers,
+            totalSubscriptionAmountMembers,
+            activeMembersCount
+        );
+    }
 
     function getMemberDetails(address userAddress)
         external
@@ -175,9 +214,11 @@ contract Membershipcontract is BaseDMContract {
         string memory _mobile,
         string memory _name
     ) internal  {
+
+        //Registering as subscriber
         subscribers[subscriber] = Subscription({
             userType: _usertype,
-            subscriptionBalance: subscriptionAmount,
+            subscriptionBalance: 0, //amount will be added below with addsubscriptionbalance method
             rewardReceived: 0,
             validity: _validity,
             referrals: new address[](0),
@@ -192,19 +233,41 @@ contract Membershipcontract is BaseDMContract {
             email: _email,
             mobile: _mobile        
         });
-        allProfileAddresses.push(subscriber);
-        subscribers[_referrer].referrals.push(subscriber);
-        if (_usertype == UserType.Member) {
-            totalSubscriptionAmountMembers += subscriptionAmount;
-            memberAddresses.push(subscriber);
-            
-            
-            activeMembersCount += 1;
-            activeMembers[subscriber]=true;
-            //mapping(address => bool) private activeMembers;
 
+        allProfileAddresses.push(subscriber);        
+        subscribers[_referrer].referrals.push(subscriber);
+
+        if (_usertype == UserType.Member) {
+            
+            memberAddresses.push(subscriber);
             totalMembers += 1;
+
+            addSubscriptionBalance( subscriber, subscriptionAmount);
+                        
         }
+    }
+
+    function topUpSubscriptionBalance(address account, uint256 amount)
+        external
+        onlyAllowedContract
+    {
+        addSubscriptionBalance(account,amount);
+    }
+
+    function addSubscriptionBalance(address account, uint256 amount) internal        
+    {
+        totalSubscriptionAmountMembers += amount;
+        subscribers[account].subscriptionBalance += amount;
+
+        if(!activeMembers[account]){
+            if(subscribers[account].rewardReceived<=
+                (subscribers[account].subscriptionBalance*dmConfigContract.maxRewardsMultiplier())){
+                activeMembersCount += 1;
+                activeMembers[account]=true;
+            }
+        }
+        
+
     }
 
     function addReceivedReward(address account, uint256 amount)
@@ -212,10 +275,17 @@ contract Membershipcontract is BaseDMContract {
         onlyAllowedContract
     {
         subscribers[account].rewardReceived += amount;
-        if(subscribers[account].rewardReceived<=(subscribers[account].subscriptionBalance*3)){//Need to fetch it from configuration
-            activeMembersCount += 1;
-            activeMembers[account]=false;
+
+        if(activeMembers[account]){
+           
+            if(subscribers[account].rewardReceived>=
+                    (subscribers[account].subscriptionBalance*dmConfigContract.maxRewardsMultiplier()))
+            {
+                activeMembersCount -= 1;
+                activeMembers[account]=false;
+            }
         }
+
     }
 
     function getPendingReward(address account, uint256 _rewardMultiplier)
@@ -253,15 +323,8 @@ contract Membershipcontract is BaseDMContract {
         return subscribers[account].referrer;
     }
 
-    function topUpSubscriptionBalance(address account, uint256 amount)
-        external
-        onlyAllowedContract
-    {
-        subscribers[account].subscriptionBalance += amount;
-        activeMembersCount += 1;
-        activeMembers[account]=true;
-    }
 
+    /*
     function calculateShare(address account, uint256 totalPoolBalance)
         external
         view
@@ -272,7 +335,8 @@ contract Membershipcontract is BaseDMContract {
         uint256 share = (subscriptionBalance * totalPoolBalance) /
             totalSubscriptionAmountMembers;
         return share;
-    }
+    }*/
+
 
     function updateUserType(address account, UserType _userType)
         external
@@ -295,6 +359,38 @@ contract Membershipcontract is BaseDMContract {
 
     function getMemberAddresses() external view onlyAllowedContract returns (address[] memory) {
         return memberAddresses;
+    }
+
+    function getActiveMemAddresses() external view onlyAllowedContract returns (address[] memory) {
+        return activeMembersArr;
+    }
+
+    address[] public activeMembersArr;
+    function getActiveMemberAddresses() external onlyAllowedContract returns (address[] memory) {
+
+        // Clear the filtered array
+        delete activeMembersArr;
+
+        uint256 membercount=memberAddresses.length;
+         
+        
+        for (uint8 i=0; i<membercount; i++) 
+        {
+            if(activeMembers[memberAddresses[i]])
+            {         
+                if(subscribers[memberAddresses[i]].subscriptionBalance>0)
+                {
+                    //activeMembersArr[i]=memberAddresses[i];
+                    activeMembersArr.push(memberAddresses[i]);
+                    
+                }else{
+                    activeMembers[memberAddresses[i]]=false;
+                }
+                
+            }
+
+        }
+        return activeMembersArr;
     }
 
     function getProfileDetails() external view onlyAllowedContract

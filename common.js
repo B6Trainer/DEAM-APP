@@ -61,7 +61,7 @@ if (wconnected) {
           membershipType=ClientData[0].result[0];
         }
         
-        console.log('Common.js : Fetched the membership details for wallet: '+walletAddress)+' Membership type: '+membershipType;
+        console.log('Common.js : Fetched the membership details for wallet: '+walletAddress+' Membership type: '+membershipType);
       }
 
           //promotor
@@ -81,6 +81,10 @@ if (wconnected) {
 
       if(membershipType==M_TYPE_Admin){
         welMess="Welcome, Dear Admin";      
+      }
+
+      if(membershipType==M_TYPE_Owner){
+        welMess="Welcome, Dear Owner";      
       }
 
     }
@@ -103,6 +107,10 @@ if (wconnected) {
         }
       }
     });
+
+}else{
+  welMess="Welcome, please connect your wallet"; 
+
 }
 
 export var walletAddress;
@@ -155,10 +163,6 @@ const footerMenu = `
 </div>`;
 
 document.getElementById("footer-menu").innerHTML = footerMenu;
-
-
-
-
 
 
 const HomenavbarMenuContent = `

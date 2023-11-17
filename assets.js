@@ -6,7 +6,7 @@ import { wconnected,walletAddress,membershipType,welMess } from './common';
 import ERC20_ABI from './ABI_ERC20.json'
 import stakeABI from './ABI_STAKE.json';
 
-import QRCode from 'qrcode'
+import {copyToClipboard} from "./dm_utils";
 
 import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
@@ -25,8 +25,7 @@ const referralRewards = document.getElementById("referralRewards");
 const totalRewards = document.getElementById("totalRewards");
 const rewardsWithdrawn = document.getElementById("rewardsWithdrawn");
 const AvailableRewards= document.getElementById("availableRewards");
-// const receivebtn= document.getElementById("receivebtn");
-const qrcode__= document.getElementById("qrcode");
+
 
 
 const welcomemessage = document.getElementById("welcome-message");
@@ -264,29 +263,11 @@ actionsselect.addEventListener("change", function() {
 });
 
 
-
-
-
-// receivebtn.addEventListener("click", async () => {
-//   var opts = {
-//     type: 'image/webp',
-//     quality: 1,
-//     margin: 1,
-//   }
-//         try {
-//          var data_ =  await QRCode.toDataURL(ethereumClient.getAccount().address,opts);
-//          console.log(data_);
-//          var data = `
-//          <img style="margin-bottom: 10px;border:1px solid black" width="70%" src="data: ${data_}">
-//         <p class="alert alert-primary" style="word-wrap:break-word;padding:10px;width: 100%;"> ${ethereumClient.getAccount().address}<input type="hidden" value="${ethereumClient.getAccount().address}" id="yourAddressCopy"><i onclick="copyToClipboard('yourAddressCopy')" class="fa-solid fa-copy float-right"></i></p>
-//          <p class="alert alert-danger">Note: Send Only BEP20 USDT or DMTK only to this address</p>
-//          `
-//          qrcode__.innerHTML = data;
-//         } catch (err) {
-//           console.error(err)
-//         }
-      
-// });
+const walletidCopybutton = document.getElementById("walletidCopybutton");
+const textToCopyValue = document.getElementById("walletid").value;
+walletidCopybutton.addEventListener("click", () => {
+      copyToClipboard(textToCopyValue);
+});
 
 
 

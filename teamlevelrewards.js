@@ -97,13 +97,9 @@
             var levelArr=ContractResponseData[0].result[2];
 
             var arrLength= memAddressArr.length;
-            console.log("Array length "+arrLength);
-            var table = document.createElement('table');
-            var txntable = document.getElementById("txnTable");
-            var txnHeader = document.getElementById("txnTableHeader");
-            var txnbody = document.getElementById("txnTableBody");
-            
             var txnTableheaders = [ "Level", "Member Wallet Address","Rewards generated"]; // Profile header values
+            
+            var table = document.createElement('table');                                   
             
             // Create header row              
             var headerRow1 = table.insertRow();

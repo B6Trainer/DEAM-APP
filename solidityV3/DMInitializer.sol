@@ -21,7 +21,7 @@ contract DMInitializer is BaseDMContract {
     //IERC20 public 
 
     constructor() {
-        console.log("DMInitialzer contract initialised");
+        logDMMessages("DMInitialzer contract initialised");
     }
 
     
@@ -36,8 +36,8 @@ contract DMInitializer is BaseDMContract {
         address _dmTransactionsAddress
     ) external onlyOwner {
 
-        //console.log("DMInitializer : Executing Contract Mapping");
-        emit logMessage("DMInitializer : Executing Contract Mapping");
+
+        logDMMessages("DMInitializer : Executing Contract Mapping");
 
         membershipContractAddress = (_membershipContractAddress != address(0))?_membershipContractAddress:membershipContractAddress;
         configContractAddress = (_configContractAddress != address(0))?_configContractAddress: configContractAddress; 
@@ -52,6 +52,10 @@ contract DMInitializer is BaseDMContract {
 
         if (_membershipContractAddress != address(0)) {
             setMemberShipContract(_membershipContractAddress,address(this));
+            
+            subscriptionContract.mapContracts(           
+                _configContractAddress                
+            );
         }
         if (_configContractAddress != address(0)) {
             setDMConfig(_configContractAddress, thisContractAddress);
@@ -88,6 +92,8 @@ contract DMInitializer is BaseDMContract {
                 _dmTransactionsAddress
             );
         }
+
+        logDMMessages("DMInitializer : Completed Executing Contract Mapping");
 
     }
 

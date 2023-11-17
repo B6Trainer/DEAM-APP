@@ -98,8 +98,7 @@ abstract contract BaseDMContract {
         
         emit logMessage(message);
         console.log(message);
-        
-
+     
     }
 
 

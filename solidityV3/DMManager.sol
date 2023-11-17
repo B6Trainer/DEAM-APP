@@ -71,7 +71,7 @@ contract DMManager is BaseDMContract {
             setDMTransactions(_dmTransactionsAddress);
         }
 
-        console.log("DMManager : Completed Executing Contract Mapping");
+        logDMMessages("DMManager : Completed Executing Contract Mapping");
     }
 
    function setDMTransactions( address _dmTransactionsAddress

@@ -14,7 +14,7 @@ contract DMCPdistributor  is BaseDMContract{
     uint256 public communityDistributionFrequencyInDays = 30 seconds;
     uint256 public totalCommunityDistribution = 0;
 
-    uint256 public communityPoolBalanceWhileCommunityDistribution=0;
+    //uint256 public communityPoolBalanceWhileCommunityDistribution=0;
     uint256 public startIndexOfNextBatch;
 
     Membershipcontract public membershipContract;
@@ -22,7 +22,7 @@ contract DMCPdistributor  is BaseDMContract{
     DMToken public dmTokenContract;
 
     constructor() {        
-        console.log("DMCPDistributor contract initialised");
+        logDMMessages("DMCPDistributor contract initialised");
              
     }
   
@@ -31,7 +31,7 @@ contract DMCPdistributor  is BaseDMContract{
                             address _configContractAddress,
                             address _dmTokenAddress) external onlyOwner
     {   
-    console.log("DMCPdistributor : Executing Contract Mapping");
+        logDMMessages("DMCPdistributor : Executing Contract Mapping");
         
         thisContractAddress=address(this);
         
@@ -44,6 +44,8 @@ contract DMCPdistributor  is BaseDMContract{
         if(_dmTokenAddress != address(0)){
             setDMToken(_dmTokenAddress, thisContractAddress);
         }
+
+        logDMMessages("DMCPdistributor : Completed Executing Contract Mapping");
                     
     }
 
@@ -78,59 +80,99 @@ contract DMCPdistributor  is BaseDMContract{
             1 days;
     }
 
+    function getActiveMembers() external view onlyOwner returns (address[] memory activeMembersArr){
+        activeMembersArr= membershipContract.getActiveMemAddresses();
 
-    function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize) external onlyOwner returns (uint256){
-        address[] memory memberAddressList =  membershipContract.getMemberAddresses();
-        require(block.timestamp >lastCommunityDistributionTime + communityDistributionFrequencyInDays,
+        return activeMembersArr;
+    }
+
+    function DistributeCommunityPool(uint256 _startIndex, uint256 batchSize, uint8 forceDistribute) external onlyOwner returns (uint256,uint256,uint256){
+        
+       // address[] memory memberAddressList =  membershipContract.getMemberAddresses();
+        address[] memory activeMembersArr=membershipContract.getActiveMemberAddresses();
+        uint256 activeMemCount = activeMembersArr.length;
+        require(activeMemCount > 0, "No active member to perform distribution");
+
+        uint256 communityPoolBalance = dmTokenContract.getBalance(dmConfigContract.communityPoolWallet());
+        
+        require(communityPoolBalance > 0, "Balance is Zero in the Community pool");
+
+        logDMMessages(string(abi.encodePacked(
+            "Distribution to community pool started, DCP balance: ",
+                             uintToString(communityPoolBalance),
+            " Active Members: ",uintToString(activeMemCount)                            
+                             
+                             )));
+
+        if(dmConfigContract.dcpDistributionIntervalCheck()==1){
+            require(block.timestamp >lastCommunityDistributionTime + communityDistributionFrequencyInDays,
                                          "Community Distribution Frequency Not Met");
-        require(_startIndex == startIndexOfNextBatch,"Start Index Should be greater than Last Distributed Index");
-        require(memberAddressList.length > 0, "No Members");
-        require(_startIndex < memberAddressList.length, "Start index out of bounds");
+        }
+
+        if(forceDistribute !=1){
+            if(startIndexOfNextBatch != 0){
+                require( _startIndex == startIndexOfNextBatch,
+                    "Start Index should be greater than last distributed Index"); 
+            }            
+        }        
+
+        require(_startIndex < activeMemCount, "Start index out of bounds");
         require(batchSize > 0, "Batch size must be greater than 0");
 
         uint256 endIndex = _startIndex + batchSize -1;
-        if (endIndex > memberAddressList.length) {
-            endIndex = memberAddressList.length-1;
+        if (endIndex > activeMemCount) {
+            endIndex = activeMemCount-1;
         }
-
-        startIndexOfNextBatch = endIndex+1;
-
-
-        if(communityPoolBalanceWhileCommunityDistribution<=0){
-            communityPoolBalanceWhileCommunityDistribution = dmTokenContract.getBalance(dmConfigContract.communityPoolWallet());
-        }
-        require(communityPoolBalanceWhileCommunityDistribution > 0, "Balance is Zero in the Community pool");
-        uint256 pendingReward;
-        uint256 share;
-
-        for (uint256 i = _startIndex; i <= endIndex; i++) {
-                pendingReward = membershipContract.getPendingReward(memberAddressList[i],dmConfigContract.maxRewardsMultiplier());
+        
+        uint256 share = calculateShare( communityPoolBalance, activeMemCount);
+        uint256 distributedAmount=0;
+        uint256 i=0;
+        for ( i = _startIndex; i <= endIndex; i++) {
+                uint256 pendingReward = membershipContract.getPendingReward(activeMembersArr[i],dmConfigContract.maxRewardsMultiplier());
                 if (pendingReward > 0) {
-                    share = membershipContract.calculateShare(memberAddressList[i], communityPoolBalanceWhileCommunityDistribution);
+
                     if (pendingReward < share) {
                         share = pendingReward;
                     }
-                    dmTokenContract.transfer(dmConfigContract.communityPoolWallet(), memberAddressList[i], share);
+                    dmTokenContract.transfer(dmConfigContract.communityPoolWallet(), activeMembersArr[i], share);
                     totalCommunityDistribution += share;
-            }
+
+                }
+
+               distributedAmount += share;
+                    logDMMessages(string(abi.encodePacked(
+                        " Sno: ",uintToString(i),
+                        " Member Addres: ",addressToString(activeMembersArr[i]),
+                        " Shared amount: ",uintToString(share),                             
+                        " Distributed Amount",uintToString(distributedAmount)                            
+                        
+                    )));
         }
-        if(endIndex == memberAddressList.length-1){
-            lastCommunityDistributionTime = block.timestamp;
-            communityPoolBalanceWhileCommunityDistribution = 0;
+
+        logDMMessages(string(abi.encodePacked(
+                             " Share per member: ",uintToString(share),
+                             " Total Active members: ",uintToString(i),
+                             " DCP balance Amount",uintToString((communityPoolBalance-distributedAmount))                           
+                             
+                             )));
+        
+        if(endIndex == activeMemCount-1){
+            lastCommunityDistributionTime = block.timestamp;            
             startIndexOfNextBatch = 0;
+        }else{
+            startIndexOfNextBatch = endIndex+1;
         }
-        return startIndexOfNextBatch;
+
+        return (startIndexOfNextBatch,totalCommunityDistribution,communityPoolBalance);
     }
 
 
-    function calculateShare(address account, uint256 totalPoolBalance)
-        internal
-        view        
+    function calculateShare( uint256 totalPoolBalance,uint256 activeMemberCount) pure
+        internal                
         returns (uint256)
     {
-        uint256 subscriptionBalance = subscribers[account].subscriptionBalance;
-        uint256 share = (subscriptionBalance * totalPoolBalance) /
-            totalSubscriptionAmountMembers;
+
+        uint256 share =  totalPoolBalance/activeMemberCount;
         return share;
     }
 

@@ -21,6 +21,7 @@ contract DeamMetaverseConfig is BaseDMContract {
     uint256 public minimumTopUpAmountMembers = 100 * 10 ** 18;
     
     uint256 public withdrawdailyLimitCheck = 0;
+    uint256 public dcpDistributionIntervalCheck = 0;
 
 
     uint256 public percentageDecimals=10000;
@@ -38,8 +39,7 @@ contract DeamMetaverseConfig is BaseDMContract {
     constructor(address _founderWallet) {
         foundersWallet=_founderWallet;
         conversionFeeWallet=_founderWallet;
-        console.log("DMConfig contract constructed");       
-        
+        logDMMessages("DMConfig contract constructed");               
     }
 
     function updateAdminWalletAddresses(

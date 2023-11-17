@@ -39,44 +39,6 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "memberAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "subscriptionAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_referrer",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_email",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_mobile",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			}
-		],
-		"name": "addAMember",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "promoterAddress",
 				"type": "address"
 			},
@@ -128,11 +90,58 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "referrer",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "subsAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "maxRewardAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "memberAddress",
+				"type": "address"
+			}
+		],
+		"name": "distributeLevelRewards",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "remainingAmount",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "dmTokenContract",
 		"outputs": [
 			{
 				"internalType": "contract DMToken",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "dmTransactions",
+		"outputs": [
+			{
+				"internalType": "contract DMTransactions",
 				"name": "",
 				"type": "address"
 			}
@@ -148,19 +157,6 @@
 				"internalType": "address",
 				"name": "_address",
 				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getContractBalance",
-		"outputs": [
-			{
-				"internalType": "uint256[]",
-				"name": "balanceArr",
-				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "view",
@@ -214,7 +210,7 @@
 			},
 			{
 				"internalType": "address",
-				"name": "_dmManagerAddress",
+				"name": "_dmTransactionsAddress",
 				"type": "address"
 			}
 		],
@@ -389,7 +385,7 @@
 		"name": "usdtToken",
 		"outputs": [
 			{
-				"internalType": "contract IERC20",
+				"internalType": "contract IBEP20",
 				"name": "",
 				"type": "address"
 			}

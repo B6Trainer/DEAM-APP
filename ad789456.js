@@ -73,6 +73,10 @@ if(!wconnected){
         }
         
 
+        var cpwalletloc=0;
+        var cpwalletloc=0;
+        var cpwalletloc=0;
+        var cpwalletloc=0;
 
 
 
@@ -80,84 +84,88 @@ if(!wconnected){
             contracts: [
             {
                 ...dmConfigContract,
-                functionName: 'communityPoolWallet',
+                functionName: 'communityPoolWallet',//0
             },
             {
                 ...dmConfigContract,
-                functionName: 'marketingWallet',
+                functionName: 'marketingWallet',//1
             },
             {
                 ...dmConfigContract,
-                functionName: 'technologyWallet',
+                functionName: 'technologyWallet',//2
             },
             {
                 ...dmConfigContract,
-                functionName: 'transactionPoolWallet',
+                functionName: 'transactionPoolWallet',//3
             },
             {
                 ...dmConfigContract,
-                functionName: 'foundersWallet',
+                functionName: 'foundersWallet',//4
             },
             {
                 ...dmConfigContract,
-                functionName: 'conversionFeeWallet',
+                functionName: 'conversionFeeWallet',//5
             },
             {
                 ...dmConfigContract,
-                functionName: 'owner',
+                functionName: 'owner',//6
             },
             {
                 ...dmCPdistributorContract,
-                functionName: 'lastCommunityDistributionTime',
+                functionName: 'lastCommunityDistributionTime',//7-unused
             },
             {
                 ...dmCPdistributorContract,
-                functionName: 'communityDistributionFrequencyInDays',
+                functionName: 'communityDistributionFrequencyInDays',//8 -unused
             },
             {
                 ...dmCPdistributorContract,
-                functionName: 'totalCommunityDistribution',
+                functionName: 'totalCommunityDistribution',//9 -unused
             },
             {
                 ...dmConfigContract,
-                functionName: 'conversionFeeMember',
+                functionName: 'conversionFeeMember',//10
             },
             {
                 ...dmConfigContract,
-                functionName: 'conversionFeePromoter',
+                functionName: 'conversionFeePromoter',//11
             },
             {
                 ...dmConfigContract,
-                functionName: 'transactionFee_communityPoolFeePercentage',
+                functionName: 'transactionFee_communityPoolFeePercentage',//12
             },
             {
                 ...dmConfigContract,
-                functionName: 'transactionFee_foundersFeePercentage',
+                functionName: 'transactionFee_foundersFeePercentage',//13
             },
             {
                 ...dmConfigContract,
-                functionName: 'minimumDepositForMembers',
+                functionName: 'minimumDepositForMembers',//14
             },
             {
                 ...dmConfigContract,
-                functionName: 'minimumTopUpAmountMembers',
+                functionName: 'minimumTopUpAmountMembers',//15
             },
             {
                 ...dmCPdistributorContract,
-                functionName: 'startIndexOfNextBatch',
+                functionName: 'startIndexOfNextBatch',//16
             },
             {
                 ...dmMembershipContract,
-                functionName: 'getProfileDetails',
+                functionName: 'getProfileDetails',//17
             }
 
             ],
         });
 
+        var profResultLoc=17;
+        var startIndexLoc=16;
+        var minTopUpLoc=15;
+        var minDepoLoc=14;
+
         //-------------------------------------------------------------Welcome message--------------------------------------------------------
        
-        document.getElementById("startIndex").value = contractData[16].result;
-        document.getElementById("startIndex").disabled = true;
+
         if(contractData[6].result != ethereumClient.getAccount().address){
             document.getElementById("authmessage").innerHTML = "Unauthorized!! You are not an admin! <br>  Wallet id:  "+ethereumClient.getAccount().address
             document.getElementById("authmessage").style.color="red";            
@@ -212,7 +220,7 @@ if(!wconnected){
             }else if (selectedActionValue == "CB") {
                 contractsBalancedetails.style.display ="block";  
             }else if (selectedActionValue == "WR") {
-                weeklydistribution.style.display ="block";  
+                weeklydistribution.style.display ="block";                  
             }else if (selectedActionValue == "FS") {
                 feesetup.style.display ="block";  
             }else if (selectedActionValue == "RP") {
@@ -222,6 +230,8 @@ if(!wconnected){
             }
 
         });
+
+
 
 
         //--------------------------------------------------------------Admin Wallet details------------------------------------------------------------------------------------
@@ -301,7 +311,7 @@ if(!wconnected){
         tableelement.appendChild(adminWallettable);
 
        
-        var profResultLoc=17;
+
 
         if(contractData!=null || contractData[profResultLoc]!=null){
 
@@ -444,14 +454,24 @@ if(!wconnected){
 
         //--------------------------------------------------------------Distribution logic------------------------------------------------------------------------------------
 
+
         var lastDistributeTime = document.getElementById("lastDistributeTime");
-            lastDistributeTime.innerHTML = `Last Distribution Time : ${new Date(Number(contractData[7].result)*1000)}`;
+        lastDistributeTime.innerHTML = "";// ` ${new Date(Number(contractData[7].result)*1000)}`;
 
         var currentfrequency = document.getElementById("currentfrequency");
-        currentfrequency.innerHTML  = `Current Value : ${contractData[8].result} seconds (${(Number(contractData[8].result)/86400).toFixed(2)} Days)`
+        currentfrequency.innerHTML  ="";// `Current distribtion Frequency : ${contractData[8].result} seconds (${(Number(contractData[8].result)/86400).toFixed(2)} Days)`
         var changeFrequency = document.getElementById("changeFrequency");
+
+        var startIndexTextbox = document.getElementById("startIndex");
+        startIndexTextbox.disabled=true;
+        startIndexTextbox.value = 0;//contractData[16].result;
+        //document.getElementById("startIndex").disabled = true;
+
+        //Adding event to  frequency update button
         changeFrequency.addEventListener("click", async function() {
-        var newFrequency = document.getElementById("newfrequency").value;
+
+            messagex.innerHTML="";
+            var newFrequency = document.getElementById("newfrequency").value;
             try{
                 var result = await writeContract({
                     address: DM_CPDISTRIBUTOR_ADDRESS,
@@ -463,19 +483,29 @@ if(!wconnected){
                     hash: result.hash,
                 })
                 if(tr.status=='success'){
-                    alert("success");
+                    messagex.innerHTML = getInfoMessageandTxn("Updated new frequency successfully : "+newFrequency,result.hash);
+                    //alert("success");
+                    
                 }else{
-                    alert("Error");
+                    messagex.innerHTML = getErrorMessageandTxn("Failed to updated new frequency : "+newFrequency,result.hash);
+                    //alert("Error");
                 }
             }catch(e){
-                alert(e);
+                //messagex.innerHTML = getErrorMessageandTxn("Failed to updated new frequency due to exception ");
+                console.log("Failed to updated new frequency due to exception ");
+                console.log(e);
             }
         });
 
         var distributeButton = document.getElementById("distributeButton")
         distributeButton.addEventListener("click", async function() {
+
+        messagex.innerHTML="";
+        
         var startIndex = document.getElementById("startIndex").value
         var lastIndex = document.getElementById("lastIndex").value
+
+
             try{
                 var result = await writeContract({
                     address: DM_CPDISTRIBUTOR_ADDRESS,
@@ -487,18 +517,80 @@ if(!wconnected){
                     hash: result.hash,
                 })
                 if(tr.status=='success'){
-                    alert("success");
+                    messagex.innerHTML = getInfoMessageandTxn("DCP distribution successful : ",result.hash);
+                   // alert("success");
                 }else{
-                    alert("Error");
+                    messagex.innerHTML = getErrorMessageandTxn("DCP distribution failed: ",result.hash);
+                    //alert("Error");
                 }
             }catch(e){
-                alert(e);
+                messagex.innerHTML = getErrorMessageandTxn("DCP distribution failed due to exception ");
+                console.log("DCP distribution failed due to exception ");
+                console.log(e);
             }
         })
 
-        document.getElementById("totalTillDate").innerHTML =`Total Token Distributed till Date : ${(Number(contractData[9].result)/Math.pow(10,18)).toFixed(2)} DMTK`
+       
+        
+    var dcpRefresh = document.getElementById("dcpRefresh");
+    var compoolbalanceElm = document.getElementById("compoolbalance");
+    var totalDistributionElm = document.getElementById("totalTillDate");
+       //Adding event to  frequency update button
+       dcpRefresh.addEventListener("click", async function(){
+
+            var comPoolAddress=adminWalletAddArray[0];
+            const dcpContractData = await readContracts({
+                contracts: [
+
+                    {
+                        ...dmTokenContract,
+                        functionName: 'balanceOf',//0
+                        args: [comPoolAddress],
+                    },
+
+                    {
+                        ...dmCPdistributorContract,
+                        functionName: 'lastCommunityDistributionTime',//1
+                    },
+                    {
+                        ...dmCPdistributorContract,
+                        functionName: 'communityDistributionFrequencyInDays',//2
+                    },
+                    {
+                        ...dmCPdistributorContract,
+                        functionName: 'totalCommunityDistribution',//3
+                    },
+                    {
+                        ...dmCPdistributorContract,
+                        functionName: 'startIndexOfNextBatch',//4
+                    },
+                    
+
+    
+                ]
+            });
+
+            var compoolbalance=0;
+            if(dcpContractData!=null){
+
+                if(dcpContractData[0].status='success'){
+                    compoolbalance=dcpContractData[0].result;
+                }
+
+            }
+
+            compoolbalanceElm.innerHTML=compoolbalance;
+            lastDistributeTime.innerHTML = ` ${new Date(Number(dcpContractData[1].result)*1000)}`;
+            currentfrequency.innerHTML  = ` ${dcpContractData[2].result} seconds (${(Number(dcpContractData[2].result)/86400).toFixed(2)} Days)`
+            totalDistributionElm.innerHTML =`${(Number(dcpContractData[3].result)/Math.pow(10,18)).toFixed(2)} DMTK`
+            startIndexTextbox.value = dcpContractData[4].result;
+            startIndexTextbox.disabled=false;
 
 
+
+        });//End of refersh button event
+        
+        //----------------------------------------------------------------------------Conversion Fee section-------------------------------------------------------
         var currentConversionFeeMembers = document.getElementById("currentConversionFeeMembers");
         var changeCoversionFeeMembers = document.getElementById("changeCoversionFeeMembers");
         currentConversionFeeMembers.innerHTML = `Current Member Fee : ${Number(contractData[10].result)/10000}%`;

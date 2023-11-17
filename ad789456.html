@@ -86,25 +86,26 @@
         
       <div id="actionform" class="container"  style="display:block">
         
-        <div class="grid-container">
-              <div class="grid-item"> <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Admin actions -> </u></h3></div>
-              <div class="grid-item">
-                  <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color); padding-left: 25px;" >          
-                      <option value="HM">Home</option>
-                      <option value="AW">Admin Wallets</option>
-                      <option value="P">Profiles</option>
-                      <option value="CB">Contracts Balance</option>
-                      <option value="WR">Weekly rewards</option>
-                      <option value="FS">Fee Setup</option>
-                      <option value="RP">Register Promoter</option> 
-                      <option value="LR">Level Rewards</option>    
-          
-                  </select>
+        <div  id="actionheadersection"  class="container" style="display:block">
+        
+            <div class="row">                        
+              <div class="col-sm-4"> <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Admin actions -> </u></h3></div>
+              <div class="col-sm-4"> 
+                        <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color); padding-left: 25px;" >          
+                          <option value="HM">Home</option>
+                          <option value="AW">Admin Wallets</option>
+                          <option value="P">Profiles</option>
+                          <option value="CB">Contracts Balance</option>
+                          <option value="WR">CP Rewards distribution</option>
+                          <option value="FS">Fee Setup</option>
+                          <option value="RP">Register Promoter</option> 
+                          <option value="LR">Level Rewards</option>
+                        </select>
               </div>
-              <div class="grid-item"><h4 id="authmessage"></h4></div> 
+              <div class="col-sm-4"><h4 id="authmessage"></h4></div>
             </div>
-      </div>
 
+      </div>
     
 
     
@@ -142,25 +143,55 @@
       
     
         <div class="container" id="weeklydistribution" style="display:none">
-            <h3>Distribute Weekly Reward </h3>
-            <p id="lastDistributeTime">loading..</p>
+            
+          <div class="row">                        
+            <div class="col-sm-6"> <h3>Distribute Community Rewards </h3></div>
+            <div class="col-sm-6"> <button id="dcpRefresh" class="btn btn-info">Refresh DCP Details</button></div>
+          </div>
+          
+            <hr>
             <div class="row">
+              <div class="col-sm-4">
+                <p>DM Community pool balance: </p>
+              </div>
+              <div class="col-sm-4"> <p id="compoolbalance">Click Refresh DCP Details..</p></div>
+              <div class="col-sm-4"> DMTK </div>
+           </div>
+           <hr>
+           <div class="row">
+            <div class="col-sm-4">
+              <p>Last Distribution Time : </p>
+            </div>
+            <div class="col-sm-8"> <p id="lastDistributeTime">Click Refresh DCP Details..</p></div>            
+          </div>
+          <hr>  
+          <div class="row">
                 <div class="col-sm-4">
-                    <p id="currentfrequency"></p>
+                  Current distribtion Frequency: <p id="currentfrequency"></p>
                 </div>
                 <div class="col-sm-4"> <input type="text" id="newfrequency" placeholder="Enter new Frequency in days"></div>
-                <div class="col-sm-4"> <button id="changeFrequency">Change</button></div>
-            </div>
-            <hr>
-            <p>Distribute in Batch</p>
+                <div class="col-sm-4"> <button id="changeFrequency" class="btn btn-info">Change</button></div>
+          </div>
+          <hr>
+          
+          
             <div class="row">
-                startIndex
-                <div class="col-sm-4"> <input type="text" id="startIndex" placeholder="Start Index"></div>
-                batch Size
-                <div class="col-sm-4"> <input type="text" id="lastIndex" placeholder="Batch Size" value="10000" disabled></div>
-                <div class="col-sm-4"> <button id="distributeButton" class="btn btn-info">Distribute Now</button></div>
+              <div class="col-sm-3"> <p>Distribute in Batch</p></div>
+                
+                <div class="col-sm-3">Start Index: <input type="number" id="startIndex" placeholder="Start Index" value="0" style="width: auto;"></div>
+                
+                <div class="col-sm-3">Batch Size: <input type="number" id="lastIndex" placeholder="Batch Size" value="1"  style="width: auto;"></div>
+                
+                <div class="col-sm-3"> <button id="distributeButton" class="btn btn-info">Distribute Now</button></div>
             </div>
-            <p id="totalTillDate"></p>
+          <hr>
+          
+          <div class="row">
+          Total Token Distributed till Date : <div class="col-sm-4"><p id="totalTillDate"></p></div>
+          <div class="col-sm-4"></div>
+          <div class="col-sm-4"></div>
+          </div>
+
         </div>
    
         
