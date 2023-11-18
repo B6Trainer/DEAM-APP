@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Deam Admin-Level Rewards</title>
+    <title>Deam Admin-Profiles</title>
     <link rel="icon" type="image/x-icon" href="/applogo.png">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,22 +55,10 @@
       </div>
  
       <div class="container" id="bodyContainer" style="display:none">
-        <h3>Level Rewards </h3>   
-
-        <div class="row"> 
-          <div class="col-sm-3">
-              <label for="sponsorAddress">Sponsor Address:</label>
-          </div>
-          <div class="col-sm-6">
-            <input required type="text" class="grid-item" id="sponsoridleveltext" name="sponsoridleveltext" placeholder="0x00032.......10302130">
-          </div>
-          <div class="col-sm-3">
-            <input class="btn btn-info" type="button" id="sponsorlevelsearchbtn" value ="Fetch Level Rewards" style="align-self: center;">
-          </div>
-        </div>
-
+        <h3>All Member's Profile : Profile count = <span id="profileCount"></span> profiles</h3>        
+        <div class="container" ><button id="getProfileDetailsBtn" class="btn btn-info">Fetch All Profiles</button> </div>        
         <hr>
-        <div class="container" id="txndetailstable" ></div>
+        <div class="container" id="profiledetailstable" ></div>
       </div>
     
 
@@ -83,7 +71,7 @@
     
     <script type="module" src="./main.js"></script>
     <script type="module" src="./common.js"></script>
-    <script type="module" src="./adlevelrewards.js"></script>
+    <script type="module" src="./adprofiles.js"></script>
 </body>
 
 </html>

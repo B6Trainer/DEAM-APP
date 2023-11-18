@@ -9,11 +9,13 @@ import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 import DM_TXN_ABI from './ABI_DM_TXN.json';
 import ERC20_ABI from './ABI_ERC20.json'
-import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn,defineMembership } from "./dm_utils";
-import {M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Guest,M_TYPE_Admin,M_TYPE_Owner} from './config';
-import {M_TYPE_Member_DEF,M_TYPE_Promoter_DEF,M_TYPE_Guest_DEF,M_TYPE_Admin_DEF,M_TYPE_Owner_DEF} from './config';
-import {membershipType,walletAddress,wconnected} from './common';
 
+import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,
+            getInfoMessageandTxn,getErrorMessageandTxn,defineMembership } from "./dm_utils";
+
+import {membershipType,walletAddress,wconnected} from './common';
+import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
+                dmTokenContract,dmMembershipContract,usdtContract} from './config';
 
 const messagex = document.getElementById("messagex");
 
@@ -36,42 +38,6 @@ if(!wconnected){
 }else{
 
     walletconnectBtn.style.display="none";
-
-        const dmConfigContract = {
-            address: DM_CONFIG_ADDRESS,
-            abi: DM_CONFIG_ABI,
-        }
-
-        const dmTXNContract = {
-            address: DM_TXN_ADDRESS,
-            abi: DM_TXN_ABI,
-          }
-
-        const dmManagerContract = {
-            address: DM_MANAGER_ADDRESS,
-            abi: DM_MANAGER_ABI,
-        }
-
-        const dmCPdistributorContract = {
-            address: DM_CPDISTRIBUTOR_ADDRESS,
-            abi: DM_CPDISTRIBUTOR_ABI,
-        }
-
-        const dmTokenContract = {
-            address: DM_TOKEN_ADDRESS,
-            abi: DM_TOKEN_ABI,
-        }
-        
-        const dmMembershipContract = {
-            address: DM_MEMBERSHIP_ADDRESS,
-            abi: DM_MEMBERSHIP_ABI,
-        }
-
-        const usdtContract = {
-            address: usdtAddress,
-            abi: ERC20_ABI,
-        }
-        
 
         const contractData = await readContracts({
             contracts: [
@@ -151,7 +117,7 @@ if(!wconnected){
             ],
         });
 
-        var profResultLoc=17;
+       
         var startIndexLoc=16;
         var minTopUpLoc=15;
         var minDepoLoc=14;
@@ -179,13 +145,12 @@ if(!wconnected){
         //-------------------------------------------------------------Action Select--------------------------------------------------------
         
         const contractsBalancedetails = document.getElementById("contractsBalancedetails");
-        const profiledetails = document.getElementById("profiledetails");
         const adminwallets = document.getElementById("adminwallets");
         const weeklydistribution = document.getElementById("weeklydistribution");
         const feesetup = document.getElementById("feesetup");
         const registerpromoter = document.getElementById("registerpromoter");
         const homesection = document.getElementById("homesection");
-        const txndetails = document.getElementById("txndetails");
+  
         
         var actionTab;
         const actionsselect = document.getElementById("actionsselect");
@@ -199,12 +164,10 @@ if(!wconnected){
 
             homesection.style.display ="none"; 
             contractsBalancedetails.style.display ="none"; 
-            profiledetails.style.display ="none"; 
             adminwallets.style.display ="none";
             weeklydistribution.style.display ="none";     
             feesetup.style.display ="none";   
             registerpromoter.style.display ="none";  
-            txndetails.style.display ="none";  
 
             if(!isAdmin){
                 messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");        
@@ -216,8 +179,6 @@ if(!wconnected){
                 homesection.style.display ="block";   
             }else if (selectedActionValue == "AW") {
                 adminwallets.style.display ="block";  
-            }else if (selectedActionValue == "P") {
-                profiledetails.style.display ="block";  
             }else if (selectedActionValue == "CB") {
                 contractsBalancedetails.style.display ="block";  
             }else if (selectedActionValue == "WR") {
@@ -226,8 +187,6 @@ if(!wconnected){
                 feesetup.style.display ="block";  
             }else if (selectedActionValue == "RP") {
                 registerpromoter.style.display ="block";  
-            }else if (selectedActionValue == "LR") {
-                txndetails.style.display ="block";  
             }
 
         });
@@ -365,13 +324,6 @@ if(!wconnected){
        
 
 
-        if(contractData!=null || contractData[profResultLoc]!=null){
-
-
-        
-
-
-
         //--------------------------------------------------------------Contract balance section------------------------------------------------------------------------------------
             // Prepare the Contracts table header
             
@@ -445,126 +397,7 @@ if(!wconnected){
 
         
 
-        //--------------------------------------------------------------Profile section------------------------------------------------------------------------------------
-            // Prepare the profile table header
-            
-            var profileTableheaders = [ "Profile type", "Name","Wallet Address", "Phone", "Email","Subscribed Balance", "Rewards gained", "Sponsor", "USDT Balance", "DMTK Balance"]; // Profile header values
-    
-            var tableelement=document.getElementById("profiledetailstable");  
-            //tableelement.removeChild("profTbl1");              
-            var profiletable = document.createElement('table'); 
-                            //profiletable.id="profTbl1";
-                // Create header row              
-                var headerRow1 = profiletable.insertRow();
-                for (var i = 0; i < profileTableheaders.length; i++) {
-                    var th = document.createElement('th');
-                    th.textContent = profileTableheaders[i];
-                    headerRow1.appendChild(th);
-                }
-
-            tableelement.appendChild(profiletable);
-
-
-            var getProfileDetailsBtn=document.getElementById("getProfileDetailsBtn");
-            getProfileDetailsBtn.addEventListener("click", async function() {
-
-                getProfileDetailsBtn.disabled=true;
-                var rowCount = profiletable.rows.length;
-                for (var i = rowCount - 1; i > 0; i--) {
-                    profiletable.deleteRow(i);
-                }
-
-                var profiletypeArr = contractData[profResultLoc].result[0]; 
-                var walletaddArr = contractData[profResultLoc].result[1];     
-                var nameArr = contractData[profResultLoc].result[2]; 
-                var emailArr = contractData[profResultLoc].result[3]; 
-                var phoneArr = contractData[profResultLoc].result[4]; 
-                var profilecount = contractData[profResultLoc].result[5]; 
-                var subsBalanceArr = contractData[profResultLoc].result[6]; 
-                var rewardsReceivedArr = contractData[profResultLoc].result[7] ; 
-                var sponsor = contractData[profResultLoc].result[8]; 
-                        
-                var profileCountSpan = document.getElementById("profileCount");
-                profileCountSpan.innerHTML = profilecount;
-                                  
-     
-                // Create body rows
-                for ( let i = 0; i < profilecount; i++) {
-    
-                    var newRow = profiletable.insertRow();
-                    var profiletypecell = newRow.insertCell(0); 
-                    var namecell = newRow.insertCell(1); 
-                    var walletaddcell = newRow.insertCell(2); 
-                    
-                    var phonecell = newRow.insertCell(3); 
-                    var emailcell = newRow.insertCell(4);
-                    var subscell = newRow.insertCell(5);
-                    var rewardscell = newRow.insertCell(6);
-                    var sponsorcell = newRow.insertCell(7); 
-                    var usdtBalancecell = newRow.insertCell(8);
-                    var dmtkBalancecell = newRow.insertCell(9); 
-            
-                    walletaddcell.innerHTML = maskWalletAddress(walletaddArr[i]);
-                    profiletypecell.innerHTML = defineMembership(profiletypeArr[i]);
-                    namecell.innerHTML = nameArr[i];
-                    phonecell.innerHTML = phoneArr[i];
-                    emailcell.innerHTML = emailArr[i];
-                    subscell.innerHTML = Number(utils.formatEther(subsBalanceArr[i])).toFixed(2);;
-                    rewardscell.innerHTML = Number(utils.formatEther(rewardsReceivedArr[i])).toFixed(2);
-                    sponsorcell.innerHTML = maskWalletAddress(sponsor[i]);
-
-                    var usdtBalance=0;
-                    var dmtkBalance=0;
-
-                    try {
-
-                        const contractBalanceData = await readContracts({
-                            contracts: [
-                            {
-                                ...usdtContract,
-                                functionName: 'balanceOf',//0
-                                args: [walletaddArr[i]],
-                            },
-                            {
-                                ...dmTokenContract,
-                                functionName: 'balanceOf',//1
-                                args: [walletaddArr[i]],
-                            }
-                
-                            ],
-                        });
-    
-    
-                        if(contractBalanceData!=null){
-            
-                            if(contractBalanceData[1].status='success'){
-                                dmtkBalance=Number(utils.formatEther(contractBalanceData[1].result)).toFixed(2);
-                            }
-
-                            if(contractBalanceData[0].status='success'){
-                                usdtBalance=Number(utils.formatEther(contractBalanceData[0].result)).toFixed(2);
-                            }
-                            
-            
-                        }
-                        
-                    } catch (error) {
-                        console.log(error);
-                    }
-
-                    usdtBalancecell.innerHTML = usdtBalance;
-                    dmtkBalancecell.innerHTML = dmtkBalance;
-                    usdtBalancecell.style.textAlign="right";
-                    dmtkBalancecell.style.textAlign="right";
-                }
-
-                getProfileDetailsBtn.disabled=false;
-
-            })
-
-
-        }
-
+       
         //--------------------------------------------------------------Distribution logic------------------------------------------------------------------------------------
 
 
@@ -646,9 +479,9 @@ if(!wconnected){
 
        
         
-    var dcpRefresh = document.getElementById("dcpRefresh");
-    var compoolbalanceElm = document.getElementById("compoolbalance");
-    var totalDistributionElm = document.getElementById("totalTillDate");
+        var dcpRefresh = document.getElementById("dcpRefresh");
+        var compoolbalanceElm = document.getElementById("compoolbalance");
+        var totalDistributionElm = document.getElementById("totalTillDate");
        //Adding event to  frequency update button
        dcpRefresh.addEventListener("click", async function(){
 
@@ -803,9 +636,6 @@ if(!wconnected){
         })
 
 
-
-
-
         var currentMinDepositMembers = document.getElementById("currentMinDepositMembers");
         var changeMinimumDepositMembers = document.getElementById("changeMinimumDepositMembers");
         currentMinDepositMembers.innerHTML = `Member's Joining min fee- Current value: ${Number(contractData[14].result)/Math.pow(10,18)} USDT`;
@@ -909,84 +739,6 @@ if(!wconnected){
 
         document.getElementById("footer-menu").innerHTML = "";
 
-        //-----------------------------------------------------------------------Level Reward section -----------------------------------------------------
-
-
-            var sponsorlevelsearchbtn = document.getElementById("sponsorlevelsearchbtn");
-            sponsorlevelsearchbtn.addEventListener("click", async function() {
-            var txndetails1element=document.getElementById("txndetailstable");
-            messagex.innerHTML = "";
-            txndetails1element.innerHTML="";
-
-            var sponsorAddress=    document.getElementById("sponsoridleveltext").value;
-        
-            if(sponsorAddress == null || sponsorAddress ==""){
-                messagex.innerHTML = getErrorMessageContent("Sponsor address cannot be empty");
-                return;
-            }
-
-            var ContractResponseData = await readContracts({
-                contracts: [                  
-                    {
-                        ...dmTXNContract,
-                        functionName: 'getSponsorLevelrewards',
-                        args:[sponsorAddress]
-                      }
-                ],
-            });
-
-
-
-            if(ContractResponseData[0].status =="failure" || ContractResponseData[0].result[6]=="0x0000000000000000000000000000000000000000"){
-
-                txndetails1element.innerHTML="Unable to fetch data from Contract";
-
-            }
-            else{
-                        
-                var memAddressArr=ContractResponseData[0].result[0];
-                var levelRewardsArr=ContractResponseData[0].result[1];
-                var levelArr=ContractResponseData[0].result[2];
-    
-                var arrLength= memAddressArr.length;
-                var txnTableheaders = [ "Level", "Member Wallet Address","Rewards generated"]; // Profile header values
-      
-                var table = document.createElement('table');                                   
-                
-                //Create header row              
-                var headerRow1 = table.insertRow();
-                for (var i = 0; i < txnTableheaders.length; i++) {
-                    var th = document.createElement('th');
-                    th.textContent = txnTableheaders[i];
-                    headerRow1.appendChild(th);
-                 }
-    
-                 if(arrLength<=0){
-                    txndetails1element.innerHTML="No rewards available for Sponsor: "+sponsorAddress;
-                    
-                 }else{
-                                    // Create body rows
-                    for ( let i = 0; i < arrLength; i++) {
-                        var row = table.insertRow();
-        
-                        var txnLevelcell = row.insertCell(0); 
-                        var txnWalletAddresscell = row.insertCell(1); 
-                        var txnLevelRewardscell = row.insertCell(2); 
-        
-                        txnLevelcell.textContent = levelArr[i];
-                        txnWalletAddresscell.textContent = maskWalletAddress(memAddressArr[i]);              
-                        txnLevelRewardscell.textContent = Number(utils.formatEther(levelRewardsArr[i])).toFixed(2);
-                        
-                    }
-                  
-                 }
-
-                txndetails1element.appendChild(table);
-
-            }
-
-
-        })
 
 
 

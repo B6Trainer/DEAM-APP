@@ -2,12 +2,9 @@ import { readContracts,watchAccount,watchNetwork,getNetwork } from "@wagmi/core"
 import ethereumClient from "./walletConnect";
 import {defaultChainId,M_TYPE_Guest,M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Admin,M_TYPE_Owner} from './config'
 import { usdtAddress,DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
-import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
-import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
-import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
-import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
+
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
-import ABI_ERC20 from './ABI_ERC20.json'
+
 
 export var wconnected = ethereumClient.getAccount().isConnected;
 var previousAddress;
@@ -43,7 +40,7 @@ if (wconnected) {
             {
               ...dmMembershipContract,
               functionName: 'owner',
-              args:[ethereumClient.getAccount().address]
+
             }
 
       ],
@@ -109,7 +106,7 @@ if (wconnected) {
     });
 
 }else{
-  welMess="Welcome, please connect your wallet"; 
+  welMess="Welcome & Please connect your wallet"; 
 
 }
 
@@ -192,3 +189,41 @@ $(function () {
       $('.navbar-collapse').collapse('hide');
   });
 });
+
+export function loadadminheader(){
+// Load the header, body, and footer from their respective HTML files
+fetch('adheader.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('header').innerHTML = data;
+    });
+}
+
+export function adminAuthMessage(){
+  var isAdmin=false;
+  if(membershipType!=M_TYPE_Owner){
+    document.getElementById("authmessage").innerHTML = "Unauthorized!! You are not an admin! ";
+    document.getElementById("authmessage").style.color="red";   
+    document.getElementById("authmessage1").innerHTML = "Wallet id: "+ethereumClient.getAccount().address;
+    document.getElementById("authmessage1").style.color="red";           
+    isAdmin=false;
+  }else{
+      document.getElementById("authmessage").innerHTML = "Welcome admin! ";
+      document.getElementById("authmessage").style.color="green";            
+      document.getElementById("authmessage1").innerHTML = "Wallet id: "+ethereumClient.getAccount().address
+      document.getElementById("authmessage1").style.color="green";            
+      isAdmin=true;
+  }
+  document.getElementById("authmessage").style.fontSize="small";
+  document.getElementById("authmessage1").style.fontSize="small";
+  const bodyContainer = document.getElementById("bodyContainer");
+  if(!isAdmin){
+      messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");                    
+      bodyContainer.style.display ="none";  
+  }else{
+      bodyContainer.style.display ="block";  
+  }
+
+  document.getElementById("footer-menu").innerHTML = "";
+
+}

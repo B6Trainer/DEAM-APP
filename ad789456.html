@@ -24,47 +24,7 @@
       }
 
    </style>
-     <style>
-        body {
-          margin: 0;
-          padding: 0;
-          overflow: hidden; /* Prevent default margin/padding and enable scrolling */
-        }
-    
-        .admincontainer {
-          display: flex; /* Use flexbox for horizontal layout */
-          overflow-x: auto; /* Enable horizontal scrolling if needed */
-          white-space: nowrap; /* Prevent divs from wrapping to the next line */
-        }
-    
-        .box {
-          width: 300px;
-          height: 200px;
-          margin: 10px;
-          background-color: rgb(2, 2, 2);
-          display: inline-block; /* Align divs horizontally */
-        }
 
-        .container {
-          background-color: rgb(7, 7, 7);
-          padding: 10px;
-          margin-top: 10px;
-
-        }
-      </style>
-
-      <style>
-        .grid-container {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr); /* Create three equal columns */
-          justify-content: center; /* Center the items horizontally */
-          gap: 10px; /* Optional: Add some gap between the items */
-        }
-
-        .grid-item {
-          text-align: center; /* Center the content inside each item */
-        }
-      </style>
 
 </head>
 
@@ -94,20 +54,19 @@
                         <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color); padding-left: 25px;" >          
                           <option value="HM">Home</option>
                           <option value="AW">Admin Wallets</option>
-                          <option value="P">Profiles</option>
+                          
                           <option value="CB">Contracts Balance</option>
                           <option value="WR">CP Rewards distribution</option>
                           <option value="FS">Fee Setup</option>
                           <option value="RP">Register Promoter</option> 
-                          <option value="LR">Level Rewards</option>
+
                         </select>
               </div>
               <div class="col-sm-4"><h4 id="authmessage"></h4></div>
             </div>
 
       </div>
-    
-
+      </div>
     
       <div  id="homesection"  class="container" style="display:none">
         <h3>Admin Home </h3>
@@ -118,31 +77,12 @@
           <div class="container" id="contractdetailstable" ></div>
       </div>
     
-      <div class="container" id="profiledetails" style="display:none">
-        <h3>All Member's Profile : Profile count = <span id="profileCount"></span> profiles</h3>        
-        <div class="container" ><button id="getProfileDetailsBtn" class="btn btn-info">Fetch All Profiles</button> </div>        
-        <hr>
-        <div class="container" id="profiledetailstable" ></div>
-      </div>
  
       <div class="container" id="adminwallets" style="display:none">
         <h3>Admin Wallets</h3>         
           <div class="container" id="adminwallettable" ></div>
       </div>
 
-      <div class="container" id="txndetails" style="display:none">
-        <h3>Level Rewards </h3>         
-          <div class="grid-container" id="sponsoridlevel" >
-          <label for="sponsorAddress" class="grid-item">Sponsor Address:</label>
-          <input required type="text" class="grid-item" id="sponsoridleveltext" name="sponsoridleveltext" placeholder="0x00032.......10302130">
-          </div>
-
-          <div class="grid-container" id="sponsorlevelsearch" >
-            <input class="btn btn-info" type="button" id="sponsorlevelsearchbtn" value ="Fetch Level Rewards" style="align-self: center;">
-          </div>
-        <div class="container" id="txndetailstable" ></div>
-      </div>
-      
     
         <div class="container" id="weeklydistribution" style="display:none">
             

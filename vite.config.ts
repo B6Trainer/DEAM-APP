@@ -13,6 +13,7 @@ export default defineConfig({
                   admin: resolve(__dirname, './ad789456.html'),
                   adminhead: resolve(__dirname, './adheader.html'),
                   adlrewards: resolve(__dirname, './adlevelrewards.html'),
+                  adprofiles: resolve(__dirname, './adprofiles.html'),
                   assets: resolve(__dirname, './assets.html'),
                   //joinPlan: resolve(__dirname, './joinPlan.html'),
                   //plans: resolve(__dirname, './stakePlan.html'),

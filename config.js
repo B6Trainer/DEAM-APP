@@ -6,6 +6,7 @@ import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 import DM_TXN_ABI from './ABI_DM_TXN.json';
 import ERC20_ABI from './ABI_ERC20.json'
 
+
 const network='Test'
 
 var subAddress;
@@ -102,6 +103,8 @@ export const  M_TYPE_Guest_DEF = "Guest";
 export const  M_TYPE_Admin_DEF = "Admin";
 export const  M_TYPE_Owner_DEF = "Owner";
 
+
+//Contract configurations
 export const dmConfigContract = {
      address: DM_CONFIG_ADDRESS,
      abi: DM_CONFIG_ABI,
@@ -111,3 +114,29 @@ export const dmTXNContract = {
      address: DM_TXN_ADDRESS,
      abi: DM_TXN_ABI,
    }
+
+export const dmManagerContract = {
+     address: DM_MANAGER_ADDRESS,
+     abi: DM_MANAGER_ABI,
+ }
+
+export const dmCPdistributorContract = {
+     address: DM_CPDISTRIBUTOR_ADDRESS,
+     abi: DM_CPDISTRIBUTOR_ABI,
+ }
+
+export const dmTokenContract = {
+     address: DM_TOKEN_ADDRESS,
+     abi: DM_TOKEN_ABI,
+ }
+ 
+ export const dmMembershipContract = {
+     address: DM_MEMBERSHIP_ADDRESS,
+     abi: DM_MEMBERSHIP_ABI,
+ }
+
+export const usdtContract = {
+     address: usdtAddress,
+     abi: ERC20_ABI,
+ }
+ 
