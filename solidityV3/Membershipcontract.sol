@@ -227,7 +227,7 @@ contract Membershipcontract is BaseDMContract {
         });
 
         memberProfiles[subscriber] = MemberProfile({
-            userType: UserType.Member,  
+            userType: _usertype,  
             memberAddress: subscriber,          
             name: _name,    
             email: _email,
@@ -244,7 +244,18 @@ contract Membershipcontract is BaseDMContract {
 
             addSubscriptionBalance( subscriber, subscriptionAmount);
                         
+
         }
+
+        logDMMessages(string(abi.encodePacked(
+            " New Subscriber MemberType: ",_usertype,
+            " Member Addres: ",addressToString(subscriber),
+            " Name: ",_name,   
+            " Email: ",_email,   
+            " Mobile: ",_mobile,                             
+            " Subscribed Amount",uintToString(subscriptionAmount)                            
+            
+        )));
     }
 
     function topUpSubscriptionBalance(address account, uint256 amount)

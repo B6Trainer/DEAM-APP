@@ -425,10 +425,7 @@ if(!wconnected){
                     contractBalanceData[1]=0;
                 }
 
-                //contractListandBalances.push(contractBalanceData);
-                console.log(contractBalanceData);
-                console.log(ContractBalanceDetails[0].result+" "+ContractBalanceDetails[1].result);
-    
+                
                 //var newRow = contractstable.insertRow(contractstbody.rows.length); 
                 var newRow = contractstable.insertRow();
                 
@@ -872,7 +869,7 @@ if(!wconnected){
             }
         })
 
-
+//------------------------------------------------------------------------Adding a promoter----------------------------------------------
 
         var addPromoter = document.getElementById("addPromoter");
         addPromoter.addEventListener("click", async function() {

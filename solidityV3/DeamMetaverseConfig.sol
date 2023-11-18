@@ -9,7 +9,7 @@ contract DeamMetaverseConfig is BaseDMContract {
     address public communityPoolWallet=0x9F03df34b0218373eF544b7386a05d8701768240;
     address public marketingWallet=0x2Df4176b7285bf4970900e14C19F628f63fCfFDB;
     address public technologyWallet=0x2e4c722122D9c89102B670dA53c91efb54bE73c7;
-    address public transactionPoolWallet;
+    address public transactionPoolWallet=0x0F4c59277c876ee947dFE0d708B6d0E92E9095e6;
     address public foundersWallet=0x9b0a5444E574a4c40870fdabEaDB224da22664F8;
     address public conversionFeeWallet;
     uint256 public conversionFeeMember = 100000;
