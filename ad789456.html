@@ -119,8 +119,10 @@
       </div>
     
       <div class="container" id="profiledetails" style="display:none">
-        <h3>All Member's Profile : Profile count = <span id="profileCount"></span> profiles</h3>         
-          <div class="container" id="profiledetailstable" ></div>
+        <h3>All Member's Profile : Profile count = <span id="profileCount"></span> profiles</h3>        
+        <div class="container" ><button id="getProfileDetailsBtn" class="btn btn-info">Fetch All Profiles</button> </div>        
+        <hr>
+        <div class="container" id="profiledetailstable" ></div>
       </div>
  
       <div class="container" id="adminwallets" style="display:none">
@@ -151,46 +153,48 @@
           
             <hr>
             <div class="row">
-              <div class="col-sm-4">
+              <div class="col-sm-6">
                 <p>DM Community pool balance: </p>
               </div>
-              <div class="col-sm-4"> <p id="compoolbalance">Click Refresh DCP Details..</p></div>
-              <div class="col-sm-4"> DMTK </div>
+              <div class="col-sm-3"> <p id="compoolbalance" style="color: var(--primary-t-color);">Click Refresh DCP Details..</p></div>
+              <div class="col-sm-3"> DMTK </div>
            </div>
            <hr>
            <div class="row">
-            <div class="col-sm-4">
-              <p>Last Distribution Time : </p>
-            </div>
-            <div class="col-sm-8"> <p id="lastDistributeTime">Click Refresh DCP Details..</p></div>            
+             <div class="col-sm-6">
+               <p>Last Distribution Time : </p>
+               <p id="lastDistributeTime" style="color: var(--primary-t-color);">Click Refresh DCP Details..</p>
+              </div>  
+             
+             <div class="col-sm-6">
+              <p>Total Token Distributed till Date :</p>
+              <p id="totalTillDate" style="color: var(--primary-t-color);" >Click Refresh DCP Details..</p>
+             </div>          
+             
           </div>
-          <hr>  
+
+          <hr>
+
           <div class="row">
-                <div class="col-sm-4">
-                  Current distribtion Frequency: <p id="currentfrequency"></p>
+                <div class="col-sm-3"> <p>Distribute in Batch</p>
+                  Force Run: <input type="checkbox" id="forcerunbox" checked style="width: auto;">
                 </div>
-                <div class="col-sm-4"> <input type="text" id="newfrequency" placeholder="Enter new Frequency in days"></div>
-                <div class="col-sm-4"> <button id="changeFrequency" class="btn btn-info">Change</button></div>
-          </div>
-          <hr>
-          
-          
-            <div class="row">
-              <div class="col-sm-3"> <p>Distribute in Batch</p></div>
                 
-                <div class="col-sm-3">Start Index: <input type="number" id="startIndex" placeholder="Start Index" value="0" style="width: auto;"></div>
-                
-                <div class="col-sm-3">Batch Size: <input type="number" id="lastIndex" placeholder="Batch Size" value="1"  style="width: auto;"></div>
-                
+                <div class="col-sm-3">Start Index: <input type="number" id="startIndex" placeholder="Start Index" value="0" style="width: auto;"></div>                
+                <div class="col-sm-3">Batch Size: <input type="number" id="lastIndex" placeholder="Batch Size" value="100"  style="width: auto;"></div>
                 <div class="col-sm-3"> <button id="distributeButton" class="btn btn-info">Distribute Now</button></div>
-            </div>
-          <hr>
-          
-          <div class="row">
-          Total Token Distributed till Date : <div class="col-sm-4"><p id="totalTillDate"></p></div>
-          <div class="col-sm-4"></div>
-          <div class="col-sm-4"></div>
           </div>
+          
+          <hr>
+
+          <div class="row">
+            <div class="col-sm-4">
+              Current distribtion Frequency: <p id="currentfrequency" style="color: var(--primary-t-color);"></p>
+            </div>
+            <div class="col-sm-4"> <input type="text" id="newfrequency" placeholder="Enter new Frequency in days"></div>
+            <div class="col-sm-4"> <button id="changeFrequency" class="btn btn-info">Change</button></div>
+          </div>
+
 
         </div>
    

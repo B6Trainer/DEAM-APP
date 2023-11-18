@@ -7,8 +7,8 @@ import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
 import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
 import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
-import USDT_ABI from './ABI_ERC20.json';
 import DM_TXN_ABI from './ABI_DM_TXN.json';
+import ERC20_ABI from './ABI_ERC20.json'
 import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn,defineMembership } from "./dm_utils";
 import {M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Guest,M_TYPE_Admin,M_TYPE_Owner} from './config';
 import {M_TYPE_Member_DEF,M_TYPE_Promoter_DEF,M_TYPE_Guest_DEF,M_TYPE_Admin_DEF,M_TYPE_Owner_DEF} from './config';
@@ -69,16 +69,9 @@ if(!wconnected){
 
         const usdtContract = {
             address: usdtAddress,
-            abi: USDT_ABI,
+            abi: ERC20_ABI,
         }
         
-
-        var cpwalletloc=0;
-        var cpwalletloc=0;
-        var cpwalletloc=0;
-        var cpwalletloc=0;
-
-
 
         const contractData = await readContracts({
             contracts: [
@@ -163,17 +156,25 @@ if(!wconnected){
         var minTopUpLoc=15;
         var minDepoLoc=14;
 
+        var isAdmin=false;
         //-------------------------------------------------------------Welcome message--------------------------------------------------------
        
 
         if(contractData[6].result != ethereumClient.getAccount().address){
             document.getElementById("authmessage").innerHTML = "Unauthorized!! You are not an admin! <br>  Wallet id:  "+ethereumClient.getAccount().address
             document.getElementById("authmessage").style.color="red";            
+            isAdmin=false;
         }else{
             document.getElementById("authmessage").innerHTML = "Welcome admin! <br> Wallet id:"+ethereumClient.getAccount().address
             document.getElementById("authmessage").style.color="green";            
+            isAdmin=true;
         }
         document.getElementById("authmessage").style.fontSize="small";
+
+        if(!isAdmin){
+            messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");        
+            //return;
+        }
 
         //-------------------------------------------------------------Action Select--------------------------------------------------------
         
@@ -187,7 +188,7 @@ if(!wconnected){
         const txndetails = document.getElementById("txndetails");
         
         var actionTab;
-       
+        const actionsselect = document.getElementById("actionsselect");
 
         
         actionsselect.addEventListener("change", function() {
@@ -205,7 +206,7 @@ if(!wconnected){
             registerpromoter.style.display ="none";  
             txndetails.style.display ="none";  
 
-            if(membershipType!=M_TYPE_Owner && membershipType!=M_TYPE_Member){
+            if(!isAdmin){
                 messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");        
                 return;
             }
@@ -242,7 +243,7 @@ if(!wconnected){
         var table = document.getElementById("myTable");
         var tbody = document.getElementById("myTableBody");
 
-        var adminWalletTableheaders = ["Wallet Name","Wallet Address", "New Address", "Update"]; 
+        var adminWalletTableheaders = ["Wallet Name","Wallet Address","USDT Balance","DMTK Balance", "New Address", "Update"]; 
         var adminWallettable = document.createElement('table');   
         // Create header row              
         var headerRow1 = adminWallettable.insertRow();
@@ -256,10 +257,61 @@ if(!wconnected){
                 var newRow = adminWallettable.insertRow(); 
                 var cell1 = newRow.insertCell(0); 
                 var cell2 = newRow.insertCell(1); 
-                var cell3 = newRow.insertCell(2); 
-                var cell4 = newRow.insertCell(3); 
+                var usdtBalancecell = newRow.insertCell(2); 
+                var dmtkBalancecell = newRow.insertCell(3); 
+                var cell3 = newRow.insertCell(4); 
+                var cell4 = newRow.insertCell(5); 
                 cell1.innerHTML = walletnamearray[i];
                 cell2.innerHTML = contractData[i].result;
+
+                var adwalletAddress=contractData[i].result;
+
+                var usdtBalance=0;
+                var dmtkBalance=0;
+
+                    try {
+
+                        const contractBalanceData = await readContracts({
+                            contracts: [
+                           
+                                {
+                                    ...dmTokenContract,
+                                    functionName: 'balanceOf',//1
+                                    args: [adwalletAddress],
+                                },
+                                {
+                                    ...usdtContract,
+                                    functionName: 'balanceOf',//0
+                                    args: [adwalletAddress],
+                                }
+
+                
+                            ],
+                        });
+    
+    
+                        if(contractBalanceData!=null){
+            
+                            if(contractBalanceData[0].status='success'){
+                                dmtkBalance=Number(utils.formatEther(contractBalanceData[0].result)).toFixed(2);
+                            }
+                            if(contractBalanceData[1].status='success'){
+                                usdtBalance=Number(utils.formatEther(contractBalanceData[1].result)).toFixed(2);
+                            }
+                    
+            
+                        }
+                        
+                    } catch (error) {
+                        console.log("Error while loading balance details for walletid: "+walletnamearray[i]+" id: "+adwalletAddress);
+                        console.log(error);
+                    }
+
+                usdtBalancecell.innerHTML = usdtBalance;
+                dmtkBalancecell.innerHTML = dmtkBalance;
+                usdtBalancecell.style.textAlign="center";
+                dmtkBalancecell.style.textAlign="center";
+
 
                 //Create a new input element
                 var inputElement = document.createElement("input");
@@ -398,57 +450,121 @@ if(!wconnected){
 
         //--------------------------------------------------------------Profile section------------------------------------------------------------------------------------
             // Prepare the profile table header
+            
+            var profileTableheaders = [ "Profile type", "Name","Wallet Address", "Phone", "Email","Subscribed Balance", "Rewards gained", "Sponsor", "USDT Balance", "DMTK Balance"]; // Profile header values
+    
+            var tableelement=document.getElementById("profiledetailstable");  
+            //tableelement.removeChild("profTbl1");              
+            var profiletable = document.createElement('table'); 
+                            //profiletable.id="profTbl1";
+                // Create header row              
+                var headerRow1 = profiletable.insertRow();
+                for (var i = 0; i < profileTableheaders.length; i++) {
+                    var th = document.createElement('th');
+                    th.textContent = profileTableheaders[i];
+                    headerRow1.appendChild(th);
+                }
 
-            var profiletypeArr = contractData[profResultLoc].result[0]; 
-            var walletaddArr = contractData[profResultLoc].result[1];     
-            var nameArr = contractData[profResultLoc].result[2]; 
-            var emailArr = contractData[profResultLoc].result[3]; 
-            var phoneArr = contractData[profResultLoc].result[4]; 
-            var profilecount = contractData[profResultLoc].result[5]; 
-            var subsBalanceArr = contractData[profResultLoc].result[6]; 
-            var rewardsReceivedArr = contractData[profResultLoc].result[7] ; 
-            var sponsor = contractData[profResultLoc].result[8]; 
-            var profileTableheaders = [ "Profile type", "Name","Wallet Address", "Phone", "Email","Subscribed Balance", "Rewards gained", "Sponsor"]; // Profile header values
-                    
-            var profileCountSpan = document.getElementById("profileCount");
-                profileCountSpan.innerHTML = profilecount;
-          
-
-            var profiletable = document.createElement('table');   
-            // Create header row              
-            var headerRow1 = profiletable.insertRow();
-            for (var i = 0; i < profileTableheaders.length; i++) {
-                var th = document.createElement('th');
-                th.textContent = profileTableheaders[i];
-                headerRow1.appendChild(th);
-            }
- 
-            // Create body rows
-            for ( let i = 0; i < profilecount; i++) {
-
-                var newRow = profiletable.insertRow();
-                var profiletypecell = newRow.insertCell(0); 
-                var namecell = newRow.insertCell(1); 
-                var walletaddcell = newRow.insertCell(2); 
-                
-                var phonecell = newRow.insertCell(3); 
-                var emailcell = newRow.insertCell(4);
-                var subscell = newRow.insertCell(5);
-                var rewardscell = newRow.insertCell(6);
-                var sponsorcell = newRow.insertCell(7); 
-        
-                walletaddcell.innerHTML = maskWalletAddress(walletaddArr[i]);
-                profiletypecell.innerHTML = defineMembership(profiletypeArr[i]);
-                namecell.innerHTML = nameArr[i];
-                phonecell.innerHTML = phoneArr[i];
-                emailcell.innerHTML = emailArr[i];
-                subscell.innerHTML = Number(utils.formatEther(subsBalanceArr[i])).toFixed(2);;
-                rewardscell.innerHTML = Number(utils.formatEther(rewardsReceivedArr[i])).toFixed(2);
-                sponsorcell.innerHTML = maskWalletAddress(sponsor[i]);
-                
-            }
-            var tableelement=document.getElementById("profiledetailstable");
             tableelement.appendChild(profiletable);
+
+
+            var getProfileDetailsBtn=document.getElementById("getProfileDetailsBtn");
+            getProfileDetailsBtn.addEventListener("click", async function() {
+
+                getProfileDetailsBtn.disabled=true;
+                var rowCount = profiletable.rows.length;
+                for (var i = rowCount - 1; i > 0; i--) {
+                    profiletable.deleteRow(i);
+                }
+
+                var profiletypeArr = contractData[profResultLoc].result[0]; 
+                var walletaddArr = contractData[profResultLoc].result[1];     
+                var nameArr = contractData[profResultLoc].result[2]; 
+                var emailArr = contractData[profResultLoc].result[3]; 
+                var phoneArr = contractData[profResultLoc].result[4]; 
+                var profilecount = contractData[profResultLoc].result[5]; 
+                var subsBalanceArr = contractData[profResultLoc].result[6]; 
+                var rewardsReceivedArr = contractData[profResultLoc].result[7] ; 
+                var sponsor = contractData[profResultLoc].result[8]; 
+                        
+                var profileCountSpan = document.getElementById("profileCount");
+                profileCountSpan.innerHTML = profilecount;
+                                  
+     
+                // Create body rows
+                for ( let i = 0; i < profilecount; i++) {
+    
+                    var newRow = profiletable.insertRow();
+                    var profiletypecell = newRow.insertCell(0); 
+                    var namecell = newRow.insertCell(1); 
+                    var walletaddcell = newRow.insertCell(2); 
+                    
+                    var phonecell = newRow.insertCell(3); 
+                    var emailcell = newRow.insertCell(4);
+                    var subscell = newRow.insertCell(5);
+                    var rewardscell = newRow.insertCell(6);
+                    var sponsorcell = newRow.insertCell(7); 
+                    var usdtBalancecell = newRow.insertCell(8);
+                    var dmtkBalancecell = newRow.insertCell(9); 
+            
+                    walletaddcell.innerHTML = maskWalletAddress(walletaddArr[i]);
+                    profiletypecell.innerHTML = defineMembership(profiletypeArr[i]);
+                    namecell.innerHTML = nameArr[i];
+                    phonecell.innerHTML = phoneArr[i];
+                    emailcell.innerHTML = emailArr[i];
+                    subscell.innerHTML = Number(utils.formatEther(subsBalanceArr[i])).toFixed(2);;
+                    rewardscell.innerHTML = Number(utils.formatEther(rewardsReceivedArr[i])).toFixed(2);
+                    sponsorcell.innerHTML = maskWalletAddress(sponsor[i]);
+
+                    var usdtBalance=0;
+                    var dmtkBalance=0;
+
+                    try {
+
+                        const contractBalanceData = await readContracts({
+                            contracts: [
+                            {
+                                ...usdtContract,
+                                functionName: 'balanceOf',//0
+                                args: [walletaddArr[i]],
+                            },
+                            {
+                                ...dmTokenContract,
+                                functionName: 'balanceOf',//1
+                                args: [walletaddArr[i]],
+                            }
+                
+                            ],
+                        });
+    
+    
+                        if(contractBalanceData!=null){
+            
+                            if(contractBalanceData[1].status='success'){
+                                dmtkBalance=Number(utils.formatEther(contractBalanceData[1].result)).toFixed(2);
+                            }
+
+                            if(contractBalanceData[0].status='success'){
+                                usdtBalance=Number(utils.formatEther(contractBalanceData[0].result)).toFixed(2);
+                            }
+                            
+            
+                        }
+                        
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    usdtBalancecell.innerHTML = usdtBalance;
+                    dmtkBalancecell.innerHTML = dmtkBalance;
+                    usdtBalancecell.style.textAlign="right";
+                    dmtkBalancecell.style.textAlign="right";
+                }
+
+                getProfileDetailsBtn.disabled=false;
+
+            })
+
 
         }
 
@@ -456,7 +572,7 @@ if(!wconnected){
 
 
         var lastDistributeTime = document.getElementById("lastDistributeTime");
-        lastDistributeTime.innerHTML = "";// ` ${new Date(Number(contractData[7].result)*1000)}`;
+        //lastDistributeTime.innerHTML = "";// ` ${new Date(Number(contractData[7].result)*1000)}`;
 
         var currentfrequency = document.getElementById("currentfrequency");
         currentfrequency.innerHTML  ="";// `Current distribtion Frequency : ${contractData[8].result} seconds (${(Number(contractData[8].result)/86400).toFixed(2)} Days)`
@@ -504,14 +620,15 @@ if(!wconnected){
         
         var startIndex = document.getElementById("startIndex").value
         var lastIndex = document.getElementById("lastIndex").value
-
+        var forcerunbox = document.getElementById("forcerunbox");
+        var forceRun = forcerunbox.checked ? 1 : 0;
 
             try{
                 var result = await writeContract({
                     address: DM_CPDISTRIBUTOR_ADDRESS,
                     abi: DM_CPDISTRIBUTOR_ABI,
                     functionName: `DistributeCommunityPool`,
-                    args: [startIndex,lastIndex],
+                    args: [startIndex,lastIndex,forceRun],
                 });
                 var tr = await waitForTransaction({
                     hash: result.hash,
@@ -524,7 +641,7 @@ if(!wconnected){
                     //alert("Error");
                 }
             }catch(e){
-                messagex.innerHTML = getErrorMessageandTxn("DCP distribution failed due to exception ");
+                messagex.innerHTML = getErrorMessageContent("DCP distribution failed due to exception ");
                 console.log("DCP distribution failed due to exception ");
                 console.log(e);
             }
@@ -574,7 +691,7 @@ if(!wconnected){
             if(dcpContractData!=null){
 
                 if(dcpContractData[0].status='success'){
-                    compoolbalance=dcpContractData[0].result;
+                    compoolbalance=Number(utils.formatEther(dcpContractData[0].result)).toFixed(2);
                 }
 
             }

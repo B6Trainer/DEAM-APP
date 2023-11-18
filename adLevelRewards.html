@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Deam Admin-Level Rewards</title>
+    <link rel="icon" type="image/x-icon" href="/applogo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <!--Stylesheet-->
+    <link rel="stylesheet" href="/assets/css/stylesheet-main.css" />
+    <link rel="stylesheet" href="/assets/css/default-stylesheet.css" />
+    <link rel="stylesheet" href="/assets/css/pink-color.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+
+   <meta name="description"    content="DEAM Metaverse is a community to benfit by streams of passive income." />
+   <style>
+      .headlabel{   
+         font-weight: 100;
+        font-size: 15px;
+      }
+
+   </style>
+
+
+</head>
+
+<body style="background-color: #080808;">
+
+    <div id="header"></div>
+   
+    <section id="topmenuspacing" style="background-color: #080808; padding: 80px;" >                       
+    </section>
+
+
+      <div id="walletconnectBtn" class="container" style="display:none ; align-items: center;">
+        <w3m-core-button id="wagmiButton"></w3m-core-button>
+      </div>
+        
+        
+      <div id="actionform" class="container"  style="display:block">        
+            <div  id="actionheadersection"  class="container" style="display:block">
+              <div class="row"> 
+              <div class="col-sm-6"><h4 id="authmessage"></h4></div>
+              <div class="col-sm-6"><h4 id="authmessage1"></h4></div>
+              </div>
+            </div>
+      </div>
+
+      <div  id="messagesection"  class="container" style="display:block">
+        <p class="text-center"><span id="messagex"></span></p>
+      </div>
+ 
+      <div class="container" id="txndetails" style="display:none">
+        <h3>Level Rewards </h3>   
+
+        <div class="row"> 
+          <div class="col-sm-3">
+              <label for="sponsorAddress">Sponsor Address:</label>
+          </div>
+          <div class="col-sm-6">
+            <input required type="text" class="grid-item" id="sponsoridleveltext" name="sponsoridleveltext" placeholder="0x00032.......10302130">
+          </div>
+          <div class="col-sm-3">
+            <input class="btn btn-info" type="button" id="sponsorlevelsearchbtn" value ="Fetch Level Rewards" style="align-self: center;">
+          </div>
+        </div>
+
+        <hr>
+        <div class="container" id="txndetailstable" ></div>
+      </div>
+    
+
+    <div id="footer-menu"></div>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./common.js"></script>
+    <script type="module" src="./adlevelrewards.js"></script>
+</body>
+
+</html>

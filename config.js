@@ -1,3 +1,11 @@
+import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
+import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
+import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
+import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
+import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
+import DM_TXN_ABI from './ABI_DM_TXN.json';
+import ERC20_ABI from './ABI_ERC20.json'
+
 const network='Test'
 
 var subAddress;
@@ -94,4 +102,12 @@ export const  M_TYPE_Guest_DEF = "Guest";
 export const  M_TYPE_Admin_DEF = "Admin";
 export const  M_TYPE_Owner_DEF = "Owner";
 
-
+export const dmConfigContract = {
+     address: DM_CONFIG_ADDRESS,
+     abi: DM_CONFIG_ABI,
+   }
+   
+export const dmTXNContract = {
+     address: DM_TXN_ADDRESS,
+     abi: DM_TXN_ABI,
+   }
