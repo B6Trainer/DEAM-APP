@@ -3,55 +3,24 @@
     
     import { maskWalletAddress } from "./dm_utils";  
     import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
-    import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
-    import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
-    import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
-    import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
-    import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
+    
+    import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
+      dmTokenContract,dmMembershipContract,usdtContract} from './config'; 
+    import { wconnected,walletAddress,membershipType,welMess } from './common';  
+
+
+
+
+    if(wconnected){
     
 
-    const TotalEarning = document.getElementById("total-earning");
-    const TotalEarningUSDT  = document.getElementById("total-earning-usdt");
-    const DirectReferrals  = document.getElementById("direct-referrals");
-    const IndirectReferrals  = document.getElementById("indirect-referrals");
-    const mysponsor  = document.getElementById("referredBy");
-    const yourAccount  = document.getElementById("your-account");
-    const referralsContainer  = document.getElementById("referrals-container");
-    const sharebtn  = document.getElementById("share");
-    const subscriberAvailable  = document.getElementById("subscriberAvailable");
-    const notsubscriberAvailable  = document.getElementById("notsubscriberAvailable");
+      const mysponsor  = document.getElementById("referredBy");
+      const yourAccount  = document.getElementById("your-account");
+      const referralsContainer  = document.getElementById("referrals-container");
+      const subscriberAvailable  = document.getElementById("subscriberAvailable");
+      const notsubscriberAvailable  = document.getElementById("notsubscriberAvailable");
 
-
-      var connected = ethereumClient.getAccount().isConnected;
-
-      if(!connected){
-       document.getElementById("subscriberAvailable").style.display = "none";
-       document.getElementById("notsubscriberAvailable").innerHTML = "Connect Wallet"
-       
-      }else{
-
-        
-        //New Contracts
-        const dmConfigContract = {
-          address: DM_CONFIG_ADDRESS,
-          abi: DM_CONFIG_ABI,
-        }
-    
-        const dmManagerContract = {
-          address: DM_MANAGER_ADDRESS,
-          abi: DM_MANAGER_ABI,
-        }
-    
-        const dmTokenContract = {
-          address: DM_TOKEN_ADDRESS,
-          abi: DM_TOKEN_ABI,
-        }
-        
-        const dmMembershipContract = {
-          address: DM_MEMBERSHIP_ADDRESS,
-          abi: DM_MEMBERSHIP_ABI,
-        }
-    
+      
         //Read data from contract
         const AccountData = await readContracts({
           contracts: [
@@ -70,8 +39,6 @@
             ],
           });
   
-      console.log(AccountData);
-
       
 
       var referrals;
@@ -112,11 +79,7 @@
   
       }
   
-  
 
-
-
-
-      }//End of Connected else block
+    }//End of Connected block
       
        

@@ -14,6 +14,23 @@ var membershipType=M_TYPE_Guest;
 var welMess="Welcome, Dear visitor"; 
 export const zeroaddress="0x0000000000000000000000000000000000000000";
 
+
+
+const connectwalletmessage=` 
+   <div class="container">
+        <div class="icon">
+            <i class="fas fa-lock"></i> <!-- Replace with your desired icon class -->
+        </div>
+        <div class="message">
+            Unauthorized
+
+        </div>
+        <div class="message">
+          Please connect your wallet
+
+        </div>`;
+
+
 if (wconnected) {
 
     const { chain } =  getNetwork();
@@ -107,6 +124,8 @@ if (wconnected) {
 
 }else{
   welMess="Welcome & Please connect your wallet"; 
+  const bodyContainer = document.getElementById("bodyContainer");
+  bodyContainer.innerHTML=connectwalletmessage;
 
 }
 
@@ -117,7 +136,7 @@ export var welMess;
 
 
 // Footer menu
-const footerMenu = `
+const footerMenu = ` <hr>
 <div class="bottom-navbar">
   <ul class="nav">
     <li class="nav-item" >
@@ -177,6 +196,8 @@ const HomenavbarMenuContent = `
   </div>
 </div>
 </nav>`;
+
+
 
 const divNav = document.getElementById("navbarmenu");
 if (divNav != null) {

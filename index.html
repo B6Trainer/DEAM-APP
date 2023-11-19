@@ -46,19 +46,7 @@
         color: #2fd9df !important;
       }
 
-      /* Media query for screens with a maximum width of 768px (typical mobile devices) */
-         @media (max-width: 768px) {
-            .hero-image {
-              opacity: 0.6 !important;
-            }
-        }
 
-        /* Media query for screens with a maximum width of 1024px (typical tablets) */
-        @media (max-width: 1024px) {
-          .hero-image {
-            opacity: 0.6 !important;
-            }
-        }
 
     </style>
   </head>
@@ -535,8 +523,8 @@
 
                 
               </div>
-            </div>
           </div>
+        
         </section>
 
 
@@ -657,9 +645,8 @@
                    </div>
                </div>
         
-              </div>
-            </div>
           </div>
+          
         </div>
       </section>
 
@@ -834,12 +821,12 @@
       </footer>
 
       <!-- <div class="lines">
-	<div class="line"></div>
-	<div class="line"></div>
-	<div class="line"></div>
-	<div class="line"></div>
-	<div class="line"></div>
-</div> -->
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+        </div> -->
     </div>
 
     <!-- Modal Search Section -->
@@ -916,24 +903,25 @@
 
     <div id="footer-menu"></div>
 
-    
+    <div id="bodyContainer" class="container" >
+    </div>  
     
     <script>
-    window.addEventListener("scroll", () => {
-      const header = document.querySelector("nav");
-      const scrollY = window.scrollY;
-  
-      if (scrollY > 200) {
-          header.style.backgroundColor = "#111111"; // Change to your desired background color
-      } else {
-          header.style.backgroundColor = "transparent";
-      }
-  });
-</script>
-
-    <script type="module" src="./common.js"></script>
+        window.addEventListener("scroll", () => {
+          const header = document.querySelector("nav");
+          const scrollY = window.scrollY;
+      
+          if (scrollY > 200) {
+              header.style.backgroundColor = "#111111"; // Change to your desired background color
+          } else {
+              header.style.backgroundColor = "transparent";
+          }
+      });
+    </script>
+    
     <script type="module" src="./main.js"></script>
     <script type="module" src="./index.js"></script>
+    <script type="module" src="./common.js"></script>
     <!--Scripts-->
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/jquery.easing.min.js"></script>
