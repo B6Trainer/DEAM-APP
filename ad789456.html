@@ -53,13 +53,9 @@
               <div class="col-sm-4"> 
                         <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color); padding-left: 25px;" >          
                           <option value="HM">Home</option>
-                          <option value="AW">Admin Wallets</option>
-                          
+                          <option value="AW">Admin Wallets</option>                          
                           <option value="CB">Contracts Balance</option>
-                          <option value="WR">CP Rewards distribution</option>
-                          <option value="FS">Fee Setup</option>
                           <option value="RP">Register Promoter</option> 
-
                         </select>
               </div>
               <div class="col-sm-4"><h4 id="authmessage"></h4></div>
@@ -83,61 +79,6 @@
           <div class="container" id="adminwallettable" ></div>
       </div>
 
-    
-        <div class="container" id="weeklydistribution" style="display:none">
-            
-          <div class="row">                        
-            <div class="col-sm-6"> <h3>Distribute Community Rewards </h3></div>
-            <div class="col-sm-6"> <button id="dcpRefresh" class="btn btn-info">Refresh DCP Details</button></div>
-          </div>
-          
-            <hr>
-            <div class="row">
-              <div class="col-sm-6">
-                <p>DM Community pool balance: </p>
-              </div>
-              <div class="col-sm-3"> <p id="compoolbalance" style="color: var(--primary-t-color);">Click Refresh DCP Details..</p></div>
-              <div class="col-sm-3"> DMTK </div>
-           </div>
-           <hr>
-           <div class="row">
-             <div class="col-sm-6">
-               <p>Last Distribution Time : </p>
-               <p id="lastDistributeTime" style="color: var(--primary-t-color);">Click Refresh DCP Details..</p>
-              </div>  
-             
-             <div class="col-sm-6">
-              <p>Total Token Distributed till Date :</p>
-              <p id="totalTillDate" style="color: var(--primary-t-color);" >Click Refresh DCP Details..</p>
-             </div>          
-             
-          </div>
-
-          <hr>
-
-          <div class="row">
-                <div class="col-sm-3"> <p>Distribute in Batch</p>
-                  Force Run: <input type="checkbox" id="forcerunbox" checked style="width: auto;">
-                </div>
-                
-                <div class="col-sm-3">Start Index: <input type="number" id="startIndex" placeholder="Start Index" value="0" style="width: auto;"></div>                
-                <div class="col-sm-3">Batch Size: <input type="number" id="lastIndex" placeholder="Batch Size" value="100"  style="width: auto;"></div>
-                <div class="col-sm-3"> <button id="distributeButton" class="btn btn-info">Distribute Now</button></div>
-          </div>
-          
-          <hr>
-
-          <div class="row">
-            <div class="col-sm-4">
-              Current distribtion Frequency: <p id="currentfrequency" style="color: var(--primary-t-color);"></p>
-            </div>
-            <div class="col-sm-4"> <input type="text" id="newfrequency" placeholder="Enter new Frequency in days"></div>
-            <div class="col-sm-4"> <button id="changeFrequency" class="btn btn-info">Change</button></div>
-          </div>
-
-
-        </div>
-   
         
         <div class="container" id="feesetup" style="display:none" >
             <h2>Fee Setup</h2>

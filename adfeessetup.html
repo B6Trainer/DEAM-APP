@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Deam Admin-DCP Distribution</title>
+    <link rel="icon" type="image/x-icon" href="/applogo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <!--Stylesheet-->
+    <link rel="stylesheet" href="/assets/css/stylesheet-main.css" />
+    <link rel="stylesheet" href="/assets/css/default-stylesheet.css" />
+    <link rel="stylesheet" href="/assets/css/pink-color.css" />
+    <link rel="stylesheet" href="./style.css" />
+
+
+   <meta name="description"    content="DEAM Metaverse is a community to benfit by streams of passive income." />
+   <style>
+      .headlabel{   
+         font-weight: 100;
+        font-size: 15px;
+      }
+
+   </style>
+
+
+</head>
+
+<body style="background-color: #080808;">
+
+    <div id="header"></div>
+   
+    <section id="topmenuspacing" style="background-color: #080808; padding: 80px;" >                       
+    </section>
+
+
+      <div id="walletconnectBtn" class="container" style="display:none ; align-items: center;">
+        <w3m-core-button id="wagmiButton"></w3m-core-button>
+      </div>
+        
+        
+      <div id="actionform" class="container"  style="display:block">        
+            <div  id="actionheadersection"  class="container" style="display:block">
+              <div class="row"> 
+              <div class="col-sm-6"><h4 id="authmessage"></h4></div>
+              <div class="col-sm-6"><h4 id="authmessage1"></h4></div>
+              </div>
+            </div>
+      </div>
+
+      <div  id="messagesection"  class="container" style="display:block">
+        <p class="text-center"><span id="messagex"></span></p>
+      </div>
+ 
+      <!-- Body Section -->
+      <div class="container" id="bodyContainer" style="display:none">
+
+        <div class="container" id="feesetup"  >
+          <h2>Fee Setup</h2>
+          <br>
+          <h5>Set Conversion Fee Members</h5>
+          <div class="row">
+              <div class="col-sm-4"> <p class="headlabel" id="currentConversionFeeMembers"></p> </div>
+              <div class="col-sm-4"> <input type="text" id="newConversionFeeMembers" placeholder="Enter percent"></div>
+              <div class="col-sm-4"> <button id="changeCoversionFeeMembers">Update</button></div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4"> <p id="currentConversionFeePromoters"></p> </div>
+            <div class="col-sm-4"> <input type="text" id="newConversionFeePromoters" placeholder="Enter percent"></div>
+            <div class="col-sm-4"> <button id="changeCoversionFeePromoters">Update</button></div>
+          </div>
+      
+          <h5>Set Conversion Fee split</h5>
+          <div class="row">
+              <div class="col-sm-3"><p id="currentTransactionFeeComm"></p></div>
+              <div class="col-sm-3"><p id="currentTransactionFeeFounder"></p></div>
+              <div class="col-sm-2"> <input type="text" id="newTransactionFeeComm" placeholder="Community New percent">
+              </div>
+              <div class="col-sm-2"> <input type="text" id="newTransactionFeeFounder" placeholder="Founders New percent">
+              </div>
+              <div class="col-sm-2"> <button id="changeTransactionFee">Update</button></div>
+          </div>
+
+          <h5>Minimum deposit members</h5>
+          <div class="row">
+              <div class="col-sm-4">  <p id="currentMinDepositMembers"></p> </div>
+              <div class="col-sm-4"> <input type="text" id="newMinimumDepositMembers" placeholder="Enter percent"></div>
+              <div class="col-sm-4"> <button id="changeMinimumDepositMembers">Update</button></div>
+          </div>
+      
+          <h5>Minimum TopUp members</h5>
+          <div class="row">
+              <div class="col-sm-4"> <p id="currentTopUpMembers"></p> </div>
+              <div class="col-sm-4"> <input type="text" id="newTopUpMembers" placeholder="Enter percent"></div>
+              <div class="col-sm-4"> <button id="changeTopUpMembers">Update</button></div>
+          </div>
+        </div>
+
+
+      </div>
+    
+
+    <div id="footer-menu"></div>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./common.js"></script>
+    <script type="module" src="./adfeessetup.js"></script>
+</body>
+
+</html>
