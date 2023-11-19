@@ -99,6 +99,8 @@ if(wconnected){
                     var usdtBalancecell = newRow.insertCell(8);
                     var dmtkBalancecell = newRow.insertCell(9); 
             
+                    
+                    walletaddcell.value=walletaddArr[i]
                     walletaddcell.innerHTML = maskWalletAddress(walletaddArr[i]);
                     profiletypecell.innerHTML = defineMembership(profiletypeArr[i]);
                     namecell.innerHTML = nameArr[i];
@@ -106,6 +108,8 @@ if(wconnected){
                     emailcell.innerHTML = emailArr[i];
                     subscell.innerHTML = Number(utils.formatEther(subsBalanceArr[i])).toFixed(2);;
                     rewardscell.innerHTML = Number(utils.formatEther(rewardsReceivedArr[i])).toFixed(2);
+
+                    sponsorcell.value=sponsor[i]
                     sponsorcell.innerHTML = maskWalletAddress(sponsor[i]);
 
                     var usdtBalance=0;

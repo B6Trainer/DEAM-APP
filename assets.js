@@ -16,14 +16,24 @@ import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 
 import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn } from "./dm_utils";
+import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
+                                dmTokenContract,dmMembershipContract,usdtContract} from './config';   
 
+
+
+var actionTab="";
+var withdrawalFee;
+var withdrawableAmount;
+var percentageDecimal;
+if(wconnected){
+
+const actionform= document.getElementById("actionform");
+actionform.style.display="block";
 const DMTK_BAL = document.getElementById("dmtk_balance");
 const USDTBAL = document.getElementById("usdt_balance");
 const TotalStakes = document.getElementById("total_mem_purchases");
 const RealtimeRewards = document.getElementById("realtimeReward");
-const referralRewards = document.getElementById("referralRewards");
-const totalRewards = document.getElementById("totalRewards");
-const rewardsWithdrawn = document.getElementById("rewardsWithdrawn");
+
 const AvailableRewards= document.getElementById("availableRewards");
 
 
@@ -44,44 +54,7 @@ const _withdrawfee = document.getElementById("fee");
 const withdrawAmount = document.getElementById("withdrawAmount");
 const submitWithdraw = document.getElementById("submit-withdraw");
 
-var actionTab="";
-var withdrawalFee;
-var withdrawableAmount;
-
-if(wconnected){
-  const usdtContract = {
-    address: usdtAddress,
-    abi: ERC20_ABI,
-    }
-    
-    //New Contracts
-    const dmConfigContract = {
-      address: DM_CONFIG_ADDRESS,
-      abi: DM_CONFIG_ABI,
-    }
-
-    const dmManagerContract = {
-      address: DM_MANAGER_ADDRESS,
-      abi: DM_MANAGER_ABI,
-    }
-
-    const dmCPdistributorContract = {
-      address: DM_CPDISTRIBUTOR_ADDRESS,
-      abi: DM_CPDISTRIBUTOR_ABI,
-    }
-
-    const dmTokenContract = {
-      address: DM_TOKEN_ADDRESS,
-      abi: DM_TOKEN_ABI,
-    }
-    
-    const dmMembershipContract = {
-      address: DM_MEMBERSHIP_ADDRESS,
-      abi: DM_MEMBERSHIP_ABI,
-    }
-
-
-const AccountData = await readContracts({
+  const AccountData = await readContracts({
     contracts: [
     {
         ...dmTokenContract,
@@ -100,13 +73,18 @@ const AccountData = await readContracts({
     },
 
     {
-    ...dmConfigContract,
-    functionName: 'conversionFeeMember',
+      ...dmConfigContract,
+      functionName: 'conversionFeeMember',
     },
 
     {
-    ...dmConfigContract,
-    functionName: 'conversionFeePromoter',
+      ...dmConfigContract,
+      functionName: 'conversionFeePromoter',
+    },
+
+    {
+      ...dmConfigContract,
+      functionName: 'percentageDecimals',
     }
     
     ],
@@ -155,15 +133,20 @@ const AccountData = await readContracts({
       withdrawalFee= Number(String(AccountData[4].result));//Promoter Fee
     }else if(membershipType==M_TYPE_Admin){
       withdrawalFee= 0;//Admin Fee
+    }else {
+      withdrawalFee= 100;//Admin Fee
+      submitWithdraw.disabled=true;
     }
+    percentageDecimal=Number(String(AccountData[5].result))
 
+    console.log("Withdrawal Fee: "+withdrawalFee);
 
-    //-----------------------------------------------------Functions if wallet is connected-----------------------------------------------------
+    //-----------------------------------------------------Withdraw is connected-----------------------------------------------------
       //Withdraw amount text box key in event
       withdrawAmount.addEventListener("keyup",()=>{
           
         const _withdrawAmountVal = withdrawAmount.value;          
-        _withdrawfee.innerHTML =  (withdrawalFee * _withdrawAmountVal)/(100);//Member Fee
+        _withdrawfee.innerHTML =  (withdrawalFee * _withdrawAmountVal)/(100*percentageDecimal);//Member Fee
               
       });
 
@@ -225,6 +208,30 @@ const AccountData = await readContracts({
 
       //----------
 
+      
+      actionsselect.addEventListener("change", function() {
+
+        //alert("Member Type: "+memberType);
+        const selectedActionValue = actionsselect.value;
+        messageBox.innerHTML="";
+        actionTab=selectedActionValue;
+
+
+        if (selectedActionValue == "MI") {
+          myInvContainer.style.display ="block";    
+          myWithdrawContainer.style.display ="none";    
+          
+        }else if (selectedActionValue == "W") {
+            
+          myInvContainer.style.display ="none";    
+          myWithdrawContainer.style.display ="block"; 
+        
+        }else{
+          myInvContainer.style.display ="none";    
+          myWithdrawContainer.style.display ="none"; 
+        }
+
+      });
 
   }else{
     // Message to retry connecting wallet again
@@ -234,33 +241,11 @@ const AccountData = await readContracts({
 
   //Message to connect wallet
 
+
 }
 
 
 
-actionsselect.addEventListener("change", function() {
-
-  //alert("Member Type: "+memberType);
-  const selectedActionValue = actionsselect.value;
-  messageBox.innerHTML="";
-  actionTab=selectedActionValue;
-
-
-  if (selectedActionValue == "MI") {
-    myInvContainer.style.display ="block";    
-    myWithdrawContainer.style.display ="none";    
-    
-  }else if (selectedActionValue == "W") {
-      
-    myInvContainer.style.display ="none";    
-    myWithdrawContainer.style.display ="block"; 
-  
-  }else{
-    myInvContainer.style.display ="none";    
-    myWithdrawContainer.style.display ="none"; 
-  }
-
-});
 
 
 const walletidCopybutton = document.getElementById("walletidCopybutton");

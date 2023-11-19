@@ -76,7 +76,7 @@
             ],
           });
   
-      console.log(ContractResponseData);
+      
 
       
 
@@ -96,6 +96,7 @@
             var levelRewardsArr=ContractResponseData[0].result[1];
             var levelArr=ContractResponseData[0].result[2];
 
+            var txndetails1element=document.getElementById("txndetailstable");
             var arrLength= memAddressArr.length;
             var txnTableheaders = [ "Level", "Member Wallet Address","Rewards generated"]; // Profile header values
             
@@ -109,21 +110,28 @@
                 headerRow1.appendChild(th);
              }
 
-            // Create body rows
-            for ( let i = 0; i < arrLength; i++) {
-              var row = table.insertRow();
+            if(arrLength >0){
 
-              var txnLevelcell = row.insertCell(0); 
-              var txnWalletAddresscell = row.insertCell(1); 
-              var txnLevelRewardscell = row.insertCell(2); 
+              // Create body rows
+              for ( let i = 0; i < arrLength; i++) {
+                var row = table.insertRow();
 
-              txnLevelcell.textContent = levelArr[i];
-              txnWalletAddresscell.textContent = maskWalletAddress(memAddressArr[i]);              
-              txnLevelRewardscell.textContent = Number(utils.formatEther(levelRewardsArr[i])).toFixed(2);
-              
+                var txnLevelcell = row.insertCell(0); 
+                var txnWalletAddresscell = row.insertCell(1); 
+                var txnLevelRewardscell = row.insertCell(2); 
+
+                txnLevelcell.textContent = levelArr[i];
+                txnWalletAddresscell.textContent = maskWalletAddress(memAddressArr[i]);              
+                txnLevelRewardscell.textContent = Number(utils.formatEther(levelRewardsArr[i])).toFixed(2);
+                
+              }
+
+             }
+            else{
+              txndetails1element.innerHTML="No rewards available for Sponsor: "+walletAddress;
             }
             
-            var txndetails1element=document.getElementById("txndetailstable");
+
             txndetails1element.appendChild(table);
   
       }
