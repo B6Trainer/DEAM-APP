@@ -290,7 +290,7 @@ if(AccountData != null){
             topupBtn.disabled = false;   
           }
       }catch(e){
-        errorx.innerHTML = getErrorMessageContent("Error: Top up failed "+e.shortMessage);
+        errorx.innerHTML = getErrorMessageContent(" Exception occurred: Top up failed "+e.shortMessage);
         topupBtn.disabled = false;   
       }finally{
         topupBtn.innerHTML = `Top Up`;             
