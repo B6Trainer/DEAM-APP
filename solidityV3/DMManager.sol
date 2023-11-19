@@ -496,7 +496,7 @@ contract DMManager is BaseDMContract {
 
     function topUpSubscriptionForMember(uint256 topupAmount) external {
         require(
-            membershipContract.isMember(msg.sender) == true,
+            membershipContract.isMember(msg.sender),
             "DMManager: Not a member yet. Need to be a registered member to topup"
         );
         require(
@@ -505,13 +505,22 @@ contract DMManager is BaseDMContract {
             "DMManager: Minimum TopUp Amount Not met"
         );
         
+        require(
+           usdtToken.allowance(msg.sender,address(this)) >= topupAmount,
+           "DMManager: Insufficient USDT approved by the member wallet"
+        );
+        require(
+            usdtToken.balanceOf(msg.sender) >= topupAmount,
+            "DMManager: Insufficient USDT Balance in the member wallet"
+        );
+
         //uint256 allowance =IERC20(usdtToken).allowance(msg.sender,msg.sender);
         //uint256 balance =IERC20(usdtToken).balanceOf(msg.sender);
         
         IBEP20(usdtToken).transferFrom(msg.sender, address(this), topupAmount);
         membershipContract.topUpSubscriptionBalance(msg.sender, topupAmount);
         address referrer = membershipContract.getReferrer(msg.sender);
-        console.log("Top up completed. Proceed with level rewards");
+        logDMMessages("Top up completed. Proceed with level rewards");
         distributeRewardsForMembers(topupAmount, referrer,msg.sender);
     }
 
