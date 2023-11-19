@@ -248,3 +248,4 @@ export function adminAuthMessage(){
   document.getElementById("footer-menu").innerHTML = "";
 
 }
+

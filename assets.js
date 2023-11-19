@@ -24,7 +24,7 @@ import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract
 var actionTab="";
 var withdrawalFee;
 var withdrawableAmount;
-
+var percentageDecimal;
 if(wconnected){
 
 const actionform= document.getElementById("actionform");
@@ -73,13 +73,18 @@ const submitWithdraw = document.getElementById("submit-withdraw");
     },
 
     {
-    ...dmConfigContract,
-    functionName: 'conversionFeeMember',
+      ...dmConfigContract,
+      functionName: 'conversionFeeMember',
     },
 
     {
-    ...dmConfigContract,
-    functionName: 'conversionFeePromoter',
+      ...dmConfigContract,
+      functionName: 'conversionFeePromoter',
+    },
+
+    {
+      ...dmConfigContract,
+      functionName: 'percentageDecimals',
     }
     
     ],
@@ -132,6 +137,7 @@ const submitWithdraw = document.getElementById("submit-withdraw");
       withdrawalFee= 100;//Admin Fee
       submitWithdraw.disabled=true;
     }
+    percentageDecimal=Number(String(AccountData[5].result))
 
     console.log("Withdrawal Fee: "+withdrawalFee);
 
@@ -140,7 +146,7 @@ const submitWithdraw = document.getElementById("submit-withdraw");
       withdrawAmount.addEventListener("keyup",()=>{
           
         const _withdrawAmountVal = withdrawAmount.value;          
-        _withdrawfee.innerHTML =  (withdrawalFee * _withdrawAmountVal)/(100);//Member Fee
+        _withdrawfee.innerHTML =  (withdrawalFee * _withdrawAmountVal)/(100*percentageDecimal);//Member Fee
               
       });
 
