@@ -35,6 +35,14 @@
     <section id="topmenuspacing" style="background-color: #080808; padding: 80px;" >                       
     </section>
 
+    <div id="actionform" class="container"  style="display:block">        
+      <div  id="actionheadersection"  class="container" style="display:block">
+        <div class="row"> 
+        <div class="col-sm-6"><h4 id="authmessage"></h4></div>
+        <div class="col-sm-6"><h4 id="authmessage1"></h4></div>
+        </div>
+      </div>
+    </div>
 
       <div  id="messagesection"  class="container" style="display:block">
         <p class="text-center"><span id="messagex"></span></p>
@@ -43,114 +51,116 @@
         <w3m-core-button id="wagmiButton"></w3m-core-button>
       </div>
         
-        
-      <div id="actionform" class="container"  style="display:block">
-        
-        <div  id="actionheadersection"  class="container" style="display:block">
-        
-            <div class="row">                        
-              <div class="col-sm-4"> <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Admin actions -> </u></h3></div>
-              <div class="col-sm-4"> 
-                        <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color); padding-left: 25px;" >          
-                          <option value="HM">Home</option>
-                          <option value="AW">Admin Wallets</option>                          
-                          <option value="CB">Contracts Balance</option>
-                          <option value="RP">Register Promoter</option> 
-                        </select>
-              </div>
-              <div class="col-sm-4"><h4 id="authmessage"></h4></div>
-            </div>
+            <!-- Body Section -->
+      <div class="container" id="bodyContainer" >
 
-      </div>
-      </div>
-    
-      <div  id="homesection"  class="container" style="display:none">
-        <h3>Admin Home </h3>
-      </div>
-    
-      <div class="container" id="contractsBalancedetails" style="display:none" >
-        <h3>Contract Balances : Contract count = <span id="contractscount"></span> contracts</h3>                     
-          <div class="container" id="contractdetailstable" ></div>
-      </div>
-    
- 
-      <div class="container" id="adminwallets" style="display:none">
-        <h3>Admin Wallets</h3>         
-          <div class="container" id="adminwallettable" ></div>
-      </div>
+          <div id="actionform" class="container"  style="display:block">
+            
+            <div  id="actionheadersection"  class="container" style="display:block">
+            
+                <div class="row">                        
+                  <div class="col-sm-4"> <h3 style="color: var(--primary-color);" class="text-center mt-2"><u>Admin actions -> </u></h3></div>
+                  <div class="col-sm-4"> 
+                            <select class="form-control" id="actionsselect" name="actionsselect" style="color: var(--primary-color); padding-left: 25px;" >          
+                              <option value="HM">Home</option>
+                              <option value="AW">Admin Wallets</option>                          
+                              <option value="CB">Contracts Balance</option>
+                              <option value="RP">Register Promoter</option> 
+                            </select>
+                  </div>
+                  <div class="col-sm-4"><h4 id="authmessage"></h4></div>
+                </div>
 
-        
-        <div class="container" id="feesetup" style="display:none" >
-            <h2>Fee Setup</h2>
-            <br>
-            <h5>Set Conversion Fee Members</h5>
-            <div class="row">
-                <div class="col-sm-4"> <p class="headlabel" id="currentConversionFeeMembers"></p> </div>
-                <div class="col-sm-4"> <input type="text" id="newConversionFeeMembers" placeholder="Enter percent"></div>
-                <div class="col-sm-4"> <button id="changeCoversionFeeMembers">Update</button></div>
-            </div>
-            <div class="row">
-              <div class="col-sm-4"> <p id="currentConversionFeePromoters"></p> </div>
-              <div class="col-sm-4"> <input type="text" id="newConversionFeePromoters" placeholder="Enter percent"></div>
-              <div class="col-sm-4"> <button id="changeCoversionFeePromoters">Update</button></div>
+          </div>
           </div>
         
-            <h5>Set Conversion Fee split</h5>
-            <div class="row">
-                <div class="col-sm-3"><p id="currentTransactionFeeComm"></p></div>
-                <div class="col-sm-3"><p id="currentTransactionFeeFounder"></p></div>
-                <div class="col-sm-2"> <input type="text" id="newTransactionFeeComm" placeholder="Community New percent">
-                </div>
-                <div class="col-sm-2"> <input type="text" id="newTransactionFeeFounder" placeholder="Founders New percent">
-                </div>
-                <div class="col-sm-2"> <button id="changeTransactionFee">Update</button></div>
-            </div>
-
-            <h5>Minimum deposit members</h5>
-            <div class="row">
-                <div class="col-sm-4">  <p id="currentMinDepositMembers"></p> </div>
-                <div class="col-sm-4"> <input type="text" id="newMinimumDepositMembers" placeholder="Enter percent"></div>
-                <div class="col-sm-4"> <button id="changeMinimumDepositMembers">Update</button></div>
-            </div>
+          <div  id="homesection"  class="container" style="display:none">
+            <h3>Admin Home </h3>
+          </div>
         
-            <h5>Minimum TopUp members</h5>
-            <div class="row">
-                <div class="col-sm-4"> <p id="currentTopUpMembers"></p> </div>
-                <div class="col-sm-4"> <input type="text" id="newTopUpMembers" placeholder="Enter percent"></div>
-                <div class="col-sm-4"> <button id="changeTopUpMembers">Update</button></div>
+          <div class="container" id="contractsBalancedetails" style="display:none" >
+            <h3>Contract Balances : Contract count = <span id="contractscount"></span> contracts</h3>                     
+              <div class="container" id="contractdetailstable" ></div>
+          </div>
+        
+    
+          <div class="container" id="adminwallets" style="display:none">
+            <h3>Admin Wallets</h3>         
+              <div class="container" id="adminwallettable" ></div>
+          </div>
+
+            
+            <div class="container" id="feesetup" style="display:none" >
+                <h2>Fee Setup</h2>
+                <br>
+                <h5>Set Conversion Fee Members</h5>
+                <div class="row">
+                    <div class="col-sm-4"> <p class="headlabel" id="currentConversionFeeMembers"></p> </div>
+                    <div class="col-sm-4"> <input type="text" id="newConversionFeeMembers" placeholder="Enter percent"></div>
+                    <div class="col-sm-4"> <button id="changeCoversionFeeMembers">Update</button></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4"> <p id="currentConversionFeePromoters"></p> </div>
+                  <div class="col-sm-4"> <input type="text" id="newConversionFeePromoters" placeholder="Enter percent"></div>
+                  <div class="col-sm-4"> <button id="changeCoversionFeePromoters">Update</button></div>
+              </div>
+            
+                <h5>Set Conversion Fee split</h5>
+                <div class="row">
+                    <div class="col-sm-3"><p id="currentTransactionFeeComm"></p></div>
+                    <div class="col-sm-3"><p id="currentTransactionFeeFounder"></p></div>
+                    <div class="col-sm-2"> <input type="text" id="newTransactionFeeComm" placeholder="Community New percent">
+                    </div>
+                    <div class="col-sm-2"> <input type="text" id="newTransactionFeeFounder" placeholder="Founders New percent">
+                    </div>
+                    <div class="col-sm-2"> <button id="changeTransactionFee">Update</button></div>
+                </div>
+
+                <h5>Minimum deposit members</h5>
+                <div class="row">
+                    <div class="col-sm-4">  <p id="currentMinDepositMembers"></p> </div>
+                    <div class="col-sm-4"> <input type="text" id="newMinimumDepositMembers" placeholder="Enter percent"></div>
+                    <div class="col-sm-4"> <button id="changeMinimumDepositMembers">Update</button></div>
+                </div>
+            
+                <h5>Minimum TopUp members</h5>
+                <div class="row">
+                    <div class="col-sm-4"> <p id="currentTopUpMembers"></p> </div>
+                    <div class="col-sm-4"> <input type="text" id="newTopUpMembers" placeholder="Enter percent"></div>
+                    <div class="col-sm-4"> <button id="changeTopUpMembers">Update</button></div>
+                </div>
             </div>
-        </div>
 
-   
-        <div class="container" id="registerpromoter" style="display:none" >
-            <h3>Register a Promoter</h3>
-            
-                <div id="promwalletid" class="grid-container">
-                    <label for="memberAddress" class="grid-item">Promoter Wallet Address*:</label>
-                    <input required type="text" class="grid-item" id="memberAddress__" name="promaddress"
-                      placeholder="0x00032.......10302130">
-                </div>
-                <div class="grid-container" id="name" >
-                <label for="name" class="grid-item">Name*:</label>
-                <input required type="text" class="grid-item" id="name__" name="subcsriberName"
-                  placeholder="eg .Mark James">
-                </div>
-                <div class="grid-container" id="mobile" >
-                <label for="mobile" class="grid-item">Mobile*:</label>
-                <input required type="text" class="grid-item" id="mobile__" name="mobile" placeholder="+971 50*****33">
-                </div>
-                <div class="grid-container" id="email" >
-                <label for="email" class="grid-item">Email*:</label>
-                <input required type="text" class="grid-item" id="email__" name="email" placeholder="xyz@abc.com">
-                </div>
+      
+            <div class="container" id="registerpromoter" style="display:none" >
+                <h3>Register a Promoter</h3>
+                
+                    <div id="promwalletid" class="grid-container">
+                        <label for="memberAddress" class="grid-item">Promoter Wallet Address*:</label>
+                        <input required type="text" class="grid-item" id="memberAddress__" name="promaddress"
+                          placeholder="0x00032.......10302130">
+                    </div>
+                    <div class="grid-container" id="name" >
+                    <label for="name" class="grid-item">Name*:</label>
+                    <input required type="text" class="grid-item" id="name__" name="subcsriberName"
+                      placeholder="eg .Mark James">
+                    </div>
+                    <div class="grid-container" id="mobile" >
+                    <label for="mobile" class="grid-item">Mobile*:</label>
+                    <input required type="text" class="grid-item" id="mobile__" name="mobile" placeholder="+971 50*****33">
+                    </div>
+                    <div class="grid-container" id="email" >
+                    <label for="email" class="grid-item">Email*:</label>
+                    <input required type="text" class="grid-item" id="email__" name="email" placeholder="xyz@abc.com">
+                    </div>
 
-                <div class="grid-container" id="registerbtn" >
-                  <input class="btn btn-info" type="button" id="addPromoter" value ="Register Promoter" style="align-self: center;">
-                </div>
-              
-            
-        </div>
-  
+                    <div class="grid-container" id="registerbtn" >
+                      <input class="btn btn-info" type="button" id="addPromoter" value ="Register Promoter" style="align-self: center;">
+                    </div>
+                  
+                
+            </div>
+      </div>
 
     <div id="footer-menu"></div>
 

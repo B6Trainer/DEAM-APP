@@ -1,41 +1,32 @@
 import {waitForTransaction, writeContract,readContracts,readContract} from '@wagmi/core';
-import ethereumClient from "./walletConnect";
+
 import {utils} from 'ethers';
 import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS, usdtAddress,DM_TXN_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
-import DM_CPDISTRIBUTOR_ABI from './ABI_DM_CPDISTRIBUTOR.json';
-import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
-import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
-import DM_TXN_ABI from './ABI_DM_TXN.json';
-import ERC20_ABI from './ABI_ERC20.json'
+
+import {adminAuthMessage,loadadminheader} from './common';
 
 import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,
             getInfoMessageandTxn,getErrorMessageandTxn,defineMembership } from "./dm_utils";
 
-import {membershipType,walletAddress,wconnected} from './common';
+import { membershipType,walletAddress,wconnected} from './common';
 import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
                 dmTokenContract,dmMembershipContract,usdtContract} from './config';
 
 const messagex = document.getElementById("messagex");
 
-const actionsection = document.getElementById("actionsection");
+
 const walletconnectBtn = document.getElementById("walletconnectBtn");
 
-// Load the header, body, and footer from their respective HTML files
-fetch('adheader.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('header').innerHTML = data;
-    });
 
-if(!wconnected){
 
-    messagex.innerHTML=getErrorMessageContent("Please connect your wallet");
-    actionsection.style.display="none";
-    walletconnectBtn.style.display="block";
+//Load the admin header
+loadadminheader();
 
-}else{
+if(wconnected){
+
+    var isAdmin=adminAuthMessage();
 
     walletconnectBtn.style.display="none";
 
@@ -74,30 +65,6 @@ if(!wconnected){
             ],
         });
 
-       
-        var startIndexLoc=16;
-        var minTopUpLoc=15;
-        var minDepoLoc=14;
-
-        var isAdmin=false;
-        //-------------------------------------------------------------Welcome message--------------------------------------------------------
-       
-
-        if(contractData[6].result != ethereumClient.getAccount().address){
-            document.getElementById("authmessage").innerHTML = "Unauthorized!! You are not an admin! <br>  Wallet id:  "+ethereumClient.getAccount().address
-            document.getElementById("authmessage").style.color="red";            
-            isAdmin=false;
-        }else{
-            document.getElementById("authmessage").innerHTML = "Welcome admin! <br> Wallet id:"+ethereumClient.getAccount().address
-            document.getElementById("authmessage").style.color="green";            
-            isAdmin=true;
-        }
-        document.getElementById("authmessage").style.fontSize="small";
-
-        if(!isAdmin){
-            messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");        
-            //return;
-        }
 
         //-------------------------------------------------------------Action Select--------------------------------------------------------
         

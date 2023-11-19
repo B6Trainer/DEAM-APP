@@ -239,11 +239,13 @@ export function adminAuthMessage(){
   document.getElementById("authmessage1").style.fontSize="small";
   const bodyContainer = document.getElementById("bodyContainer");
   if(!isAdmin){
-      messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");                    
+      //messagex.innerHTML=getInfoMessageContent("Restricted access only to Admins ");                    
       bodyContainer.style.display ="none";  
   }else{
       bodyContainer.style.display ="block";  
   }
+
+  return isAdmin;
 
   document.getElementById("footer-menu").innerHTML = "";
 
