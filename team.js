@@ -6,13 +6,10 @@
     
     import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
       dmTokenContract,dmMembershipContract,usdtContract} from './config'; 
-    import { wconnected,walletAddress,membershipType,welMess } from './common';  
+    import { generateBodyContent,walletAddress,membershipType,welMess } from './common';  
 
 
-
-
-    if(wconnected){
-    
+    if(generateBodyContent){
 
       const mysponsor  = document.getElementById("referredBy");
       const yourAccount  = document.getElementById("your-account");
@@ -20,7 +17,7 @@
       const subscriberAvailable  = document.getElementById("subscriberAvailable");
       const notsubscriberAvailable  = document.getElementById("notsubscriberAvailable");
 
-      
+
         //Read data from contract
         const AccountData = await readContracts({
           contracts: [

@@ -8,33 +8,17 @@
     import DM_TOKEN_ABI from './ABI_DM_TOKEN.json';
     import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
     import DM_TXN_ABI from './ABI_DM_TXN.json';
-    import {membershipType,walletAddress,wconnected} from './common';
-    
-
-    const TotalEarning = document.getElementById("total-earning");
-    const TotalEarningUSDT  = document.getElementById("total-earning-usdt");
-    const DirectReferrals  = document.getElementById("direct-referrals");
-    const IndirectReferrals  = document.getElementById("indirect-referrals");
+    import {membershipType,walletAddress,generateBodyContent} from './common';
     
     const myAccount  = document.getElementById("myWalletid");
     const referralsContainer  = document.getElementById("referrals-container");
-    const sharebtn  = document.getElementById("share");
     const subscriberAvailable  = document.getElementById("subscriberAvailable");
     const notsubscriberAvailable  = document.getElementById("notsubscriberAvailable");
 
   
       
 
-    if(!wconnected){
-
-        messagex.innerHTML=getErrorMessageContent("Please connect your wallet");
-        
-        walletconnectBtn.style.display="block";
-        subscriberAvailable.style.display = "none";
-        notsubscriberAvailable.innerHTML = "Connect Wallet"
-    
-    }else{
-
+    if(generateBodyContent){
 
       subscriberAvailable.style.display = "block";
       notsubscriberAvailable.style.display = "none";
@@ -138,6 +122,6 @@
   
  
 
-      }//End of Connected else block
+      }//End of body generate block
       
        

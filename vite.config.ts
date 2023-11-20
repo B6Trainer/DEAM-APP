@@ -26,7 +26,7 @@ export default defineConfig({
                   team: resolve(__dirname, './team.html'),
                   teamlevelrewards: resolve(__dirname, './teamlevelrewards.html'),
                  // unstake: resolve(__dirname, './unstake.html'),
-                  withdrawRewards: resolve(__dirname, './withdrawRewards.html'),
+                  //withdrawRewards: resolve(__dirname, './withdrawRewards.html'),
                   //withdrawToken: resolve(__dirname, './withdrawToken.html'),
                   subscription: resolve(__dirname, './subscription.html'),
                   notFound: resolve(__dirname, './error.html'),

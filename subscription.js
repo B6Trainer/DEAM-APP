@@ -12,11 +12,11 @@ import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoM
 import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
                                 dmTokenContract,dmMembershipContract,usdtContract} from './config';   
 
-import { wconnected,walletAddress,membershipType,welMess } from './common';
+import { generateBodyContent,walletAddress,membershipType,welMess } from './common';
 
 
 
-if(wconnected){
+if(generateBodyContent){
   
     var walletConnectedid=walletAddress;
     var memberType=membershipType;

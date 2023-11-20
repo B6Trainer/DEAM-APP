@@ -10,7 +10,7 @@ import {adminAuthMessage,loadadminheader} from './common';
 import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,
             getInfoMessageandTxn,getErrorMessageandTxn,defineMembership } from "./dm_utils";
 
-import { membershipType,walletAddress,wconnected} from './common';
+import { membershipType,walletAddress,generateBodyContent} from './common';
 import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
                 dmTokenContract,dmMembershipContract,usdtContract} from './config';
 
@@ -24,7 +24,7 @@ const walletconnectBtn = document.getElementById("walletconnectBtn");
 //Load the admin header
 loadadminheader();
 
-if(wconnected){
+if(generateBodyContent){
 
     var isAdmin=adminAuthMessage();
 

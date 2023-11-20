@@ -2,7 +2,7 @@ import {readContracts,writeContract,waitForTransaction} from '@wagmi/core';
 import ethereumClient from "./walletConnect";
 import {utils} from 'ethers';
 import { usdtAddress,M_TYPE_Guest,M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Admin } from './config';
-import { wconnected,walletAddress,membershipType,welMess } from './common';
+import { generateBodyContent,walletAddress,membershipType,welMess } from './common';
 import ERC20_ABI from './ABI_ERC20.json'
 import stakeABI from './ABI_STAKE.json';
 
@@ -25,7 +25,8 @@ var actionTab="";
 var withdrawalFee;
 var withdrawableAmount;
 var percentageDecimal;
-if(wconnected){
+
+if(generateBodyContent){
 
 const actionform= document.getElementById("actionform");
 actionform.style.display="block";
@@ -237,22 +238,19 @@ const submitWithdraw = document.getElementById("submit-withdraw");
     // Message to retry connecting wallet again
   }
 
-}else{
 
-  //Message to connect wallet
+const walletidCopybutton = document.getElementById("walletidCopybutton");
+const textToCopyValue = document.getElementById("walletid").value;
+
+walletidCopybutton.addEventListener("click", () => {
+      copyToClipboard(textToCopyValue);
+});
 
 
 }
 
 
 
-
-
-const walletidCopybutton = document.getElementById("walletidCopybutton");
-const textToCopyValue = document.getElementById("walletid").value;
-walletidCopybutton.addEventListener("click", () => {
-      copyToClipboard(textToCopyValue);
-});
 
 
 

@@ -78,6 +78,7 @@ export const DM_CPDISTRIBUTOR_ADDRESS =DM_CPDISTRIBUTOR_ADD;
 export const DM_TOKEN_ADDRESS =DM_TOKEN_ADD;
 export const DM_MEMBERSHIP_ADDRESS =DM_MEMBERSHIP_ADD;
 export const DM_TXN_ADDRESS =DM_TXN_ADD;
+export const DM_CHAIN_ID=chain;
 
 export const stakingAddress = '0x95804085CcD0cDba510FCBCDA78355D15a5632f2';
 export const swapAddress = '0xC17F1Cf5d7a49f4b63BDeaf57De9645fDA3Aa68F';

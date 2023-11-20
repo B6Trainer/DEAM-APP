@@ -5,7 +5,7 @@ import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,
             getInfoMessageandTxn,getErrorMessageandTxn,defineMembership } from "./dm_utils";
 
-import {membershipType,walletAddress,wconnected} from './common';
+import {membershipType,walletAddress,generateBodyContent} from './common';
 import {adminAuthMessage,loadadminheader} from './common';
 import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
                 dmTokenContract,dmMembershipContract,usdtContract} from './config';
@@ -18,7 +18,7 @@ const messagex = document.getElementById("messagex");
 //Load the admin header
 loadadminheader();
 
-if(wconnected){
+if(generateBodyContent){
 
         adminAuthMessage();
 
@@ -282,4 +282,4 @@ if(wconnected){
                  })
 
 
-}//End of else loop, if wallet is connected
+}//End of body generation

@@ -5,7 +5,7 @@ import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,
                     getInfoMessageandTxn,getErrorMessageandTxn,defineMembership } from "./dm_utils";
 
 import {dmConfigContract,dmTXNContract} from './config';
-import {membershipType,walletAddress,wconnected} from './common';
+import {generateBodyContent,walletAddress} from './common';
 import {adminAuthMessage,loadadminheader} from './common';
 
 const messagex = document.getElementById("messagex");
@@ -17,7 +17,7 @@ var sponsorlevelsearchbtn = document.getElementById("sponsorlevelsearchbtn");
 //Load the admin header
 loadadminheader();
 
-if(wconnected){
+if(generateBodyContent){
 
     adminAuthMessage();
 

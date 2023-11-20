@@ -1,12 +1,15 @@
-import { readContracts,watchAccount,watchNetwork,getNetwork } from "@wagmi/core";
+
+import { readContracts,watchAccount,watchNetwork,getNetwork,switchNetwork } from "@wagmi/core";
 import ethereumClient from "./walletConnect";
-import {defaultChainId,M_TYPE_Guest,M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Admin,M_TYPE_Owner} from './config'
+import {DM_CHAIN_ID,M_TYPE_Guest,M_TYPE_Member,M_TYPE_Promoter,M_TYPE_Admin,M_TYPE_Owner} from './config'
 import { usdtAddress,DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 
 import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 
 
+
 export var wconnected = ethereumClient.getAccount().isConnected;
+export var generateBodyContent = false;
 var previousAddress;
 var previousNetwork;
 var walletAddress="";
@@ -19,7 +22,7 @@ export const zeroaddress="0x0000000000000000000000000000000000000000";
 const connectwalletmessage=` 
    <div class="container">
         <div class="icon">
-            <i class="fas fa-lock"></i> <!-- Replace with your desired icon class -->
+            <i class="fas fa-lock"></i> 
         </div>
         <div class="message">
             Unauthorized
@@ -30,38 +33,102 @@ const connectwalletmessage=`
 
         </div>`;
 
+const connectCorrectChainmessage=` 
+        <div class="container">
+             <div class="icon">
+                 <i class="fas fa-lock"></i> 
+             </div>
+             <div class="message">
+                 Unauthorized
+     
+             </div>
+             <hr>
+             <div class="message">
+               Please connect to valid chain :  <button  class="btn btn-info" id="switchChain">Switch Chain</button>  
+             </div>
+
+             
+             `;
+
+const HomenavbarMenuContent = `
+             <nav class="top-navbar">
+             <div class="container">
+               <h4 id="header-title" style="color:var(--primary-color)">
+               <i onclick="history.back()" class="fa-solid fa-arrow-left"></i>${document.title}
+               </h3>
+               <w3m-core-button id="web3-login-button" class="web3-login-button"></w3m-core-button>
+               <div class="web3-wallet-address" style="display: none">
+                 <span></span>
+               </div>
+             </div>
+             </nav>`;
+             
+             
+             
+const divNav = document.getElementById("navbarmenu");
+if (divNav != null) {
+  divNav.innerHTML = HomenavbarMenuContent;
+}
+             
+
+
+const web3loginbutton = document.getElementById("web3-login-button");
+
 
 if (wconnected) {
 
-    const { chain } =  getNetwork();
-    previousNetwork = chain.id;
-    previousAddress = ethereumClient.getAccount().address;
     walletAddress=ethereumClient.getAccount().address;
+    const { chain } =  getNetwork();   
 
-    console.log('Common.js : Wallet connected with address: '+walletAddress);
+    console.log('Common.js : Wallet connected with address: '+walletAddress+" & with Chain: "+chain.name+"("+chain.id+")");
+    
+    var validChainConnected=false;
 
-    const dmMembershipContract = {
-      address: DM_MEMBERSHIP_ADDRESS,
-      abi: DM_MEMBERSHIP_ABI,
+    previousNetwork = chain.id;
+    previousAddress = walletAddress;
+
+    if(chain.id != null && chain.id == DM_CHAIN_ID){
+      validChainConnected=true;
+      chain.name;
+      generateBodyContent=true;
     }
 
+    if(!validChainConnected){
+      welMess="Welcome & Please connect to valid chain : "; 
+      const bodyContainer = document.getElementById("bodyContainer");
+      bodyContainer.innerHTML=connectCorrectChainmessage;      
+      bodyContainer.style.display="block";            
+      const switchChain = document.getElementById("switchChain");
+      switchChain.addEventListener("click", async () => {
+        const networks__ = await switchNetwork({
+          chainId: DM_CHAIN_ID,
+        }
+        )});
 
-    var ClientData = await readContracts({
-      contracts: [
-           
-            {
-              ...dmMembershipContract,
-              functionName: 'getSubscriptionDetails',
-              args:[ethereumClient.getAccount().address]
-            },           
-            {
-              ...dmMembershipContract,
-              functionName: 'owner',
+    }else{
 
-            }
+        const dmMembershipContract = {
+          address: DM_MEMBERSHIP_ADDRESS,
+          abi: DM_MEMBERSHIP_ABI,
+        }
 
-      ],
-    });
+
+        var ClientData = await readContracts({
+          contracts: [
+              
+                {
+                  ...dmMembershipContract,
+                  functionName: 'getSubscriptionDetails',
+                  args:[ethereumClient.getAccount().address]
+                },           
+                {
+                  ...dmMembershipContract,
+                  functionName: 'owner',
+
+                }
+
+          ],
+        });
 
     if(ClientData!=null){
 
@@ -103,31 +170,42 @@ if (wconnected) {
 
     }
 
-    const unwatch = watchAccount((account) => {
-      if (account.address!=undefined && previousAddress != account.address) {
-        window.location.reload();
-      }
-    });
+
+
+  }
+
     
-    const unwatch1 = watchNetwork((network) =>
-        {
-          if(network.chain !=undefined){
-            previousNetwork = network.chain.id;
-        if(previousNetwork != defaultChainId){
-            //window.location.href="./home.html";
-            //switchChain.style.display ="block";
-            //connectBtn.style.display = "none";
-            //openApp.style.display = "none";
-        }
-      }
-    });
+
 
 }else{
+  console.log("Common.js : Wallet is not connected ");
+   
   welMess="Welcome & Please connect your wallet"; 
   const bodyContainer = document.getElementById("bodyContainer");
-  bodyContainer.innerHTML=connectwalletmessage;
-
+  bodyContainer.innerHTML=connectwalletmessage;  
+  bodyContainer.style.display="block";    
 }
+
+
+const unwatch = watchAccount((account) => {
+  if (account.address!=undefined && previousAddress != account.address) {
+    window.location.reload();
+  }
+});
+
+const unwatch1 = watchNetwork((network) =>
+{
+  if(network.chain !=undefined){
+      //previousNetwork = network.chain.id;
+      if(previousNetwork != network.chain.id){
+          window.location.reload();
+          //window.location.href="./home.html";
+          //switchChain.style.display ="block";
+          //connectBtn.style.display = "none";
+          //openApp.style.display = "none";
+      }
+  }
+});
 
 export var walletAddress;
 export var membershipType;
@@ -181,28 +259,6 @@ const footerMenu = ` <hr>
 document.getElementById("footer-menu").innerHTML = footerMenu;
 
 
-const HomenavbarMenuContent = `
-<nav class="top-navbar">
-<div class="container">
-  <h4 id="header-title" style="color:var(--primary-color)">
-  <i onclick="history.back()" class="fa-solid fa-arrow-left"></i>${document.title}
-  </h3>
-  <w3m-core-button
-    id="web3-login-button"
-    class="web3-login-button"
-  ></w3m-core-button>
-  <div class="web3-wallet-address" style="display: none">
-    <span></span>
-  </div>
-</div>
-</nav>`;
-
-
-
-const divNav = document.getElementById("navbarmenu");
-if (divNav != null) {
-  divNav.innerHTML = HomenavbarMenuContent;
-}
 
 
 $(function () { 
@@ -219,6 +275,7 @@ fetch('adheader.html')
         document.getElementById('header').innerHTML = data;
     });
 }
+
 
 export function adminAuthMessage(){
   var isAdmin=false;
