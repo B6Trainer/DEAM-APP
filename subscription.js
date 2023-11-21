@@ -474,8 +474,6 @@ if(generateBodyContent){
             errorx.innerHTML = getErrorMessageContent("Please fill all the mandatory fields");
             return;
           }
-          var selectMTypeElement = document.getElementById("membershipType");
-          var mTypeSelectedValue = selectMTypeElement.value;
           
           var minDeposit = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
       
@@ -493,11 +491,9 @@ if(generateBodyContent){
                 abi: DM_MANAGER_ABI,
                 functionName: 'SelfRegistrationasMember',
                 args: [utils.parseUnits(String(amountsubscriptionnew), 18),referrerAccount],
-            });
+              });
             
-            const resultTr = await waitForTransaction({
-                hash: result.hash,
-              })
+              const resultTr = await waitForTransaction({ hash: result.hash,    })
               if(resultTr.status=='success'){
                 errorx.innerHTML = getInfoMessageandTxn("Joined as memeber successFully!",result.hash);
                 //window.location.reload();

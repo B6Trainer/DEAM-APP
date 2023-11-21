@@ -70,6 +70,7 @@
         subscriberAvailable.style.display ="none";
         notsubscriberAvailable.innerHTML = "Unable to fetch data from contract"
         notsubscriberAvailable.style.display ="block";
+        console.log(ContractResponseData[0].error.message);
 
       }else{
     

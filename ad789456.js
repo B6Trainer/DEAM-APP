@@ -4,6 +4,7 @@ import {utils} from 'ethers';
 import { DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS, usdtAddress,DM_TXN_ADDRESS } from './config';
 import DM_CONFIG_ABI from './ABI_DM_CONFIG.json';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
+import DM_MEMBERSHIP_ABI from './ABI_DM_MEMBERSHIP.json';
 
 import {adminAuthMessage,loadadminheader} from './common';
 
@@ -59,7 +60,14 @@ if(generateBodyContent){
             {
                 ...dmConfigContract,
                 functionName: 'owner',//6
-            }
+            },
+            
+                {
+                    ...dmMembershipContract,
+                    functionName: 'getProfileDetails',
+                }
+
+            
 
 
             ],
@@ -343,10 +351,10 @@ if(generateBodyContent){
                 })
                 if(tr.status=='success'){
                     messagex.innerHTML = getInfoMessageandTxn("New member added successfully : "+promoterAddress,result.hash);
-                    alert("success");
+                   
                 }else{
                     messagex.innerHTML = getErrorMessageandTxn(" Unable to register promoter: "+promoterAddress,result.hash);
-                    alert("Error");
+                   
                 }
             }catch(e){
                 messagex.innerHTML = getErrorMessageContent("Exception occured: Unable to register promoter: "+promoterAddress);
@@ -356,6 +364,12 @@ if(generateBodyContent){
 
         document.getElementById("footer-menu").innerHTML = "";
 
+
+//----------------------------------------------------------------------------------------------------------
+
+
+
+//------------------------------------*************************************---------------------------------------------
 
 
 
