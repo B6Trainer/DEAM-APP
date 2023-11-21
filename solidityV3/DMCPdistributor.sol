@@ -19,7 +19,7 @@ contract DMCPdistributor  is BaseDMContract{
 
     Membershipcontract public membershipContract;
     DeamMetaverseConfig public dmConfigContract;
-    DMToken public dmTokenContract;
+    
 
     constructor() {        
         logDMMessages("DMCPDistributor contract initialised");
@@ -61,14 +61,6 @@ contract DMCPdistributor  is BaseDMContract{
         require(_configContractAddress != address(0), "Invalid address for DMConfiguration contract");        
         dmConfigContract = DeamMetaverseConfig(_configContractAddress);
         dmConfigContract.updateAllowedContract(_thisContractAddress);                
-    }
-
-    function setDMToken(address _dmTokenAddress, address _thisContractAddress) internal
-    {   
-        require(_dmTokenAddress != address(0), "Invalid address for DM Token Contract");        
-        dmTokenContract = DMToken(_dmTokenAddress);  
-        dmTokenContract.updateAllowedContract(_thisContractAddress);     
-                    
     }
 
 

@@ -45,7 +45,7 @@ contract DMTransactions is BaseDMContract{
 
    
 
-    function getSponsorLevelrewards(address sponsor) external view onlyAllowedContract
+    function getSponsorLevelrewards(address sponsor) external view 
      returns  (address[] memory, uint256[] memory,uint256[] memory ){
 
        

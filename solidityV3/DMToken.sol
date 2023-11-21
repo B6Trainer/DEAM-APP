@@ -2,19 +2,19 @@
 pragma solidity 0.8.0;
 
 
-import "./DeamMetaverseConfig.sol";
+//import "./DeamMetaverseConfig.sol";
 import "./IERC20.sol";
 import "hardhat/console.sol";
-import "./Membershipcontract.sol";
+//import "./Membershipcontract.sol";
 
 contract DMToken is IERC20 {
     string public name = "DEAM Metaverse";
     string public symbol = "DMTK";
     uint8 public decimals = 18;
     uint256 public _totalSupply;
-    Membershipcontract public membershipContract;
-    DeamMetaverseConfig public deamMetaverseConfigContract;
-    IERC20 public usdtToken;
+//    Membershipcontract public membershipContract;
+//    DeamMetaverseConfig public deamMetaverseConfigContract;
+    //IERC20 public usdtToken;
 
     mapping(address => uint256) override public balanceOf;
     mapping(address => mapping(address => uint256)) public allowances;
@@ -22,7 +22,7 @@ contract DMToken is IERC20 {
     mapping(address => uint256) public numberOfWithdrawals;
     
     address public owner;
-    address public thisContractAddress;
+    
     mapping(address => address) private allowedContracts;
 
     uint256 public initialSupply =0;
@@ -47,14 +47,14 @@ contract DMToken is IERC20 {
         _totalSupply = initialSupply * 10**uint256(decimals);
         balanceOf[msg.sender] = _totalSupply;
         owner = msg.sender;
-
+        
         allowedContracts[owner]=owner;
 
         emit Transfer(address(0), owner, _totalSupply);
     }
 
-    function mapContracts(address _membershipContractAddress,
-                            address _configContractAddress,                            
+/* 
+    function mapContracts(                          
                             address _usdtToken,
                             address _dmTokenAddress        ) external onlyOwner
     {   
@@ -62,12 +62,13 @@ contract DMToken is IERC20 {
         if(_dmTokenAddress != address(0)){
             thisContractAddress=_dmTokenAddress;
         }
-        if(_membershipContractAddress != address(0)){
-            setMemberShipContract(_membershipContractAddress,thisContractAddress);
-        }
-        if(_configContractAddress != address(0)){
-            setDMConfig(_configContractAddress,thisContractAddress);
-        }
+       
+//        if(_membershipContractAddress != address(0)){
+//            setMemberShipContract(_membershipContractAddress,thisContractAddress);
+//        }
+//        if(_configContractAddress != address(0)){
+//            setDMConfig(_configContractAddress,thisContractAddress);
+//        }
 
         if(_usdtToken != address(0)){
             setUSDTToken(_usdtToken);
@@ -75,14 +76,15 @@ contract DMToken is IERC20 {
 
                    
     }
-
+    */
+/*
     function setMemberShipContract(address _membershipContractAddress, address _thisContractAddress) internal
     {   
         require(_membershipContractAddress != address(0), "Invalid address for Membership Contract");        
         membershipContract = Membershipcontract(_membershipContractAddress); 
         membershipContract.updateAllowedContract(_thisContractAddress);               
     }
-    
+  
     function setDMConfig(address _configContractAddress, address _thisContractAddress) internal
     {   
         require(_configContractAddress != address(0), "Invalid address for DMConfiguration contract");        
@@ -97,10 +99,7 @@ contract DMToken is IERC20 {
         usdtToken = IERC20(_usdtToken);                
     }
 
-
-
-
-
+*/  
      function totalSupply() external view override  returns (uint256) {
         return _totalSupply;
     }
@@ -134,6 +133,7 @@ contract DMToken is IERC20 {
     }
 
 
+/*
 
     function deductTransferFee(address from , uint256 amount) internal  returns (uint256) {
         uint256 communityPoolFee = ((amount * deamMetaverseConfigContract.transactionFee_communityPoolFeePercentage()) / (100*percentageDecimals));
@@ -144,15 +144,15 @@ contract DMToken is IERC20 {
         _transfer(from, founderWalletPoolAddress, foundersFee);
         return (amount-communityPoolFee-foundersFee);
     }
-
+*/
     function transfer(address to, uint256 amount) public override returns (bool success) {
         require(to != address(0), "Invalid address");
         require(balanceOf[msg.sender] >= amount, "Insufficient balance");
         uint256 deduction = 0;
         balanceOf[msg.sender] -= amount;
-        if (membershipContract.isSubscriber(msg.sender)) {
-            deduction = deductTransferFee(msg.sender, amount);
-        }
+        //if (membershipContract.isSubscriber(msg.sender)) {
+         //   deduction = deductTransferFee(msg.sender, amount);
+        //}
         _transfer(msg.sender, to, amount - deduction);
         return true;
     }
@@ -168,9 +168,9 @@ contract DMToken is IERC20 {
         require(balanceOf[from] >= amount, "Insufficient balance");
         require(allowances[from][msg.sender] >= amount, "Allowance exceeded");
         uint256 deduction = 0;
-        if (membershipContract.isSubscriber(msg.sender)) {
-            deduction = deductTransferFee(from,amount);
-        }
+       // if (membershipContract.isSubscriber(msg.sender)) {
+        //    deduction = deductTransferFee(from,amount);
+       // }
         _transfer(from, to, amount-deduction);
         allowances[from][msg.sender] -= amount;
         return true;
@@ -189,14 +189,14 @@ contract DMToken is IERC20 {
         emit Transfer(address(0), to, value);
     }
 
- 
+ /*
     function swapToDMTK(uint256 amount) external returns (bool) {
         require(amount > 0, "ERC20: Amount must be greater than zero");
         usdtToken.transferFrom(msg.sender, address(this), amount);
         mint(msg.sender, amount);
         return true;
     }
-    
+*/ 
 
     function recoverStuckTokens(address tokenAddress) public onlyOwner{
         IERC20 token = IERC20(tokenAddress);

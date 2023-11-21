@@ -34,8 +34,6 @@ contract DeamMetaverseConfig is BaseDMContract {
     uint256[7] public levelPercentage = [500000,100000,30000,20000,10000,5000,2500];
 
 
-
-
     constructor(address _founderWallet) {
         foundersWallet=_founderWallet;
         conversionFeeWallet=_founderWallet;

@@ -37,7 +37,7 @@ contract Membershipcontract is BaseDMContract {
     mapping(address => MemberProfile) private memberProfiles;
     address[] public allProfileAddresses;
     address[] public memberAddresses;
-    mapping(address => address) private allowedContracts;
+    
 
     //Data store to perform Communitity distribution
     uint256 public activeMembersCount = 0;
@@ -404,7 +404,7 @@ contract Membershipcontract is BaseDMContract {
         return activeMembersArr;
     }
 
-    function getProfileDetails() external view onlyAllowedContract
+    function getProfileDetails() external view 
      returns (
         UserType[] memory userTypeArr,
             address[] memory profileAddressArr,

@@ -10,11 +10,12 @@ import "./DMToken.sol";
 import "hardhat/console.sol";
 import "./BaseDMContract.sol";
 
+
 contract DMManager is BaseDMContract {
    
     Membershipcontract public membershipContract;
     DeamMetaverseConfig public deamMetaverseConfigContract;
-    DMToken public dmTokenContract;
+
     DMCPdistributor public dcomdistributor;
     DMTransactions public dmTransactions;
 
@@ -23,7 +24,8 @@ contract DMManager is BaseDMContract {
 
     uint256 public minimumWithdrawalLimit = 50 * 10**18;
     uint256 public withdrawalsAllowedADay = 1;
-    IBEP20 public usdtToken;
+
+
 
     constructor() {
         logDMMessages("DMManager contract initialised");
@@ -74,6 +76,8 @@ contract DMManager is BaseDMContract {
         logDMMessages("DMManager : Completed Executing Contract Mapping");
     }
 
+
+
    function setDMTransactions( address _dmTransactionsAddress
     ) internal {
         require(
@@ -108,22 +112,8 @@ contract DMManager is BaseDMContract {
         );
         deamMetaverseConfigContract.updateAllowedContract(_thisContractAddress);
     }
-    function setUSDTToken(address _usdtToken) internal 
-    {   
-        require(_usdtToken != address(0), "Invalid address for USDT Token Contract");        
-       usdtToken = IBEP20(_usdtToken);                
-    }
 
-    function setDMToken(address _dmTokenAddress, address _thisContractAddress)
-        internal
-    {
-        require(
-            _dmTokenAddress != address(0),
-            "Invalid address for DM Token Contract"
-        );
-        dmTokenContract = DMToken(_dmTokenAddress);
-        dmTokenContract.updateAllowedContract(_thisContractAddress);
-    }
+
 
     function setDCPDistributor(
         address _dcpDistAddress,
@@ -136,6 +126,8 @@ contract DMManager is BaseDMContract {
         dcomdistributor = DMCPdistributor(_dcpDistAddress);
         dcomdistributor.updateAllowedContract(_thisContractAddress);
     }
+
+   
 
 
 
@@ -303,11 +295,19 @@ contract DMManager is BaseDMContract {
         string memory _mobile,
         string memory _name
     ) external onlyOwner {
-        require(promoterAddress != address(0), string(abi.encodePacked("DMManager: Invalid wallet address : ",addressToString(promoterAddress))));
+        require(promoterAddress != address(0), string(abi.encodePacked(
+                                    "DMManager: Invalid wallet address : ",addressToString(promoterAddress),
+                                    " Message Sender: : ",addressToString(msg.sender)
+                                    
+                                    )));
         require(
-            membershipContract.isSubscriber(promoterAddress) == false,
-           string(abi.encodePacked("DMManager: The requested  member/promoter : ",addressToString(promoterAddress)))
-        );
+            !membershipContract.isSubscriber(promoterAddress),
+           string(abi.encodePacked(
+            "DMManager: The requested  member/promoter : ",addressToString(promoterAddress),
+                                    "is already a member, Message Sender: : ",addressToString(msg.sender)
+           
+           )));
+
         membershipContract.subscribe(
             promoterAddress,Membershipcontract.UserType.Promotor,
             0,//Setting subscription amount as zero for promoters
