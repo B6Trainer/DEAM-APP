@@ -127,7 +127,7 @@ const submitWithdraw = document.getElementById("submit-withdraw");
       console.log("No data on Subscription operation. Status: "+AccountData[2].status);
     }
 
-    
+    percentageDecimal=Number(String(AccountData[5].result))
     if(membershipType==M_TYPE_Member){
       withdrawalFee= Number(String(AccountData[3].result));//Member Fee
     }else if(membershipType==M_TYPE_Promoter){
@@ -135,10 +135,9 @@ const submitWithdraw = document.getElementById("submit-withdraw");
     }else if(membershipType==M_TYPE_Admin){
       withdrawalFee= 0;//Admin Fee
     }else {
-      withdrawalFee= 100;//Admin Fee
-      submitWithdraw.disabled=true;
+      withdrawalFee= 100*Number(percentageDecimal);//Guest Fee      
     }
-    percentageDecimal=Number(String(AccountData[5].result))
+    
 
     console.log("Withdrawal Fee: "+withdrawalFee);
 
@@ -162,7 +161,7 @@ const submitWithdraw = document.getElementById("submit-withdraw");
             try{
 
               if(withdrawAmount_ == "" || withdrawAmount_ <=0){              
-                messageBox.innerHTML =getErrorMessageContent("Please Enter Amount above 0");              
+                messageBox.innerHTML =getErrorMessageContent("Please enter amount above 0");              
                 return;
               }
 

@@ -60,6 +60,17 @@ export function getInfoMessageandTxn(message,txn){
   return constructedMessage;
 }
 
+export function getWarnMessageandTxn(message,txn){
+
+  var constructedHashlink=constructTxnLink(txn)
+
+  var constructedMessage=` <div class="alert alert-warning alert-dismissible fade show">
+  <span style="margin-right:10px" type="button" class="close" data-dismiss="alert">&times;</span>
+  <strong >Info!</strong> ${message}<br> Txn Hash : ${constructedHashlink} </div>`;
+
+  return constructedMessage;
+}
+
 function constructTxnLink(txn){
 
   var fullurl=DM_TXN_HASH_EXPLORER+txn;

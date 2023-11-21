@@ -8,7 +8,7 @@ import {copyToClipboard} from "./dm_utils";
 import { usdtAddress,DM_MANAGER_ADDRESS,DM_CONFIG_ADDRESS,DM_CPDISTRIBUTOR_ADDRESS,DM_TOKEN_ADDRESS,DM_MEMBERSHIP_ADDRESS } from './config';
 import DM_MANAGER_ABI from './ABI_DM_MANAGER.json';
 import ABI_ERC20 from './ABI_ERC20.json';
-import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn,formatDateToDDMMYYYY } from "./dm_utils";
+import { maskWalletAddress,getErrorMessageContent,getInfoMessageContent,getInfoMessageandTxn,getErrorMessageandTxn,getWarnMessageandTxn } from "./dm_utils";
 import {dmConfigContract,dmTXNContract,dmManagerContract,dmCPdistributorContract,
                                 dmTokenContract,dmMembershipContract,usdtContract} from './config';   
 
@@ -37,7 +37,7 @@ if(generateBodyContent){
     
     const topupBtn = document.getElementById("btn-topup");
     const labeltopup = document.getElementById("labeltopup");
-    const renewalCharge = document.getElementById("renewalCharge");
+    const subscribeBtnxx = document.getElementById("subscribeBtnxx");
     const errorx = document.getElementById("errorx");
     const topupamount = document.getElementById("amountx");
     const btnApprove = document.getElementById("btn-approve");
@@ -253,21 +253,6 @@ if(generateBodyContent){
             }
         })
       
-        /*
-        renewBtn.addEventListener('click', async function (e) {
-          try{
-              const result = await writeContract({   
-                                              address: DM_MANAGER_ADDRESS,
-                                              abi: DM_MANAGER_ABI,
-                                             functionName: 'renewSubscriptionForPromotor',});//Need to work on this
-              const resultTr = await waitForTransaction({    hash: result.hash,  })
-              if(resultTr.status=='success'){
-                  renewalCharge.innerHTML ="Membership  Renewed! Hash: "+result.hash;
-              }
-          }catch(e){
-            errorx.innerHTML = "Error: Validity not Expired";
-          }
-        })*/
       
         //Approve button event
         btnApprove.addEventListener('click', async function (e) {
@@ -308,14 +293,14 @@ if(generateBodyContent){
             btnApprove.innerHTML  = `Approved successfully`;
       
             updateApprovedUSDTValue(amountToApprove_);
-            errorx.innerHTML=getInfoMessageandTxn(amountToApprove_+" USDT successfully approved ",result.hash);
+            errorx.innerHTML=getWarnMessageandTxn(amountToApprove_+" USDT successfully approved, Proceed with join/top-up ",result.hash);
       
             if(actionTab=="R"){
               
               btnApprove.disabled = false;
               btnApprove.style.display = "none";
               
-              subscribeBtnCont.style.display ="block"
+              subscribeBtn.style.display ="block"
       
             }else if(actionTab=="T"){
               
@@ -339,9 +324,11 @@ if(generateBodyContent){
           }
         })
       
-      //Typing event on amount text new Joining member
+      //Typing event on amount text in new Joining member
         amountsubscriptionnewx.addEventListener("keyup",()=>{
           const amout__ = amountsubscriptionnewx.value;
+          errorx.innerHTML = "";
+          btnApprove.innerHTML  = `Approve to Subscribe/Top-up `;
       
           if(amout__>0){
             btnApprove.disabled = false;
@@ -353,10 +340,11 @@ if(generateBodyContent){
       
           if(Number(amout__)<=Number(utils.formatEther(AccountData[3].result)).toFixed(2)){
             btnApprove.style.display = "none";
-            subscribeBtnCont.style.display ="block"
+            subscribeBtn.style.display ="block"
           }else{
             btnApprove.style.display = "block";
-            subscribeBtnCont.style.display ="none"
+            subscribeBtn.style.display ="none"
+            
           }
           
         });
@@ -392,6 +380,9 @@ if(generateBodyContent){
         amountSelfRegister.addEventListener("keyup",()=>{
           const amout__ = amountSelfRegister.value;
       
+          errorx.innerHTML = "";
+          btnApprove.innerHTML  = `Approve to Subscribe/Top-up `;
+
           if(amout__>0){
             btnApprove.disabled = false;
             joinBtn.disabled = false;
@@ -534,48 +525,6 @@ if(generateBodyContent){
         });
       
       
-        /*
-        membershipType1.addEventListener("change", function() {
-          const mTypeSelectedValue = membershipType1.value;
-          if (mTypeSelectedValue === "0") {
-            $('#amountInput').show();
-            if(AccountData[5].status == "failure"){
-              mindeposit.innerHTML = minimumDepositFee;
-            }else{
-              mindeposit.innerHTML = Number(utils.formatEther(AccountData[5].result)).toFixed(2);
-            }
-      
-            
-            mindepositcontainer.style.display ="none";
-            referrerAc___.style.display ="block";
-            amountInput___.style.display ="block";
-            name_.style.display ="block";
-            userAddress_.style.display = "block";
-            mobile_.style.display ="block";
-            //approvedeposit.style.display="block;"
-            
-            email_.style.display ="block";
-            mandatory.style.display ="block";
-            subscribeBtnCont.style.display ="none";
-      
-            errorx.innerHTML = "";
-            btnApprove.innerHTML  = `Approve to Subscribe/Top-up `;
-            btnApprove.style.display = "block";
-            btnApprove.disabled = true;
-      
-          
-          }else{
-            mindepositcontainer.style.display ="none";            
-            referrerAc___.style.display ="none";
-            amountInput___.style.display ="none";
-            name_.style.display ="none";
-            userAddress_.style.display = "none";
-            mobile_.style.display ="none";
-            email_.style.display ="none";
-            mandatory.style.display ="none";
-          }
-        });
-        */
 
         const walletidCopybutton = document.getElementById("walletidCopybutton");
         const textToCopyValue = document.getElementById("walletid").value;
@@ -589,6 +538,8 @@ if(generateBodyContent){
         copymine.addEventListener("click", () => {
              referrerAccountInputBox.value=walletConnectedid;
         });
+
+        //Event to handle the action selection
       
         actionsselect.addEventListener("change", function() {
       
@@ -596,10 +547,17 @@ if(generateBodyContent){
           const selectedActionValue = actionsselect.value;
           errorx.innerHTML="";
           actionTab=selectedActionValue;
+
+          referMemberform.style.display ="none"; 
+          selfregisterform.style.display ="none"; 
+          topupform.style.display ="none";
+          commonform.style.display ="none";     
+          benefits.style.display ="none"; 
+
           if(memberType==M_TYPE_Admin){
       
             errorx.innerHTML=getInfoMessageContent("Admin dont have access to Subscription actions");
-            subscribeform.style.display ="none"; 
+            referMemberform.style.display ="none"; 
             selfregisterform.style.display ="none"; 
             topupform.style.display ="none";
             commonform.style.display ="none";     
@@ -608,21 +566,39 @@ if(generateBodyContent){
           }
       
           if (selectedActionValue == "R") {
-            subscribeform.style.display ="block";    
+            referMemberform.style.display ="block";    
+            benefits.style.display ="none";             
             selfregisterform.style.display ="none";    
-            topupform.style.display ="none";
             commonform.style.display ="block";  
-            benefits.style.display ="none"; 
+
+            if(approvedtopupValue>0){
+              subscribeBtnxx.style.display ="block";
+              subscribeBtnxx.disabled = false;
+
+              
+              btnApprove.style.display = "none";
+              btnApprove.disabled = true;  
+            }else{
+              subscribeBtnxx.style.display ="none";
+              subscribeBtnxx.disabled = true;
+
+              
+              btnApprove.style.display = "block";
+              btnApprove.disabled = false;
+            }
+
+
+            
           }else if (selectedActionValue == "S") {
               
-              subscribeform.style.display ="none";  
+              referMemberform.style.display ="none";  
               topupform.style.display ="none";        
               benefits.style.display ="none"; 
       
               selfregisterform.style.display ="block";  
       
               if(memberType==M_TYPE_Member){
-                selfregisterform.innerHTML="You are already registered. You can still top up to enjoy more benefits"
+                selfregisterform.innerHTML="You are already registered. Top up to enjoy more benefits"
                 topupBtn.style.display = "none";  
                 btnApprove.style.display = "none";          
               }else{
@@ -644,7 +620,7 @@ if(generateBodyContent){
       
           }else if (selectedActionValue == "T") {
             
-            subscribeform.style.display ="none";       
+            referMemberform.style.display ="none";       
             selfregisterform.style.display ="none"; 
             benefits.style.display ="none";    
       
@@ -668,7 +644,7 @@ if(generateBodyContent){
             }   
             
           }else{
-            subscribeform.style.display ="none"; 
+            referMemberform.style.display ="none"; 
             selfregisterform.style.display ="none"; 
             topupform.style.display ="none";
             commonform.style.display ="none";     
@@ -678,7 +654,7 @@ if(generateBodyContent){
         });
       
       }else{
-        errorx.innerHTML="Unable to connect to the DM Web3"
+        errorx.innerHTML="Unable to connect to connect the DM Web3"
       }
 
       function updateApprovedUSDTValue(newapprovedtopupValue){
